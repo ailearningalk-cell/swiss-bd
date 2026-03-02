@@ -7,19 +7,71 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
       padding: 20px;
       font-family: Arial, sans-serif;
-      background: #f4f7fa;
+      background: #eef2f5;
     }
 
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 348px;
+      text-align: center;
+    }
+
+    .header-title { font-size: 24px; font-weight: bold; color: #333; }
+    .header-date { font-size: 18px; color: #555; margin-bottom: 5px; }
+
+    .refresh-btn {
+      padding: 10px 20px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: background-color 0.2s;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+    .refresh-btn:hover { background-color: #357ae8; }
+    
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Dashboard Wrapper with stronger shadow */
     .dashboard-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 20px;
       max-width: 1200px;
+      position: relative;
+      background-color: #ffffff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1); /* Stronger shadow */
+      border: 1px solid #dcdcdc;
     }
 
     .dashboard-row {
@@ -30,7 +82,6 @@
       width: 100%;
     }
 
-    /* Container for Row 3 (Tipping, Starching, FG) */
     .row-3-container {
       display: flex;
       flex-direction: column;
@@ -40,44 +91,31 @@
       align-items: center;
     }
 
-    .section-group {
-      width: 242px;
+    .section-group { width: 242px; }
+
+    /* Updated Styles for Chart Sections to Pop */
+    .chart-wrapper, .row3-chart-wrapper, .third-chart {
+      border: 1px solid #d0d0d0; /* Visible border */
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.08); /* Inner chart shadow */
+      overflow: hidden;
+      background: #fcfcfc;
+      border-radius: 4px;
+      transition: box-shadow 0.2s;
+    }
+    
+    /* Hover effect for interactivity */
+    .chart-wrapper:hover, .row3-chart-wrapper:hover, .third-chart:hover {
+      box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
     }
 
-    .chart-wrapper {
-      width: 100%;
-      margin-bottom: 8px;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      overflow: hidden;
-      background: #fff;
-      border-radius: 4px;
-    }
-
-    /* Specialized wrapper for Row 3 charts (240x64) */
-    .row3-chart-wrapper {
-      width: 100%;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      overflow: hidden;
-      background: #fff;
-      border-radius: 4px;
-    }
+    .chart-wrapper { width: 100%; margin-bottom: 8px; }
+    .row3-chart-wrapper { width: 100%; }
+    .third-chart { flex: 1; min-width: 0; }
 
     .third-charts-container {
       display: flex;
       width: 100%;
       gap: 4px; 
-    }
-
-    .third-chart {
-      flex: 1;
-      min-width: 0;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      overflow: hidden;
-      background: #fff;
-      border-radius: 4px;
     }
 
     iframe {
@@ -86,10 +124,17 @@
       border: none;
     }
 
-    /* Aspect Ratios */
     .total-chart { aspect-ratio: 240 / 140; } 
     .small-chart { aspect-ratio: 80 / 50; } 
-    .row3-chart { aspect-ratio: 240 / 64; } /* New aspect ratio */
+    .row3-chart { aspect-ratio: 240 / 64; }
+
+    /* Footer Timestamp */
+    .footer-timestamp {
+      font-size: 12px;
+      color: #666;
+      margin-top: 30px;
+      padding: 10px;
+    }
 
     @media (min-width: 769px) {
       iframe { scrollbar-width: none; }
@@ -97,7 +142,16 @@
     }
   </style>
 </head>
-<body>
+<body onload="initializeDashboard()">
+
+  <div class="action-bar">
+    <div class="header-title">Today's Production</div>
+    <div class="header-date" id="currentDate"></div>
+    <button class="refresh-btn" onclick="refreshDashboard()">
+      <div class="spinner" id="btnSpinner"></div>
+      <span id="btnText">🔄 Refresh Dashboard</span>
+    </button>
+  </div>
 
   <div class="dashboard-wrapper">
     
@@ -157,6 +211,58 @@
     </div>
 
   </div>
+
+  <div class="footer-timestamp" id="lastUpdated"></div>
+
+  <script>
+    function updateDate() {
+      var now = new Date();
+      var dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      var dayOptions = { weekday: 'short' };
+      
+      var dateStr = now.toLocaleDateString('en-GB', dateOptions).split('/').join('-');
+      var dayStr = now.toLocaleDateString('en-US', dayOptions);
+      
+      document.getElementById('currentDate').textContent = dateStr + ' (' + dayStr + ')';
+    }
+
+    function updateTimestamp() {
+      var now = new Date();
+      var timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('lastUpdated').textContent = 'Last updated: ' + timeString;
+    }
+
+    function refreshDashboard() {
+      var btn = document.querySelector('.refresh-btn');
+      var spinner = document.getElementById('btnSpinner');
+      var text = document.getElementById('btnText');
+      
+      // 1. Show Spinner
+      spinner.style.display = 'inline-block';
+      text.textContent = 'Refreshing...';
+      btn.disabled = true;
+
+      // 2. Refresh all Iframes
+      var iframes = document.querySelectorAll('iframe');
+      iframes.forEach(function(iframe) {
+        iframe.src = iframe.src;
+      });
+      
+      // 3. Simulate load time and hide spinner
+      setTimeout(function() {
+        spinner.style.display = 'none';
+        text.textContent = '🔄 Refresh Dashboard';
+        btn.disabled = false;
+        updateTimestamp();
+      }, 1500); // Spinner shows for 1.5 seconds
+    }
+
+    // Run on load
+    function initializeDashboard() {
+      updateDate();
+      updateTimestamp();
+    }
+  </script>
 
 </body>
 </html>
