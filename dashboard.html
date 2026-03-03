@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Stats</title>
+    <style>
+        :root {
+            --primary: #4285f4;
+            --success: #34a853;
+            --bg: #f8f9fa;
+            --text-dark: #1a1f36;
+            --text-light: #697386;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 480px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 { font-size: 22px; margin: 0; color: var(--text-dark); letter-spacing: -0.5px; }
+        .date-sub { font-size: 13px; color: var(--text-light); }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: grid;
+            gap: 16px;
+        }
+
+        /* --- Metric Card Style --- */
+        .metric-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #edf2f7;
+        }
+
+        .label-small {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .number-large {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        /* --- Sub-Data Grid --- */
+        .sub-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid #f1f4f8;
+        }
+
+        .sub-item { display: flex; flex-direction: column; }
+        .sub-label { font-size: 10px; color: var(--text-light); margin-bottom: 2px; }
+        .sub-number { font-size: 16px; font-weight: 600; color: var(--text-dark); }
+
+        /* --- Colors --- */
+        .txt-blue { color: var(--primary) !important; }
+        .txt-green { color: var(--success) !important; }
+        
+        .accent-card {
+            background: var(--text-dark);
+            color: white;
+        }
+        .accent-card .label-small, .accent-card .sub-label { color: #9da4b0; }
+        .accent-card .number-large, .accent-card .sub-number { color: white; }
+
+        .refresh-btn {
+            background: white;
+            border: 1px solid #d1d9e0;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <span class="date-sub" id="fullDate"></span>
+            <h1>Daily Dashboard</h1>
+        </div>
+        <button class="refresh-btn" onclick="fetchData()">Refresh</button>
+    </div>
+
+    <div class="container">
+        
+        <div class="metric-card">
+            <span class="label-small">Twill Tape Total</span>
+            <span class="number-large txt-blue" id="twillTotal">0</span>
+            <div class="sub-grid">
+                <div class="sub-item"><span class="sub-label">(6)-1</span><span class="sub-number" id="t1">0</span></div>
+                <div class="sub-item"><span class="sub-label">(6)-2</span><span class="sub-number" id="t2">0</span></div>
+                <div class="sub-item"><span class="sub-label">(10)-2</span><span class="sub-number" id="t3">0</span></div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <span class="label-small">Drawstring Total</span>
+            <span class="number-large txt-green" id="drawTotal">0</span>
+            <div class="sub-grid">
+                <div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="d1">0</span></div>
+                <div class="sub-item"><span class="sub-label">16H-2</span><span class="sub-number" id="d2">0</span></div>
+                <div class="sub-item"><span class="sub-label">48H-3</span><span class="sub-number" id="d3">0</span></div>
+            </div>
+        </div>
+
+        <div class="metric-card accent-card">
+            <span class="label-small">Total Output</span>
+            <span class="number-large" id="fgVal">0</span>
+            <div class="sub-grid">
+                <div class="sub-item"><span class="sub-label">Tipping</span><span class="sub-number" id="tipVal">0</span></div>
+                <div class="sub-item"><span class="sub-label">Starching</span><span class="sub-number" id="starchVal">0</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxosSsvZzIRdPb92B8tJ-0Nhd1WaLA3oY4w2QC3J9qP-sC9EtGDf9KK2RznSPd8pcU/exec';
+
+        async function fetchData() {
+            try {
+                const response = await fetch(scriptURL);
+                const data = await response.json();
+                const today = new Date().toISOString().split('T')[0];
+                const row = data.find(r => r.Date.split('T')[0] === today);
+
+                if (row) {
+                    // Update Numbers
+                    const t1 = Number(row['Twill Tape (6)-1']) || 0;
+                    const t2 = Number(row['Twill Tape (6)-2']) || 0;
+                    const t3 = Number(row['Twill Tape (10)-2']) || 0;
+                    document.getElementById('twillTotal').innerText = t1 + t2 + t3;
+                    document.getElementById('t1').innerText = t1;
+                    document.getElementById('t2').innerText = t2;
+                    document.getElementById('t3').innerText = t3;
+
+                    const d1 = Number(row['Drawstring-16H-1']) || 0;
+                    const d2 = Number(row['Drawstring-16H-2']) || 0;
+                    const d3 = Number(row['Drawstring-48H-3']) || 0;
+                    document.getElementById('drawTotal').innerText = d1 + d2 + d3;
+                    document.getElementById('d1').innerText = d1;
+                    document.getElementById('d2').innerText = d2;
+                    document.getElementById('d3').innerText = d3;
+
+                    document.getElementById('fgVal').innerText = row['Finished Goods'] || 0;
+                    document.getElementById('tipVal').innerText = row['Tipping Machine'] || 0;
+                    document.getElementById('starchVal').innerText = row['Starching'] || 0;
+                }
+            } catch (e) { console.error("Sync Error"); }
+        }
+
+        document.getElementById('fullDate').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        window.onload = fetchData;
+    </script>
+</body>
+</html>
