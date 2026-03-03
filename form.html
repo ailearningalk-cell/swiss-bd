@@ -9,136 +9,164 @@
             --primary: #4285f4;
             --success: #34a853;
             --bg: #eef2f5;
+            --white: #ffffff;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            margin: 0;
         }
 
         .form-container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 550px;
+            border: 1px solid #dce1e6;
         }
 
         h2 {
             text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #1a1f36;
+            margin-bottom: 25px;
+            font-size: 24px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-        }
-
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #4f566b; font-size: 14px; }
+        
         input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 10px;
+            border: 1px solid #dcdfe6;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.2s;
             box-sizing: border-box;
+            background: #fcfcfd;
         }
 
-        input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 8px rgba(66, 133, 244, 0.2);
-        }
+        input:focus { border-color: var(--primary); outline: none; background: #fff; }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         .submit-btn {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
+            transition: background 0.2s;
             margin-top: 20px;
         }
 
-        .submit-btn:hover {
-            background: #357ae8;
-            transform: translateY(-2px);
+        .submit-btn:hover { background: #357ae8; }
+        .submit-btn:disabled { background: #a5beff; cursor: not-allowed; }
+
+        /* --- POPUP MODAL STYLES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        #status {
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
             text-align: center;
-            margin-top: 15px;
-            font-weight: bold;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease-out;
         }
 
-        @media (max-width: 480px) {
-            .grid { grid-template-columns: 1fr; }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
+
+        .modal-icon {
+            font-size: 50px;
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+
+        .modal h3 { margin: 0 0 10px; color: #333; }
+        .modal p { color: #666; margin-bottom: 25px; }
+
+        .view-btn {
+            background: var(--success);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .view-btn:hover { background: #2d9146; }
+
+        @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="form-container">
     <h2>Production Entry</h2>
-    <form id="productionForm" name="google-sheet" action="https://script.google.com/macros/s/AKfycbxEEFrMzb51zBq_I8u4PhUzLPl1vcdm-t0ILjxzB9VfuofRn1tseHkiVe2h4bfxcFlm/exec">
+    <form id="productionForm" name="google-sheet">
         
         <div class="form-group">
-            <label>Date</label>
+            <label>Date (Mandatory)</label>
             <input type="date" name="Date" id="dateField" required>
         </div>
 
         <div class="grid">
-            <div class="form-group"><label>Twill Tape (6)-1</label><input type="number" name="Twill Tape (6)-1" placeholder="0"></div>
-            <div class="form-group"><label>Twill Tape (6)-2</label><input type="number" name="Twill Tape (6)-2" placeholder="0"></div>
-            <div class="form-group"><label>Twill Tape (10)-2</label><input type="number" name="Twill Tape (10)-2" placeholder="0"></div>
-            <div class="form-group"><label>Drawstring-16H-1</label><input type="number" name="Drawstring-16H-1" placeholder="0"></div>
-            <div class="form-group"><label>Drawstring-16H-2</label><input type="number" name="Drawstring-16H-2" placeholder="0"></div>
-            <div class="form-group"><label>Drawstring-48H-3</label><input type="number" name="Drawstring-48H-3" placeholder="0"></div>
-            <div class="form-group"><label>Crochet-1</label><input type="number" name="Crochet-1" placeholder="0"></div>
-            <div class="form-group"><label>Crochet-2</label><input type="number" name="Crochet-2" placeholder="0"></div>
-            <div class="form-group"><label>Crochet-3</label><input type="number" name="Crochet-3" placeholder="0"></div>
-            <div class="form-group"><label>Tipping Machine</label><input type="number" name="Tipping Machine" placeholder="0"></div>
-            <div class="form-group"><label>Starching</label><input type="number" name="Starching" placeholder="0"></div>
-            <div class="form-group"><label>Finished Goods</label><input type="number" name="Finished Goods" placeholder="0"></div>
+            <div class="form-group"><label>Twill Tape (6)-1</label><input type="number" name="Twill Tape (6)-1" value="0"></div>
+            <div class="form-group"><label>Twill Tape (6)-2</label><input type="number" name="Twill Tape (6)-2" value="0"></div>
+            <div class="form-group"><label>Twill Tape (10)-2</label><input type="number" name="Twill Tape (10)-2" value="0"></div>
+            <div class="form-group"><label>Drawstring-16H-1</label><input type="number" name="Drawstring-16H-1" value="0"></div>
+            <div class="form-group"><label>Drawstring-16H-2</label><input type="number" name="Drawstring-16H-2" value="0"></div>
+            <div class="form-group"><label>Drawstring-48H-3</label><input type="number" name="Drawstring-48H-3" value="0"></div>
+            <div class="form-group"><label>Crochet-1</label><input type="number" name="Crochet-1" value="0"></div>
+            <div class="form-group"><label>Crochet-2</label><input type="number" name="Crochet-2" value="0"></div>
+            <div class="form-group"><label>Crochet-3</label><input type="number" name="Crochet-3" value="0"></div>
+            <div class="form-group"><label>Tipping Machine</label><input type="number" name="Tipping Machine" value="0"></div>
+            <div class="form-group"><label>Starching</label><input type="number" name="Starching" value="0"></div>
+            <div class="form-group"><label>Finished Goods</label><input type="number" name="Finished Goods" value="0"></div>
         </div>
 
-        <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
-        <p id="status"></p>
+        <button type="submit" class="submit-btn" id="submitBtn">Final Submit</button>
     </form>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-icon">✅</div>
+        <h3>Success!</h3>
+        <p>Data has been inserted successfully.</p>
+        <a href="YOUR_DASHBOARD_PAGE_URL.html" class="view-btn">View Data</a>
+    </div>
 </div>
 
 <script>
@@ -147,32 +175,32 @@
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
 
-    // 2. Handle Form Submission
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxEEFrMzb51zBq_I8u4PhUzLPl1vcdm-t0ILjxzB9VfuofRn1tseHkiVe2h4bfxcFlm/exec'; // REPLACE THIS TOO
+    // 2. Form Logic
+    const scriptURL = 'REPLACE_WITH_YOUR_APPS_SCRIPT_URL'; 
     const form = document.forms['google-sheet'];
     const btn = document.getElementById('submitBtn');
-    const status = document.getElementById('status');
+    const modal = document.getElementById('modalOverlay');
 
     form.addEventListener('submit', e => {
         e.preventDefault();
         btn.disabled = true;
-        btn.innerText = 'Submitting...';
-        status.innerText = 'Connecting to Google Sheets...';
+        btn.innerText = 'Inserting...';
 
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
             .then(response => {
-                status.style.color = 'var(--success)';
-                status.innerText = 'Success! Data sent to Sheet.';
+                // Show Popup
+                modal.style.display = 'flex';
+                
+                // Reset Form
                 btn.disabled = false;
-                btn.innerText = 'Submit';
+                btn.innerText = 'Final Submit';
                 form.reset();
-                dateInput.value = today; // Reset date to today
+                dateInput.value = today;
             })
             .catch(error => {
-                status.style.color = 'red';
-                status.innerText = 'Error! Check your connection.';
+                alert('Error! Please check your connection.');
                 btn.disabled = false;
-                btn.innerText = 'Submit';
+                btn.innerText = 'Final Submit';
                 console.error('Error!', error.message);
             });
     });
