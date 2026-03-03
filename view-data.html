@@ -1,68 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>View Production Data</title>
+    <meta charset="UTF-8">
+    <title>Production Data Management</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: #4285f4; color: white; }
-        tr:nth-child(even) { background: #f9f9f9; }
-        .edit-btn { background: #f4b400; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-        .refresh-btn { background: #34a853; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 30px; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #333; border-bottom: 2px solid #4285f4; padding-bottom: 10px; }
+        
+        .controls { margin-bottom: 20px; display: flex; justify-content: space-between; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { padding: 12px; border: 1px solid #dee2e6; text-align: left; }
+        th { background-color: #4285f4; color: white; position: sticky; top: 0; }
+        tr:hover { background-color: #f8f9fa; }
+
+        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-refresh { background: #34a853; color: white; }
+        .btn-edit { background: #fbbc05; color: #333; }
+        
+        #loading { text-align: center; padding: 20px; font-weight: bold; color: #666; }
+        .table-wrapper { overflow-x: auto; max-height: 600px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Production Logs</h2>
-        <button class="refresh-btn" onclick="fetchData()">🔄 Refresh Data</button>
-        <table id="dataTable">
-            <thead>
-                <tr id="headerRow"></tr>
-            </thead>
+
+<div class="container">
+    <h2>Production Logs</h2>
+    <div class="controls">
+        <button class="btn btn-refresh" onclick="loadData()">🔄 Refresh Data</button>
+        <small>Click "Edit" to modify values.</small>
+    </div>
+
+    <div id="loading">Fetching data from Google Sheets...</div>
+    
+    <div class="table-wrapper">
+        <table id="mainTable" style="display:none;">
+            <thead><tr id="tableHead"></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
+</div>
 
-    <script>
-        const scriptURL = 'YOUR_WEB_APP_URL';
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxosSsvZzIRdPb92B8tJ-0Nhd1WaLA3oY4w2QC3J9qP-sC9EtGDf9KK2RznSPd8pcU/exec';
 
-        async function fetchData() {
-            const tbody = document.getElementById('tableBody');
-            const hrow = document.getElementById('headerRow');
-            tbody.innerHTML = '<tr><td colspan="15">Loading data...</td></tr>';
+    async function loadData() {
+        const loading = document.getElementById('loading');
+        const table = document.getElementById('mainTable');
+        const tbody = document.getElementById('tableBody');
+        const thead = document.getElementById('tableHead');
 
-            try {
-                const response = await fetch(scriptURL);
-                const data = await response.json();
+        loading.style.display = 'block';
+        table.style.display = 'none';
+
+        try {
+            const response = await fetch(scriptURL);
+            const data = await response.json();
+            
+            if (data.length > 0) {
+                const keys = Object.keys(data[0]).filter(k => k !== 'rowId');
                 
-                if (data.length > 0) {
-                    const headers = Object.keys(data[0]).filter(k => k !== 'rowId');
-                    hrow.innerHTML = headers.map(h => `<th>${h}</th>`).join('') + '<th>Action</th>';
-                    
-                    tbody.innerHTML = data.map(row => `
-                        <tr>
-                            ${headers.map(h => `<td>${row[h]}</td>`).join('')}
-                            <td><button class="edit-btn" onclick="editRow(${row.rowId})">Edit</button></td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="15">Error loading data.</td></tr>';
-            }
-        }
+                // Create Headers
+                thead.innerHTML = keys.map(k => `<th>${k}</th>`).join('') + '<th>Action</th>';
+                
+                // Create Rows
+                tbody.innerHTML = data.map(row => `
+                    <tr>
+                        ${keys.map(k => `<td>${row[k]}</td>`).join('')}
+                        <td><button class="btn btn-edit" onclick="updateEntry(${row.rowId}, '${row.Date}')">Edit</button></td>
+                    </tr>
+                `).join('');
 
-        function editRow(rowId) {
-            // Placeholder for update logic
-            const newVal = prompt("Enter new Finished Goods value for row " + rowId);
-            if (newVal) {
-                fetch(`${scriptURL}?rowId=${rowId}&Finished Goods=${newVal}`, { method: 'GET' }) // Simplified for demo
-                .then(() => fetchData());
+                loading.style.display = 'none';
+                table.style.display = 'table';
             }
+        } catch (e) {
+            loading.innerText = "Error loading data. Make sure Apps Script 'Anyone' access is on.";
         }
+    }
 
-        window.onload = fetchData;
-    </script>
+    function updateEntry(rowId, date) {
+        const field = prompt("Which column do you want to update? (Case Sensitive, e.g., Finished Goods)");
+        if (!field) return;
+        
+        const newValue = prompt(`Enter new value for ${field} on ${date}:`);
+        if (newValue === null) return;
+
+        const updateUrl = `${scriptURL}?rowId=${rowId}&${encodeURIComponent(field)}=${encodeURIComponent(newValue)}`;
+        
+        // Using GET for the update via Apps Script doGet
+        fetch(updateUrl, { method: 'GET', mode: 'no-cors' })
+            .then(() => {
+                alert("Update request sent! Refreshing data...");
+                setTimeout(loadData, 2000);
+            })
+            .catch(err => alert("Update failed."));
+    }
+
+    window.onload = loadData;
+</script>
+
 </body>
 </html>
