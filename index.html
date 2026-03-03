@@ -1,268 +1,347 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Production Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #eef2f5;
-    }
+    <title>Production Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Action Bar */
-    .action-bar {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      width: 100%;
-      max-width: 348px;
-      text-align: center;
-    }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #eef2f5;
+        }
 
-    .header-title { font-size: 24px; font-weight: bold; color: #333; }
-    .header-date { font-size: 18px; color: #555; margin-bottom: 5px; }
+        /* Action Bar */
+        .action-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 348px;
+            text-align: center;
+        }
 
-    .refresh-btn {
-      padding: 10px 20px;
-      background-color: #4285f4;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      transition: background-color 0.2s;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
-    .refresh-btn:hover { background-color: #357ae8; }
-    
-    .spinner {
-      display: none;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      border-top-color: #fff;
-      animation: spin 1s ease-in-out infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
 
-    /* Dashboard Wrapper with stronger shadow */
-    .dashboard-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      max-width: 1200px;
-      position: relative;
-      background-color: #ffffff;
-      padding: 25px;
-      border-radius: 8px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1); /* Stronger shadow */
-      border: 1px solid #dcdcdc;
-    }
+        .header-date {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 5px;
+        }
 
-    .dashboard-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      width: 100%;
-    }
+        .refresh-btn {
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .row-3-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      width: 100%;
-      max-width: 242px;
-      align-items: center;
-    }
+        .refresh-btn:hover {
+            background-color: #357ae8;
+        }
 
-    .section-group { width: 242px; }
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
 
-    /* Updated Styles for Chart Sections to Pop */
-    .chart-wrapper, .row3-chart-wrapper, .third-chart {
-      border: 1px solid #d0d0d0; /* Visible border */
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.08); /* Inner chart shadow */
-      overflow: hidden;
-      background: #fcfcfc;
-      border-radius: 4px;
-      transition: box-shadow 0.2s;
-    }
-    
-    /* Hover effect for interactivity */
-    .chart-wrapper:hover, .row3-chart-wrapper:hover, .third-chart:hover {
-      box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
-    }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    .chart-wrapper { width: 100%; margin-bottom: 8px; }
-    .row3-chart-wrapper { width: 100%; }
-    .third-chart { flex: 1; min-width: 0; }
+        /* Dashboard Wrapper with stronger shadow */
+        .dashboard-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            max-width: 1200px;
+            position: relative;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            /* Stronger shadow */
+            border: 1px solid #dcdcdc;
+        }
 
-    .third-charts-container {
-      display: flex;
-      width: 100%;
-      gap: 4px; 
-    }
+        .dashboard-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+        }
 
-    iframe {
-      width: 100%;
-      display: block;
-      border: none;
-    }
+        .row-3-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            max-width: 242px;
+            align-items: center;
+        }
 
-    .total-chart { aspect-ratio: 240 / 140; } 
-    .small-chart { aspect-ratio: 80 / 50; } 
-    .row3-chart { aspect-ratio: 240 / 64; }
+        .section-group {
+            width: 242px;
+        }
 
-    /* Footer Timestamp */
-    .footer-timestamp {
-      font-size: 12px;
-      color: #666;
-      margin-top: 30px;
-      padding: 10px;
-    }
+        /* Updated Styles for Chart Sections to Pop */
+        .chart-wrapper,
+        .row3-chart-wrapper,
+        .third-chart {
+            border: 1px solid #d0d0d0;
+            /* Visible border */
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.08);
+            /* Inner chart shadow */
+            overflow: hidden;
+            background: #fcfcfc;
+            border-radius: 4px;
+            transition: box-shadow 0.2s;
+        }
 
-    @media (min-width: 769px) {
-      iframe { scrollbar-width: none; }
-      iframe::-webkit-scrollbar { width: 0; height: 0; }
-    }
-  </style>
+        /* Hover effect for interactivity */
+        .chart-wrapper:hover,
+        .row3-chart-wrapper:hover,
+        .third-chart:hover {
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-wrapper {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .row3-chart-wrapper {
+            width: 100%;
+        }
+
+        .third-chart {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .third-charts-container {
+            display: flex;
+            width: 100%;
+            gap: 4px;
+        }
+
+        iframe {
+            width: 100%;
+            display: block;
+            border: none;
+        }
+
+        .total-chart {
+            aspect-ratio: 240 / 140;
+        }
+
+        .small-chart {
+            aspect-ratio: 80 / 50;
+        }
+
+        .row3-chart {
+            aspect-ratio: 240 / 64;
+        }
+
+        /* Footer Timestamp */
+        .footer-timestamp {
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            padding: 10px;
+        }
+
+        @media (min-width: 769px) {
+            iframe {
+                scrollbar-width: none;
+            }
+
+            iframe::-webkit-scrollbar {
+                width: 0;
+                height: 0;
+            }
+        }
+    </style>
 </head>
+
 <body onload="initializeDashboard()">
 
-  <div class="action-bar">
-    <div class="header-title">Today's Production</div>
-    <div class="header-date" id="currentDate"></div>
-    <button class="refresh-btn" onclick="refreshDashboard()">
-      <div class="spinner" id="btnSpinner"></div>
-      <span id="btnText">🔄 Refresh Dashboard</span>
-    </button>
-  </div>
-
-  <div class="dashboard-wrapper">
-    
-    <div class="dashboard-row">
-      <div class="section-group">
-        <div class="chart-wrapper">
-          <iframe class="total-chart" scrolling="no" loading="lazy"
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=925935116&format=interactive">
-          </iframe>
-        </div>
-        <div class="third-charts-container">
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=576058580&format=interactive"></iframe></div>
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=816570071&format=interactive"></iframe></div>
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=164499255&format=interactive"></iframe></div>
-        </div>
-      </div>
-      
-      <div class="section-group">
-        <div class="chart-wrapper">
-          <iframe class="total-chart" scrolling="no" loading="lazy"
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=1025710992&format=interactive">
-          </iframe>
-        </div>
-        <div class="third-charts-container">
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=1125201597&format=interactive"></iframe></div>
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=512498170&format=interactive"></iframe></div>
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=83680413&format=interactive"></iframe></div>
-        </div>
-      </div>
+    <div class="action-bar">
+        <div class="header-title">Today's Production</div>
+        <div class="header-date" id="currentDate"></div>
+        <button class="refresh-btn" onclick="refreshDashboard()">
+            <div class="spinner" id="btnSpinner"></div>
+            <span id="btnText">🔄 Refresh Dashboard</span>
+        </button>
     </div>
 
-    <div class="dashboard-row">
-      <div class="section-group">
-        <div class="chart-wrapper">
-          <iframe class="total-chart" scrolling="no" loading="lazy"
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=1481872252&format=interactive">
-          </iframe>
+    <div class="dashboard-wrapper">
+
+        <div class="dashboard-row">
+            <div class="section-group">
+                <div class="chart-wrapper">
+                    <iframe class="total-chart" scrolling="no" loading="lazy"
+                        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=373227578&format=interactive">
+                    </iframe>
+                </div>
+                <div class="third-charts-container">
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=1277359821&format=interactive"></iframe>
+                    </div>
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=312503870&format=interactive"></iframe>
+                    </div>
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=1799187226&format=interactive"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-group">
+                <div class="chart-wrapper">
+                    <iframe class="total-chart" scrolling="no" loading="lazy"
+                        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=1244124235&format=interactive">
+                    </iframe>
+                </div>
+                <div class="third-charts-container">
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=1798325847&format=interactive"></iframe>
+                    </div>
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=1158058&format=interactive"></iframe>
+                    </div>
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=2024564603&format=interactive"></iframe>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="third-charts-container">
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=73691630&format=interactive"></iframe></div>
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=88217814&format=interactive"></iframe></div>
-          <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=2013222798&format=interactive"></iframe></div>
+
+        <div class="dashboard-row">
+            <div class="section-group">
+                <div class="chart-wrapper">
+                    <iframe class="total-chart" scrolling="no" loading="lazy"
+                        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=726693784&format=interactive">
+                    </iframe>
+                </div>
+                <div class="third-charts-container">
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=271346179&format=interactive"></iframe>
+                    </div>
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=1955443186&format=interactive"></iframe>
+                    </div>
+                    <div class="third-chart"><iframe class="small-chart" scrolling="no" loading="lazy"
+                            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=599524798&format=interactive"></iframe>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <div class="row-3-container">
+            <div class="row3-chart-wrapper">
+                <iframe class="row3-chart" scrolling="no" loading="lazy"
+                    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=720321239&format=interactive"></iframe>
+            </div>
+            <div class="row3-chart-wrapper">
+                <iframe class="row3-chart" scrolling="no" loading="lazy"
+                    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=1841699622&format=interactive"></iframe>
+            </div>
+            <div class="row3-chart-wrapper">
+                <iframe class="row3-chart" scrolling="no" loading="lazy"
+                    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIFGYS2cB7mdAVziWebO-uK4F8ab0kjWAJect9OnLYlYwfz2QB9gNOH__61ltnPsaHH2ux-JveMmo/pubchart?oid=1862176662&format=interactive"></iframe>
+            </div>
+        </div>
+
     </div>
 
-    <div class="row-3-container">
-      <div class="row3-chart-wrapper">
-        <iframe class="row3-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=571276417&format=interactive"></iframe>
-      </div>
-      <div class="row3-chart-wrapper">
-        <iframe class="row3-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=458469058&format=interactive"></iframe>
-      </div>
-      <div class="row3-chart-wrapper">
-        <iframe class="row3-chart" scrolling="no" loading="lazy" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRilXfTrRXNlMqglvXXKXhIKFAbQWX00sED3kmtYvgk_MzYqWoa9tS7ruINi78RMIEi0Sq6cM9f65oO/pubchart?oid=2118079047&format=interactive"></iframe>
-      </div>
-    </div>
+    <div class="footer-timestamp" id="lastUpdated"></div>
 
-  </div>
+    <script>
+        function updateDate() {
+            var now = new Date();
+            var dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            var dayOptions = { weekday: 'short' };
 
-  <div class="footer-timestamp" id="lastUpdated"></div>
+            var dateStr = now.toLocaleDateString('en-GB', dateOptions).split('/').join('-');
+            var dayStr = now.toLocaleDateString('en-US', dayOptions);
 
-  <script>
-    function updateDate() {
-      var now = new Date();
-      var dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      var dayOptions = { weekday: 'short' };
-      
-      var dateStr = now.toLocaleDateString('en-GB', dateOptions).split('/').join('-');
-      var dayStr = now.toLocaleDateString('en-US', dayOptions);
-      
-      document.getElementById('currentDate').textContent = dateStr + ' (' + dayStr + ')';
-    }
+            document.getElementById('currentDate').textContent = dateStr + ' (' + dayStr + ')';
+        }
 
-    function updateTimestamp() {
-      var now = new Date();
-      var timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      document.getElementById('lastUpdated').textContent = 'Last updated: ' + timeString;
-    }
+        function updateTimestamp() {
+            var now = new Date();
+            var timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('lastUpdated').textContent = 'Last updated: ' + timeString;
+        }
 
-    function refreshDashboard() {
-      var btn = document.querySelector('.refresh-btn');
-      var spinner = document.getElementById('btnSpinner');
-      var text = document.getElementById('btnText');
-      
-      // 1. Show Spinner
-      spinner.style.display = 'inline-block';
-      text.textContent = 'Refreshing...';
-      btn.disabled = true;
+        function refreshDashboard() {
+            var btn = document.querySelector('.refresh-btn');
+            var spinner = document.getElementById('btnSpinner');
+            var text = document.getElementById('btnText');
 
-      // 2. Refresh all Iframes
-      var iframes = document.querySelectorAll('iframe');
-      iframes.forEach(function(iframe) {
-        iframe.src = iframe.src;
-      });
-      
-      // 3. Simulate load time and hide spinner
-      setTimeout(function() {
-        spinner.style.display = 'none';
-        text.textContent = '🔄 Refresh Dashboard';
-        btn.disabled = false;
-        updateTimestamp();
-      }, 1500); // Spinner shows for 1.5 seconds
-    }
+            // 1. Show Spinner
+            spinner.style.display = 'inline-block';
+            text.textContent = 'Refreshing...';
+            btn.disabled = true;
 
-    // Run on load
-    function initializeDashboard() {
-      updateDate();
-      updateTimestamp();
-    }
-  </script>
+            // 2. Refresh all Iframes
+            var iframes = document.querySelectorAll('iframe');
+            iframes.forEach(function (iframe) {
+                iframe.src = iframe.src;
+            });
+
+            // 3. Simulate load time and hide spinner
+            setTimeout(function () {
+                spinner.style.display = 'none';
+                text.textContent = '🔄 Refresh Dashboard';
+                btn.disabled = false;
+                updateTimestamp();
+            }, 1500); // Spinner shows for 1.5 seconds
+        }
+
+        // Run on load
+        function initializeDashboard() {
+            updateDate();
+            updateTimestamp();
+        }
+    </script>
 
 </body>
+
 </html>
