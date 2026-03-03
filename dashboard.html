@@ -131,9 +131,9 @@
             <span class="label-small">Drawstring Total</span>
             <span class="number-large txt-green" id="drawTotal">0</span>
             <div class="sub-grid">
-                <div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="d1">0</span></div>
-                <div class="sub-item"><span class="sub-label">16H-2</span><span class="sub-number" id="d2">0</span></div>
-                <div class="sub-item"><span class="sub-label">48H-3</span><span class="sub-number" id="d3">0</span></div>
+                <div class="sub-item"><span class="sub-label">Drawstring-16H-1</span><span class="sub-number" id="d1">0</span></div>
+                <div class="sub-item"><span class="sub-label">Drawstring-2</span><span class="sub-number" id="d2">0</span></div>
+                <div class="sub-item"><span class="sub-label">Drawstring-3</span><span class="sub-number" id="d3">0</span></div>
             </div>
         </div>
 
@@ -149,42 +149,80 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxosSsvZzIRdPb92B8tJ-0Nhd1WaLA3oY4w2QC3J9qP-sC9EtGDf9KK2RznSPd8pcU/exec';
+        <script>
+    // 1. ENSURE THIS URL IS CORRECT (Ends in /exec)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxosSsvZzIRdPb92B8tJ-0Nhd1WaLA3oY4w2QC3J9qP-sC9EtGDf9KK2RznSPd8pcU/exec';
 
-        async function fetchData() {
-            try {
-                const response = await fetch(scriptURL);
-                const data = await response.json();
-                const today = new Date().toISOString().split('T')[0];
-                const row = data.find(r => r.Date.split('T')[0] === today);
+    async function fetchData() {
+        console.log("Attempting to connect to Google Sheets...");
+        
+        try {
+            const response = await fetch(scriptURL);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Error! Status: ${response.status}`);
+            }
 
-                if (row) {
-                    // Update Numbers
-                    const t1 = Number(row['Twill Tape (6)-1']) || 0;
-                    const t2 = Number(row['Twill Tape (6)-2']) || 0;
-                    const t3 = Number(row['Twill Tape (10)-2']) || 0;
-                    document.getElementById('twillTotal').innerText = t1 + t2 + t3;
-                    document.getElementById('t1').innerText = t1;
-                    document.getElementById('t2').innerText = t2;
-                    document.getElementById('t3').innerText = t3;
+            const data = await response.json();
+            console.log("Raw Data Received:", data);
 
-                    const d1 = Number(row['Drawstring-16H-1']) || 0;
-                    const d2 = Number(row['Drawstring-16H-2']) || 0;
-                    const d3 = Number(row['Drawstring-48H-3']) || 0;
-                    document.getElementById('drawTotal').innerText = d1 + d2 + d3;
-                    document.getElementById('d1').innerText = d1;
-                    document.getElementById('d2').innerText = d2;
-                    document.getElementById('d3').innerText = d3;
+            // DEBUG ALERT 1: Check if data is empty
+            if (!data || data.length === 0) {
+                alert("Connected successfully, but the Google Sheet seems EMPTY.");
+                return;
+            }
 
-                    document.getElementById('fgVal').innerText = row['Finished Goods'] || 0;
-                    document.getElementById('tipVal').innerText = row['Tipping Machine'] || 0;
-                    document.getElementById('starchVal').innerText = row['Starching'] || 0;
-                }
-            } catch (e) { console.error("Sync Error"); }
+            // DEBUG ALERT 2: Check Date Matching
+            const today = new Date().toISOString().split('T')[0];
+            console.log("Looking for entries matching today's date:", today);
+            
+            const row = data.find(r => {
+                const sheetDate = r.Date ? r.Date.split('T')[0] : "";
+                return sheetDate === today;
+            });
+
+            if (row) {
+                console.log("Match Found! Updating UI with:", row);
+                updateUI(row);
+            } else {
+                alert(`No entry found for TODAY (${today}).\n\nLatest date in sheet: ${data[0].Date.split('T')[0]}`);
+                // Optional: Show the latest data anyway for testing
+                updateUI(data[0]); 
+            }
+
+        } catch (e) {
+            console.error("Connection Failed:", e);
+            alert("CONNECTION FAILED!\nPossible reasons:\n1. Script not deployed as 'Anyone'\n2. Ad-blocker is blocking the script\n3. URL is incorrect.");
         }
+    }
 
-        document.getElementById('fullDate').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        window.onload = fetchData;
+    function updateUI(r) {
+        try {
+            // Numbers - Log these to see if column names are wrong
+            const t1 = Number(r['Twill Tape (6)-1']);
+            console.log("Value for Twill (6)-1:", t1);
+
+            document.getElementById('twillTotal').innerText = (Number(r['Twill Tape (6)-1']) || 0) + (Number(r['Twill Tape (6)-2']) || 0) + (Number(r['Twill Tape (10)-2']) || 0);
+            document.getElementById('t1').innerText = r['Twill Tape (6)-1'] || 0;
+            document.getElementById('t2').innerText = r['Twill Tape (6)-2'] || 0;
+            document.getElementById('t3').innerText = r['Twill Tape (10)-2'] || 0;
+
+            document.getElementById('drawTotal').innerText = (Number(r['Drawstring-16H-1']) || 0) + (Number(r['Drawstring-16H-2']) || 0) + (Number(r['Drawstring-48H-3']) || 0);
+            document.getElementById('d1').innerText = r['Drawstring-16H-1'] || 0;
+            document.getElementById('d2').innerText = r['Drawstring-16H-2'] || 0;
+            document.getElementById('d3').innerText = r['Drawstring-48H-3'] || 0;
+
+            document.getElementById('fgVal').innerText = r['Finished Goods'] || 0;
+            document.getElementById('tipVal').innerText = r['Tipping Machine'] || 0;
+            document.getElementById('starchVal').innerText = r['Starching'] || 0;
+        } catch (err) {
+            alert("UI Update Error: Check if Column Names in Google Sheet match the code exactly!");
+            console.error(err);
+        }
+    }
+
+    window.onload = fetchData;
+</script>
     </script>
 </body>
 </html>
