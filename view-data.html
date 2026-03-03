@@ -2,127 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Production Category Summary</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Review</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
-        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #333; border-bottom: 2px solid #4285f4; padding-bottom: 10px; margin-bottom: 20px; }
+        :root {
+            --primary: #4285f4;
+            --success: #34a853;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app-container { width: 100%; max-width: 600px; }
+
+        /* Header Area */
+        .header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 20px; }
+        .back-link { text-decoration: none; color: var(--primary); font-weight: bold; font-size: 14px; }
+
+        /* Today's Highlight Card */
+        .today-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--success);
+            margin-bottom: 25px;
+        }
+
+        .today-card h3 { margin-top: 0; color: #333; display: flex; justify-content: space-between; }
+        .date-badge { font-size: 12px; background: #e6ffed; color: #1e7e34; padding: 4px 10px; border-radius: 10px; }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .stat-item { background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
+        .stat-label { font-size: 11px; color: #777; text-transform: uppercase; }
+        .stat-value { font-size: 18px; font-weight: bold; color: #222; }
+
+        .edit-fab {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3);
+        }
+
+        /* History Table Style */
+        .history-section h4 { color: #555; margin-bottom: 10px; }
+        .history-row {
+            background: white;
+            margin-bottom: 8px;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        #loading { text-align: center; padding: 50px; color: #999; }
         
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { padding: 10px; border: 1px solid #dee2e6; text-align: center; }
-        
-        /* Category Header Styling */
-        .cat-header { background-color: #e8f0fe; font-weight: bold; color: #1967d2; }
-        .total-cell { background-color: #e6ffed; font-weight: bold; color: #1e7e34; border-right: 2px solid #34a853; }
-        th { background-color: #4285f4; color: white; position: sticky; top: 0; }
-        
-        .btn-edit { padding: 5px 10px; background: #fbbc05; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; }
-        #loading { text-align: center; padding: 40px; font-style: italic; color: #666; }
+        /* Mobile Adjustments */
+        @media (max-width: 400px) {
+            .stat-value { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Daily Production Category Summary</h2>
-    
-    <div id="loading">Gathering data from Google Sheets...</div>
-    
-    <div class="table-wrapper">
-        <table id="mainTable" style="display:none;">
-            <thead>
-                <tr>
-                    <th rowspan="2">Date</th>
-                    <th colspan="4" class="cat-header">Twill Tape</th>
-                    <th colspan="4" class="cat-header">Drawstring</th>
-                    <th colspan="4" class="cat-header">Crochet</th>
-                    <th>Tipping</th>
-                    <th>Starch</th>
-                    <th>FG</th>
-                    <th rowspan="2">Action</th>
-                </tr>
-                <tr>
-                    <th>(6)-1</th><th>(6)-2</th><th>(10)-2</th><th class="total-cell">Total</th>
-                    <th>16H-1</th><th>16H-2</th><th>48H-3</th><th class="total-cell">Total</th>
-                    <th>C-1</th><th>C-2</th><th>C-3</th><th class="total-cell">Total</th>
-                    <th>Total</th><th>Total</th><th>Total</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+<div class="app-container">
+    <div class="header">
+        <a href="index.html" class="back-link">← Back to Hub</a>
+        <span style="font-weight:bold; color:#444;">Production Review</span>
+    </div>
+
+    <div id="loading">Syncing with Cloud...</div>
+
+    <div id="todayContainer"></div>
+
+    <div class="history-section">
+        <h4>Recent Logs</h4>
+        <div id="historyList"></div>
     </div>
 </div>
 
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxosSsvZzIRdPb92B8tJ-0Nhd1WaLA3oY4w2QC3J9qP-sC9EtGDf9KK2RznSPd8pcU/exec';
 
-    async function loadData() {
-        const tbody = document.getElementById('tableBody');
+    async function syncApp() {
         try {
             const response = await fetch(scriptURL);
             const data = await response.json();
+            document.getElementById('loading').style.display = 'none';
+
+            const todayStr = new Date().toISOString().split('T')[0];
             
-            if (data.length > 0) {
-                tbody.innerHTML = data.map(row => {
-                    // 1. Clean Date format (Split at 'T' to remove time)
-                    const cleanDate = row.Date ? row.Date.split('T')[0] : 'N/A';
-                    
-                    // 2. Parse Numbers (Convert strings to numbers or 0)
-                    const t1 = Number(row['Twill Tape (6)-1']) || 0;
-                    const t2 = Number(row['Twill Tape (6)-2']) || 0;
-                    const t3 = Number(row['Twill Tape (10)-2']) || 0;
-                    const totalTwill = t1 + t2 + t3;
+            // Separate Today's data from history
+            const todayEntry = data.find(row => row.Date.split('T')[0] === todayStr);
+            const historyData = data.filter(row => row.Date.split('T')[0] !== todayStr);
 
-                    const d1 = Number(row['Drawstring-16H-1']) || 0;
-                    const d2 = Number(row['Drawstring-16H-2']) || 0;
-                    const d3 = Number(row['Drawstring-48H-3']) || 0;
-                    const totalDraw = d1 + d2 + d3;
-
-                    const c1 = Number(row['Crochet-1']) || 0;
-                    const c2 = Number(row['Crochet-2']) || 0;
-                    const c3 = Number(row['Crochet-3']) || 0;
-                    const totalCrochet = c1 + c2 + c3;
-
-                    const tipping = Number(row['Tipping Machine']) || 0;
-                    const starching = Number(row['Starching']) || 0;
-                    const fg = Number(row['Finished Goods']) || 0;
-
-                    return `
-                        <tr>
-                            <td>${cleanDate}</td>
-                            <td>${t1}</td><td>${t2}</td><td>${t3}</td><td class="total-cell">${totalTwill}</td>
-                            <td>${d1}</td><td>${d2}</td><td>${d3}</td><td class="total-cell">${totalDraw}</td>
-                            <td>${c1}</td><td>${c2}</td><td>${c3}</td><td class="total-cell">${totalCrochet}</td>
-                            <td>${tipping}</td>
-                            <td>${starching}</td>
-                            <td>${fg}</td>
-                            <td><button class="btn-edit" onclick="updateEntry(${row.rowId})">Edit</button></td>
-                        </tr>
-                    `;
-                }).join('');
-
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('mainTable').style.display = 'table';
-            }
+            renderToday(todayEntry);
+            renderHistory(historyData);
         } catch (e) {
-            document.getElementById('loading').innerText = "Error loading summary.";
+            document.getElementById('loading').innerText = "Offline or Connection Error.";
         }
     }
 
-    function updateEntry(rowId) {
-        const field = prompt("Enter Column Name (e.g. Finished Goods):");
-        if (!field) return;
-        const val = prompt("Enter New Value:");
-        if (val === null) return;
+    function renderToday(row) {
+        const container = document.getElementById('todayContainer');
+        if (!row) {
+            container.innerHTML = `<div class="today-card" style="border-left-color:#ccc;">
+                <p>No entry found for today yet.</p>
+                <a href="form.html" class="edit-fab" style="text-decoration:none; display:block; text-align:center;">Create Today's Entry</a>
+            </div>`;
+            return;
+        }
 
-        fetch(`${scriptURL}?rowId=${rowId}&${encodeURIComponent(field)}=${encodeURIComponent(val)}`, { method: 'GET', mode: 'no-cors' })
-            .then(() => {
-                alert("Update sent! The page will reload in 2 seconds.");
-                setTimeout(() => location.reload(), 2000);
-            });
+        // Totals Calculation
+        const twill = (Number(row['Twill Tape (6)-1']) || 0) + (Number(row['Twill Tape (6)-2']) || 0) + (Number(row['Twill Tape (10)-2']) || 0);
+        const drawstring = (Number(row['Drawstring-16H-1']) || 0) + (Number(row['Drawstring-16H-2']) || 0) + (Number(row['Drawstring-48H-3']) || 0);
+
+        container.innerHTML = `
+            <div class="today-card">
+                <h3>Today Entry <span class="date-badge">LIVE</span></h3>
+                <div class="stat-grid">
+                    <div class="stat-item"><div class="stat-label">Twill Total</div><div class="stat-value">${twill}</div></div>
+                    <div class="stat-item"><div class="stat-label">Drawstring</div><div class="stat-value">${drawstring}</div></div>
+                    <div class="stat-item"><div class="stat-label">Starching</div><div class="stat-value">${row.Starching || 0}</div></div>
+                    <div class="stat-item"><div class="stat-label">Finished</div><div class="stat-value">${row['Finished Goods'] || 0}</div></div>
+                </div>
+                <button class="edit-fab" onclick="fastEdit(${row.rowId})">✏️ Correct Mistakes</button>
+            </div>
+        `;
     }
 
-    window.onload = loadData;
+    function renderHistory(data) {
+        const list = document.getElementById('historyList');
+        list.innerHTML = data.slice(0, 5).map(row => `
+            <div class="history-row">
+                <span><b>${row.Date.split('T')[0]}</b></span>
+                <span>FG: ${row['Finished Goods'] || 0}</span>
+                <span style="color:#999; font-size:10px;">Row ID: ${row.rowId}</span>
+            </div>
+        `).join('');
+    }
+
+    function fastEdit(rowId) {
+        const col = prompt("Which field to fix? (e.g., Finished Goods)");
+        if (!col) return;
+        const val = prompt(`Enter corrected value for ${col}:`);
+        if (val === null) return;
+
+        fetch(`${scriptURL}?rowId=${rowId}&${encodeURIComponent(col)}=${encodeURIComponent(val)}`, { method: 'GET', mode: 'no-cors' })
+        .then(() => {
+            alert("Entry updated successfully!");
+            location.reload();
+        });
+    }
+
+    window.onload = syncApp;
 </script>
 </body>
 </html>
