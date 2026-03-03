@@ -164,7 +164,7 @@
                 status.style.color = 'var(--success)';
                 status.innerText = 'Success! Data sent to Sheet.';
                 btn.disabled = false;
-                btn.innerText = 'Final Submit';
+                btn.innerText = 'Submit';
                 form.reset();
                 dateInput.value = today; // Reset date to today
             })
@@ -172,7 +172,7 @@
                 status.style.color = 'red';
                 status.innerText = 'Error! Check your connection.';
                 btn.disabled = false;
-                btn.innerText = 'Final Submit';
+                btn.innerText = 'Submit';
                 console.error('Error!', error.message);
             });
     });
