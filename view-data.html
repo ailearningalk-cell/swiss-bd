@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Production Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7fa; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #4285f4; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .edit-btn { background: #f4b400; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .refresh-btn { background: #34a853; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Production Logs</h2>
+        <button class="refresh-btn" onclick="fetchData()">🔄 Refresh Data</button>
+        <table id="dataTable">
+            <thead>
+                <tr id="headerRow"></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const scriptURL = 'YOUR_WEB_APP_URL';
+
+        async function fetchData() {
+            const tbody = document.getElementById('tableBody');
+            const hrow = document.getElementById('headerRow');
+            tbody.innerHTML = '<tr><td colspan="15">Loading data...</td></tr>';
+
+            try {
+                const response = await fetch(scriptURL);
+                const data = await response.json();
+                
+                if (data.length > 0) {
+                    const headers = Object.keys(data[0]).filter(k => k !== 'rowId');
+                    hrow.innerHTML = headers.map(h => `<th>${h}</th>`).join('') + '<th>Action</th>';
+                    
+                    tbody.innerHTML = data.map(row => `
+                        <tr>
+                            ${headers.map(h => `<td>${row[h]}</td>`).join('')}
+                            <td><button class="edit-btn" onclick="editRow(${row.rowId})">Edit</button></td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="15">Error loading data.</td></tr>';
+            }
+        }
+
+        function editRow(rowId) {
+            // Placeholder for update logic
+            const newVal = prompt("Enter new Finished Goods value for row " + rowId);
+            if (newVal) {
+                fetch(`${scriptURL}?rowId=${rowId}&Finished Goods=${newVal}`, { method: 'GET' }) // Simplified for demo
+                .then(() => fetchData());
+            }
+        }
+
+        window.onload = fetchData;
+    </script>
+</body>
+</html>
