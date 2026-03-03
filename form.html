@@ -1,1 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Entry Form</title>
+    <style>
+        :root {
+            --primary: #4285f4;
+            --success: #34a853;
+            --bg: #eef2f5;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 8px rgba(66, 133, 244, 0.2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #357ae8;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #status {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Production Entry</h2>
+    <form id="productionForm" name="google-sheet" action="https://script.google.com/macros/s/AKfycbzMpBJUHVePVNzgxZoN7VFyRvlMOYpApKIUDPWvmjIjm0a3Vp3zrBtAFpjXgbX6T6H0QA/exec">
+        
+        <div class="form-group">
+            <label>Date (Mandatory)</label>
+            <input type="date" name="Date" id="dateField" required>
+        </div>
+
+        <div class="grid">
+            <div class="form-group"><label>Twill Tape (6)-1</label><input type="number" name="Twill Tape (6)-1" placeholder="0"></div>
+            <div class="form-group"><label>Twill Tape (6)-2</label><input type="number" name="Twill Tape (6)-2" placeholder="0"></div>
+            <div class="form-group"><label>Twill Tape (10)-2</label><input type="number" name="Twill Tape (10)-2" placeholder="0"></div>
+            <div class="form-group"><label>Drawstring-16H-1</label><input type="number" name="Drawstring-16H-1" placeholder="0"></div>
+            <div class="form-group"><label>Drawstring-16H-2</label><input type="number" name="Drawstring-16H-2" placeholder="0"></div>
+            <div class="form-group"><label>Drawstring-48H-3</label><input type="number" name="Drawstring-48H-3" placeholder="0"></div>
+            <div class="form-group"><label>Crochet-1</label><input type="number" name="Crochet-1" placeholder="0"></div>
+            <div class="form-group"><label>Crochet-2</label><input type="number" name="Crochet-2" placeholder="0"></div>
+            <div class="form-group"><label>Crochet-3</label><input type="number" name="Crochet-3" placeholder="0"></div>
+            <div class="form-group"><label>Tipping Machine</label><input type="number" name="Tipping Machine" placeholder="0"></div>
+            <div class="form-group"><label>Starching</label><input type="number" name="Starching" placeholder="0"></div>
+            <div class="form-group"><label>Finished Goods</label><input type="number" name="Finished Goods" placeholder="0"></div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Final Submit</button>
+        <p id="status"></p>
+    </form>
+</div>
+
+<script>
+    // 1. Set default date to today
+    const dateInput = document.getElementById('dateField');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+
+    // 2. Handle Form Submission
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzMpBJUHVePVNzgxZoN7VFyRvlMOYpApKIUDPWvmjIjm0a3Vp3zrBtAFpjXgbX6T6H0QA/exec'; // REPLACE THIS TOO
+    const form = document.forms['google-sheet'];
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.innerText = 'Submitting...';
+        status.innerText = 'Connecting to Google Sheets...';
+
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => {
+                status.style.color = 'var(--success)';
+                status.innerText = 'Success! Data sent to Sheet.';
+                btn.disabled = false;
+                btn.innerText = 'Final Submit';
+                form.reset();
+                dateInput.value = today; // Reset date to today
+            })
+            .catch(error => {
+                status.style.color = 'red';
+                status.innerText = 'Error! Check your connection.';
+                btn.disabled = false;
+                btn.innerText = 'Final Submit';
+                console.error('Error!', error.message);
+            });
+    });
+</script>
+
+</body>
+</html>
