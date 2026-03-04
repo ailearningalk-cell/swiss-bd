@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiss-Bangla Trims & Accessories | Welcome</title>
+    <title>Swiss-Bangla Trims | Welcome</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,35 +49,48 @@
             align-items: center;
             position: relative;
             z-index: 10;
+            padding: 0 20px;
         }
 
+        /* --- Responsive Brand Name --- */
         .brand-name {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(32px, 6vw, 58px);
+            font-size: clamp(22px, 5vw, 48px); /* Responsive font sizing */
             font-weight: 700;
             color: #ffffff;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-shadow: 0 10px 30px rgba(0,0,0,0.8);
             animation: fadeInScale 2s ease-out forwards;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Styling the & symbol */
+        .brand-name span {
+            font-size: 0.8em;
+            font-style: italic;
+            color: rgba(255,255,255,0.6);
+            margin: 0 4px;
         }
 
         .tagline {
-            font-size: 12px;
+            font-size: clamp(10px, 2vw, 12px);
             text-transform: uppercase;
-            letter-spacing: 8px;
-            color: #ff4b2b; /* Industrial Red */
+            letter-spacing: clamp(4px, 1.5vw, 8px);
+            color: #ff4b2b;
             margin-top: 12px;
             opacity: 0;
             font-weight: 500;
             animation: fadeIn 2s ease forwards 1s;
         }
 
-        /* --- Mechanical Pulse Needle & Track --- */
+        /* --- Responsive Sewing Track --- */
         .sewing-track {
-            width: 320px;
+            width: 80%; /* Takes 80% of container width */
+            max-width: 500px; /* Limits width on large screens */
             height: 1px;
             background: rgba(255, 255, 255, 0.1);
-            margin: 80px auto 40px auto;
+            margin: clamp(40px, 10vh, 80px) auto 40px auto;
             position: relative;
         }
 
@@ -90,7 +103,6 @@
             animation: stitchEffect 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
         }
 
-        /* The Metallic Mechanical Needle */
         .pulse-needle {
             position: absolute;
             top: -48px;
@@ -103,27 +115,16 @@
             animation: needleTravel 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
         }
 
-        /* The Glowing Tip */
         .pulse-needle::after {
             content: '';
             position: absolute;
-            bottom: -3px;
-            left: 50%;
+            bottom: -3px; left: 50%;
             transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
+            width: 6px; height: 6px;
             background: #ff4b2b;
             border-radius: 50%;
             box-shadow: 0 0 10px #ff4b2b, 0 0 20px rgba(255, 75, 43, 0.6);
             animation: tipPulse 0.3s infinite alternate;
-        }
-
-        /* Top cap of the needle */
-        .pulse-needle::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -1px; width: 5px; height: 2px;
-            background: #95a5a6;
         }
 
         /* --- Loading Footer --- */
@@ -133,11 +134,12 @@
         }
 
         .progress-bar {
-            width: 200px;
+            width: 150px;
             height: 1px;
             background: rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
+            margin: 0 auto;
         }
 
         .progress-fill {
@@ -151,31 +153,15 @@
             font-size: 8px;
             color: #555;
             margin-top: 12px;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             font-weight: 700;
         }
 
         /* --- Animations --- */
         @keyframes needleTravel {
             0% { left: 0%; transform: translateY(0); }
-            5% { transform: translateY(-8px); }
-            10% { transform: translateY(0); }
-            15% { transform: translateY(-8px); }
-            20% { transform: translateY(0); }
-            25% { transform: translateY(-8px); }
-            30% { transform: translateY(0); }
-            35% { transform: translateY(-8px); }
-            40% { transform: translateY(0); }
-            45% { transform: translateY(-8px); }
-            50% { transform: translateY(0); }
-            55% { transform: translateY(-8px); }
-            60% { transform: translateY(0); }
-            65% { transform: translateY(-8px); }
-            70% { transform: translateY(0); }
-            75% { transform: translateY(-8px); }
-            80% { transform: translateY(0); }
-            85% { transform: translateY(-8px); }
-            90% { transform: translateY(0); }
+            5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateY(-8px); }
+            10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% { transform: translateY(0); }
             100% { left: 100%; transform: translateY(0); }
         }
 
@@ -204,8 +190,8 @@
     </div>
 
     <div class="container">
-        <div class="brand-name">Swiss-Bangla Trims & Accessories</div>
-        <div class="tagline">Smart Production Monitoring</div>
+        <div class="brand-name">Swiss-Bangla Trims <span>&</span> Accessories</div>
+        <div class="tagline">Smart Production Sync</div>
 
         <div class="sewing-track">
             <div class="stitch-progress"></div>
@@ -216,12 +202,11 @@
             <div class="progress-bar">
                 <div class="progress-fill"></div>
             </div>
-            <p class="loading-text">Loading</p>
+            <p class="loading-text">CONNECTING TO PRODUCTION SERVER</p>
         </div>
     </div>
 
     <script>
-        // Smooth transition to home.html after 5 seconds
         setTimeout(() => {
             window.location.href = "home.html";
         }, 5000);
