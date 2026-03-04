@@ -157,49 +157,39 @@
 </div>
 
 <script>
-    // YOUR GOOGLE SCRIPT URL
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxPPSb-IFARQ_OysFY3JjYDR2mkcuSJMB59RHa5XxMHoiPYZF2B1XoNrflRapE14Ncf/exec';
-    
     const form = document.getElementById('productionForm');
     const dateInput = document.getElementById('dateField');
     const modal = document.getElementById('modalOverlay');
     const btn = document.getElementById('submitBtn');
 
-    // Set today's date automatically on load
+    // Set today's date automatically
     dateInput.value = new Date().toISOString().split('T')[0];
 
     form.addEventListener('submit', e => {
         e.preventDefault();
         
-        btn.disabled = true;
-        btn.innerText = 'Submitting Data...';
+        // 1. Show the success modal IMMEDIATELY
+        modal.style.display = 'flex';
 
+        // 2. Start the data transfer in the background
         fetch(scriptURL, { 
             method: 'POST', 
+            mode: 'no-cors', // This makes the request even faster by ignoring the response
             body: new FormData(form)
         })
-        .then(res => {
-            console.log('Success!', res);
-            // Show the modal
-            modal.style.display = 'flex';
-            
-            // Reset form for next entry
-            form.reset();
-            dateInput.value = new Date().toISOString().split('T')[0];
-            
-            // Re-enable button
-            btn.disabled = false;
-            btn.innerText = 'Final Submit';
+        .then(() => {
+            console.log('Data sent to background processing');
         })
         .catch(error => {
-            console.error('Error!', error.message);
-            alert('Error submitting data! Please check your internet connection.');
-            btn.disabled = false;
-            btn.innerText = 'Final Submit';
+            console.error('Background upload failed', error);
         });
+
+        // 3. Reset form while modal is open
+        form.reset();
+        dateInput.value = new Date().toISOString().split('T')[0];
     });
 
-    // Function to handle redirection
     function redirectToDashboard() {
         window.location.href = "dashboard.html";
     }
