@@ -153,48 +153,43 @@
     // 1. ENSURE THIS URL IS CORRECT (Ends in /exec)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyXy0Tip2_2x0t-iFBrVZ8ORCLNyRWBJTDwEvsfg0FXxX6TFaPvKGoX-0XUO_ToWsVn/exec';
 
-    async function fetchData() {
-        console.log("Attempting to connect to Google Sheets...");
-        
-        try {
-            const response = await fetch(scriptURL);
+async function fetchData() {
+    // This is your verified working URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyXy0Tip2_2x0t-iFBrVZ8ORCLNyRWBJTDwEvsfg0FXxX6TFaPvKGoX-0XUO_ToWsVn/exec';
+    
+    console.log("Connecting to API...");
+    
+    try {
+        // We add 'redirect: follow' to handle Google's internal redirection
+        const response = await fetch(scriptURL, {
+            method: 'GET',
+            redirect: 'follow'
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+        console.log("Data received successfully:", data);
+
+        // Since your script returns an array [{}], we take the first item
+        if (data && data.length > 0) {
+            const latestRow = data[0];
+            updateUI(latestRow);
             
-            if (!response.ok) {
-                throw new Error(`HTTP Error! Status: ${response.status}`);
+            // Update the date display from the sheet data
+            if(latestRow.Date) {
+                document.getElementById('dateDisplay').innerText = "Update: " + latestRow.Date;
             }
-
-            const data = await response.json();
-            console.log("Raw Data Received:", data);
-
-            // DEBUG ALERT 1: Check if data is empty
-            if (!data || data.length === 0) {
-                alert("Connected successfully, but the Google Sheet seems EMPTY.");
-                return;
-            }
-
-            // DEBUG ALERT 2: Check Date Matching
-            const today = new Date().toISOString().split('T')[0];
-            console.log("Looking for entries matching today's date:", today);
-            
-            const row = data.find(r => {
-                const sheetDate = r.Date ? r.Date.split('T')[0] : "";
-                return sheetDate === today;
-            });
-
-            if (row) {
-                console.log("Match Found! Updating UI with:", row);
-                updateUI(row);
-            } else {
-                alert(`No entry found for TODAY (${today}).\n\nLatest date in sheet: ${data[0].Date.split('T')[0]}`);
-                // Optional: Show the latest data anyway for testing
-                updateUI(data[0]); 
-            }
-
-        } catch (e) {
-            console.error("Connection Failed:", e);
-            alert("CONNECTION FAILED!\nPossible reasons:\n1. Script not deployed as 'Anyone'\n2. Ad-blocker is blocking the script\n3. URL is incorrect.");
+        } else {
+            console.error("Data array is empty");
         }
+
+    } catch (e) {
+        console.error("Fetch error:", e);
+        // If it still shows '<', it's usually because of a local cache. 
+        // Try opening the HTML file in an Incognito window.
     }
+}
 
     function updateUI(r) {
     try {
