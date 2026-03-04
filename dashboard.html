@@ -42,7 +42,6 @@
             gap: 16px;
         }
 
-        /* --- Metric Card Style --- */
         .metric-card {
             background: #fff;
             border-radius: 12px;
@@ -70,7 +69,6 @@
             margin-bottom: 16px;
         }
 
-        /* --- Sub-Data Grid --- */
         .sub-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -83,7 +81,6 @@
         .sub-label { font-size: 10px; color: var(--text-light); margin-bottom: 2px; }
         .sub-number { font-size: 16px; font-weight: 600; color: var(--text-dark); }
 
-        /* --- Colors --- */
         .txt-blue { color: var(--primary) !important; }
         .txt-green { color: var(--success) !important; }
         
@@ -110,7 +107,7 @@
     <div class="header">
         <div>
             <span class="date-sub" id="fullDate"></span>
-            <h1>Daily Dashboard</h1>
+            <h1 id="mainTitle">Daily Dashboard</h1>
         </div>
         <button class="refresh-btn" onclick="fetchData()">Refresh</button>
     </div>
@@ -121,9 +118,9 @@
             <span class="label-small">Twill Tape Total</span>
             <span class="number-large txt-blue" id="twillTotal">0</span>
             <div class="sub-grid">
-                <div class="sub-item"><span class="sub-label">Twill Tape (6)-1</span><span class="sub-number" id="t1">0</span></div>
-                <div class="sub-item"><span class="sub-label">Twill Tape (6)-2</span><span class="sub-number" id="t2">0</span></div>
-                <div class="sub-item"><span class="sub-label">Twill Tape (10)-2</span><span class="sub-number" id="t3">0</span></div>
+                <div class="sub-item"><span class="sub-label">6-1</span><span class="sub-number" id="t1">0</span></div>
+                <div class="sub-item"><span class="sub-label">6-2</span><span class="sub-number" id="t2">0</span></div>
+                <div class="sub-item"><span class="sub-label">10-2</span><span class="sub-number" id="t3">0</span></div>
             </div>
         </div>
 
@@ -131,9 +128,9 @@
             <span class="label-small">Drawstring Total</span>
             <span class="number-large txt-green" id="drawTotal">0</span>
             <div class="sub-grid">
-                <div class="sub-item"><span class="sub-label">Drawstring-16H-1</span><span class="sub-number" id="d1">0</span></div>
-                <div class="sub-item"><span class="sub-label">Drawstring-2</span><span class="sub-number" id="d2">0</span></div>
-                <div class="sub-item"><span class="sub-label">Drawstring-3</span><span class="sub-number" id="d3">0</span></div>
+                <div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="d1">0</span></div>
+                <div class="sub-item"><span class="sub-label">16H-2</span><span class="sub-number" id="d2">0</span></div>
+                <div class="sub-item"><span class="sub-label">48H-3</span><span class="sub-number" id="d3">0</span></div>
             </div>
         </div>
 
@@ -149,96 +146,59 @@
     </div>
 
     <script>
-        <script>
-    // 1. ENSURE THIS URL IS CORRECT (Ends in /exec)
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyXy0Tip2_2x0t-iFBrVZ8ORCLNyRWBJTDwEvsfg0FXxX6TFaPvKGoX-0XUO_ToWsVn/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyXy0Tip2_2x0t-iFBrVZ8ORCLNyRWBJTDwEvsfg0FXxX6TFaPvKGoX-0XUO_ToWsVn/exec';
 
-async function fetchData() {
-    // This is your verified working URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyXy0Tip2_2x0t-iFBrVZ8ORCLNyRWBJTDwEvsfg0FXxX6TFaPvKGoX-0XUO_ToWsVn/exec';
-    
-    console.log("Connecting to API...");
-    
-    try {
-        // We add 'redirect: follow' to handle Google's internal redirection
-        const response = await fetch(scriptURL, {
-            method: 'GET',
-            redirect: 'follow'
-        });
+        async function fetchData() {
+            console.log("Fetching data...");
+            try {
+                const response = await fetch(scriptURL);
+                if (!response.ok) throw new Error('Network error');
+                
+                const data = await response.json();
+                console.log("Data:", data);
 
-        if (!response.ok) throw new Error('Network response was not ok');
-
-        const data = await response.json();
-        console.log("Data received successfully:", data);
-
-        // Since your script returns an array [{}], we take the first item
-        if (data && data.length > 0) {
-            const latestRow = data[0];
-            updateUI(latestRow);
-            
-            // Update the date display from the sheet data
-            if(latestRow.Date) {
-                document.getElementById('dateDisplay').innerText = "Update: " + latestRow.Date;
+                if (data && data.length > 0) {
+                    updateUI(data[0]); // Using the first row of your Summary sheet
+                } else {
+                    alert("Dashboard-Summary sheet is empty.");
+                }
+            } catch (e) {
+                console.error("Fail:", e);
+                alert("Connection failed. Check your App Script Deployment.");
             }
-        } else {
-            console.error("Data array is empty");
         }
 
-    } catch (e) {
-        console.error("Fetch error:", e);
-        // If it still shows '<', it's usually because of a local cache. 
-        // Try opening the HTML file in an Incognito window.
-    }
-}
+        function updateUI(r) {
+            try {
+                // Values from JSON (Keys from your Dashboard-Summary headers)
+                const t1 = Number(r['T-6-1']) || 0;
+                const t2 = Number(r['T-6-2']) || 0;
+                const t3 = Number(r['T-10-2']) || 0;
+                document.getElementById('t1').innerText = t1;
+                document.getElementById('t2').innerText = t2;
+                document.getElementById('t3').innerText = t3;
+                document.getElementById('twillTotal').innerText = (t1 + t2 + t3).toLocaleString();
 
-    function updateUI(r) {
-    try {
-        // 1. Map Twill Tape (T- headers)
-        const t1 = Number(r['T-6-1']) || 0;
-        const t2 = Number(r['T-6-2']) || 0;
-        const t3 = Number(r['T-10-2']) || 0;
-        
-        document.getElementById('t1').innerText = t1;
-        document.getElementById('t2').innerText = t2;
-        document.getElementById('t3').innerText = t3;
-        document.getElementById('twillTotal').innerText = (t1 + t2 + t3).toLocaleString();
+                const d1 = Number(r['D-16H-1']) || 0;
+                const d2 = Number(r['D-16H-2']) || 0;
+                const d3 = Number(r['D-48H-3']) || 0;
+                document.getElementById('d1').innerText = d1;
+                document.getElementById('d2').innerText = d2;
+                document.getElementById('d3').innerText = d3;
+                document.getElementById('drawTotal').innerText = (d1 + d2 + d3).toLocaleString();
 
-        // 2. Map Drawstring (D- headers)
-        const d1 = Number(r['D-16H-1']) || 0;
-        const d2 = Number(r['D-16H-2']) || 0;
-        const d3 = Number(r['D-48H-3']) || 0;
-        
-        document.getElementById('d1').innerText = d1;
-        document.getElementById('d2').innerText = d2;
-        document.getElementById('d3').innerText = d3;
-        document.getElementById('drawTotal').innerText = (d1 + d2 + d3).toLocaleString();
+                document.getElementById('tipVal').innerText = r['Tipping'] || 0;
+                document.getElementById('starchVal').innerText = r['Starching'] || 0;
+                document.getElementById('fgVal').innerText = (Number(r['FG']) || 0).toLocaleString();
+                
+                if(r.Date) document.getElementById('fullDate').innerText = "Last Update: " + r.Date;
 
-        // 3. Map Crochet (C- headers)
-        const c1 = Number(r['C-1']) || 0;
-        const c2 = Number(r['C-2']) || 0;
-        const c3 = Number(r['C-3']) || 0;
-        
-        // If you have Crochet elements in your HTML:
-        if(document.getElementById('c1')){
-            document.getElementById('c1').innerText = c1;
-            document.getElementById('c2').innerText = c2;
-            document.getElementById('c3').innerText = c3;
-            document.getElementById('crochetTotal').innerText = (c1 + c2 + c3).toLocaleString();
+            } catch (err) {
+                console.error("UI Error:", err);
+            }
         }
 
-        // 4. Map Final Processing & FG
-        document.getElementById('tipVal').innerText = r['Tipping'] || 0;
-        document.getElementById('starchVal').innerText = r['Starching'] || 0;
-        document.getElementById('fgVal').innerText = (Number(r['FG']) || 0).toLocaleString();
-
-        console.log("UI successfully updated with Summary Data");
-    } catch (err) {
-        console.error("Mapping Error: Check if Dashboard-Summary headers match code keys!", err);
-    }
-}
-
-    window.onload = fetchData;
-</script>
+        window.onload = fetchData;
     </script>
 </body>
 </html>
