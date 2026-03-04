@@ -8,6 +8,7 @@
         :root {
             --primary: #4285f4;
             --success: #34a853;
+            --warning: #fbbc04;
             --bg: #f8f9fa;
             --text-dark: #1a1f36;
             --text-light: #697386;
@@ -48,18 +49,15 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Header & Layout --- */
         .header {
             width: 100%;
             max-width: 480px;
             margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+            text-align: center;
         }
 
-        .header h1 { font-size: 22px; margin: 0; color: var(--text-dark); letter-spacing: -0.5px; }
-        .date-sub { font-size: 13px; color: var(--text-light); }
+        .header h1 { font-size: 24px; margin: 0; color: var(--text-dark); letter-spacing: -0.5px; }
+        .date-sub { font-size: 14px; color: var(--text-light); font-weight: 500; }
 
         .container {
             width: 100%;
@@ -87,7 +85,7 @@
         }
 
         .number-large {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 800;
             color: var(--text-dark);
             line-height: 1;
@@ -98,14 +96,14 @@
         .sub-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            padding-top: 16px;
+            gap: 8px;
+            padding-top: 12px;
             border-top: 1px solid #f1f4f8;
         }
 
         .sub-item { display: flex; flex-direction: column; }
-        .sub-label { font-size: 10px; color: var(--text-light); margin-bottom: 2px; }
-        .sub-number { font-size: 16px; font-weight: 600; color: var(--text-dark); }
+        .sub-label { font-size: 9px; color: var(--text-light); margin-bottom: 2px; text-transform: uppercase; }
+        .sub-number { font-size: 14px; font-weight: 600; color: var(--text-dark); }
 
         .accent-card {
             background: var(--text-dark);
@@ -114,44 +112,24 @@
         .accent-card .label-small, .accent-card .sub-label { color: #9da4b0; }
         .accent-card .number-large, .accent-card .sub-number { color: white; }
 
-        .refresh-btn {
-            background: white;
-            border: 1px solid #d1d9e0;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .nav-links {
-            margin-top: 30px;
-            text-decoration: none;
-            color: var(--primary);
-            font-size: 14px;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
 
     <div id="loader">
         <div class="spinner"></div>
-        <p style="color: var(--text-light); font-family: sans-serif; margin-top: 15px;">Fetching Production Totals...</p>
+        <p style="color: var(--text-light); font-family: sans-serif; margin-top: 15px;">Updating Dashboard...</p>
     </div>
 
     <div class="header">
-        <div>
-            <span class="date-sub" id="fullDate">Syncing...</span>
-            <h1>Daily Dashboard</h1>
-        </div>
-        <button class="refresh-btn" onclick="fetchData()">Refresh</button>
+        <span class="date-sub" id="fullDate">Loading...</span>
+        <h1>Production Totals</h1>
     </div>
 
     <div class="container">
         
         <div class="metric-card">
-            <span class="label-small">Twill Tape Today</span>
+            <span class="label-small">Twill Tape</span>
             <span class="number-large" style="color: var(--primary)" id="twillTotal">0</span>
             <div class="sub-grid">
                 <div class="sub-item"><span class="sub-label">6-1</span><span class="sub-number" id="t1">0</span></div>
@@ -161,7 +139,7 @@
         </div>
 
         <div class="metric-card">
-            <span class="label-small">Drawstring Today</span>
+            <span class="label-small">Drawstring</span>
             <span class="number-large" style="color: var(--success)" id="drawTotal">0</span>
             <div class="sub-grid">
                 <div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="d1">0</span></div>
@@ -170,51 +148,52 @@
             </div>
         </div>
 
+        <div class="metric-card">
+            <span class="label-small">Crochet</span>
+            <span class="number-large" style="color: var(--warning)" id="crochetTotal">0</span>
+            <div class="sub-grid">
+                <div class="sub-item"><span class="sub-label">C-1</span><span class="sub-number" id="c1">0</span></div>
+                <div class="sub-item"><span class="sub-label">C-2</span><span class="sub-number" id="c2">0</span></div>
+                <div class="sub-item"><span class="sub-label">C-3</span><span class="sub-number" id="c3">0</span></div>
+            </div>
+        </div>
+
         <div class="metric-card accent-card">
-            <span class="label-small">Total Output</span>
+            <span class="label-small">Finished Goods</span>
             <span class="number-large" id="fgVal">0</span>
             <div class="sub-grid">
                 <div class="sub-item"><span class="sub-label">Tipping</span><span class="sub-number" id="tipVal">0</span></div>
                 <div class="sub-item"><span class="sub-label">Starching</span><span class="sub-number" id="starchVal">0</span></div>
+                <div class="sub-item"><span class="sub-label">Status</span><span class="sub-number" style="color:var(--success)">Live</span></div>
             </div>
         </div>
 
     </div>
 
-    <a href="form.html" class="nav-links">← Back to Entry Form</a>
-
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyXy0Tip2_2x0t-iFBrVZ8ORCLNyRWBJTDwEvsfg0FXxX6TFaPvKGoX-0XUO_ToWsVn/exec';
 
         async function fetchData() {
-            const loader = document.getElementById('loader');
-            loader.style.display = 'flex';
-            loader.style.opacity = '1';
-
             try {
                 const response = await fetch(scriptURL);
-                if (!response.ok) throw new Error('Network response was not ok');
-                
                 const data = await response.json();
                 
                 if (data && data.length > 0) {
                     updateUI(data[0]);
                 }
                 
-                // Hide loader
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500);
 
             } catch (e) {
                 console.error("Fetch Error:", e);
-                document.getElementById('fullDate').innerText = "Connection Error";
-                alert("Failed to sync data. Please check your internet.");
+                document.getElementById('fullDate').innerText = "Sync Failed";
             }
         }
 
         function updateUI(r) {
             try {
-                // Map values based on your Dashboard-Summary headers
+                // Twill Mapping
                 const t1 = Number(r['T-6-1']) || 0;
                 const t2 = Number(r['T-6-2']) || 0;
                 const t3 = Number(r['T-10-2']) || 0;
@@ -223,6 +202,7 @@
                 document.getElementById('t3').innerText = t3;
                 document.getElementById('twillTotal').innerText = (t1 + t2 + t3).toLocaleString();
 
+                // Drawstring Mapping
                 const d1 = Number(r['D-16H-1']) || 0;
                 const d2 = Number(r['D-16H-2']) || 0;
                 const d3 = Number(r['D-48H-3']) || 0;
@@ -231,6 +211,16 @@
                 document.getElementById('d3').innerText = d3;
                 document.getElementById('drawTotal').innerText = (d1 + d2 + d3).toLocaleString();
 
+                // Crochet Mapping
+                const c1 = Number(r['C-1']) || 0;
+                const c2 = Number(r['C-2']) || 0;
+                const c3 = Number(r['C-3']) || 0;
+                document.getElementById('c1').innerText = c1;
+                document.getElementById('c2').innerText = c2;
+                document.getElementById('c3').innerText = c3;
+                document.getElementById('crochetTotal').innerText = (c1 + c2 + c3).toLocaleString();
+
+                // Final Goods Mapping
                 document.getElementById('tipVal').innerText = (Number(r['Tipping']) || 0).toLocaleString();
                 document.getElementById('starchVal').innerText = (Number(r['Starching']) || 0).toLocaleString();
                 document.getElementById('fgVal').innerText = (Number(r['FG']) || 0).toLocaleString();
