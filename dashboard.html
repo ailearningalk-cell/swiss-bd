@@ -197,29 +197,50 @@
     }
 
     function updateUI(r) {
-        try {
-            // Numbers - Log these to see if column names are wrong
-            const t1 = Number(r['Twill Tape (6)-1']);
-            console.log("Value for Twill (6)-1:", t1);
+    try {
+        // 1. Map Twill Tape (T- headers)
+        const t1 = Number(r['T-6-1']) || 0;
+        const t2 = Number(r['T-6-2']) || 0;
+        const t3 = Number(r['T-10-2']) || 0;
+        
+        document.getElementById('t1').innerText = t1;
+        document.getElementById('t2').innerText = t2;
+        document.getElementById('t3').innerText = t3;
+        document.getElementById('twillTotal').innerText = (t1 + t2 + t3).toLocaleString();
 
-            document.getElementById('twillTotal').innerText = (Number(r['Twill Tape (6)-1']) || 0) + (Number(r['Twill Tape (6)-2']) || 0) + (Number(r['Twill Tape (10)-2']) || 0);
-            document.getElementById('t1').innerText = r['Twill Tape (6)-1'] || 0;
-            document.getElementById('t2').innerText = r['Twill Tape (6)-2'] || 0;
-            document.getElementById('t3').innerText = r['Twill Tape (10)-2'] || 0;
+        // 2. Map Drawstring (D- headers)
+        const d1 = Number(r['D-16H-1']) || 0;
+        const d2 = Number(r['D-16H-2']) || 0;
+        const d3 = Number(r['D-48H-3']) || 0;
+        
+        document.getElementById('d1').innerText = d1;
+        document.getElementById('d2').innerText = d2;
+        document.getElementById('d3').innerText = d3;
+        document.getElementById('drawTotal').innerText = (d1 + d2 + d3).toLocaleString();
 
-            document.getElementById('drawTotal').innerText = (Number(r['Drawstring-16H-1']) || 0) + (Number(r['Drawstring-16H-2']) || 0) + (Number(r['Drawstring-48H-3']) || 0);
-            document.getElementById('d1').innerText = r['Drawstring-16H-1'] || 0;
-            document.getElementById('d2').innerText = r['Drawstring-16H-2'] || 0;
-            document.getElementById('d3').innerText = r['Drawstring-48H-3'] || 0;
-
-            document.getElementById('fgVal').innerText = r['Finished Goods'] || 0;
-            document.getElementById('tipVal').innerText = r['Tipping Machine'] || 0;
-            document.getElementById('starchVal').innerText = r['Starching'] || 0;
-        } catch (err) {
-            alert("UI Update Error: Check if Column Names in Google Sheet match the code exactly!");
-            console.error(err);
+        // 3. Map Crochet (C- headers)
+        const c1 = Number(r['C-1']) || 0;
+        const c2 = Number(r['C-2']) || 0;
+        const c3 = Number(r['C-3']) || 0;
+        
+        // If you have Crochet elements in your HTML:
+        if(document.getElementById('c1')){
+            document.getElementById('c1').innerText = c1;
+            document.getElementById('c2').innerText = c2;
+            document.getElementById('c3').innerText = c3;
+            document.getElementById('crochetTotal').innerText = (c1 + c2 + c3).toLocaleString();
         }
+
+        // 4. Map Final Processing & FG
+        document.getElementById('tipVal').innerText = r['Tipping'] || 0;
+        document.getElementById('starchVal').innerText = r['Starching'] || 0;
+        document.getElementById('fgVal').innerText = (Number(r['FG']) || 0).toLocaleString();
+
+        console.log("UI successfully updated with Summary Data");
+    } catch (err) {
+        console.error("Mapping Error: Check if Dashboard-Summary headers match code keys!", err);
     }
+}
 
     window.onload = fetchData;
 </script>
