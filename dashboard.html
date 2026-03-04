@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Stats</title>
+    <title>Production Stats Dashboard</title>
     <style>
         :root {
             --primary: #4285f4;
@@ -22,15 +22,33 @@
             flex-direction: column;
             align-items: center;
         }
-        <div id="loader" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999;">
-    <div style="border: 4px solid #f3f3f3; border-top: 4px solid #4285f4; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;"></div>
-    <p style="font-family:sans-serif; color:#697386; margin-top:15px;">Syncing Production Data...</p>
-</div>
 
-<style>
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-</style>
+        /* --- Loading Screen --- */
+        #loader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
 
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- Header & Layout --- */
         .header {
             width: 100%;
             max-width: 480px;
@@ -89,9 +107,6 @@
         .sub-label { font-size: 10px; color: var(--text-light); margin-bottom: 2px; }
         .sub-number { font-size: 16px; font-weight: 600; color: var(--text-dark); }
 
-        .txt-blue { color: var(--primary) !important; }
-        .txt-green { color: var(--success) !important; }
-        
         .accent-card {
             background: var(--text-dark);
             color: white;
@@ -108,14 +123,27 @@
             font-weight: 600;
             font-size: 13px;
         }
+
+        .nav-links {
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
 
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="color: var(--text-light); font-family: sans-serif; margin-top: 15px;">Fetching Production Totals...</p>
+    </div>
+
     <div class="header">
         <div>
-            <span class="date-sub" id="fullDate"></span>
-            <h1 id="mainTitle">Daily Dashboard</h1>
+            <span class="date-sub" id="fullDate">Syncing...</span>
+            <h1>Daily Dashboard</h1>
         </div>
         <button class="refresh-btn" onclick="fetchData()">Refresh</button>
     </div>
@@ -123,8 +151,8 @@
     <div class="container">
         
         <div class="metric-card">
-            <span class="label-small">Twill Tape Total</span>
-            <span class="number-large txt-blue" id="twillTotal">0</span>
+            <span class="label-small">Twill Tape Today</span>
+            <span class="number-large" style="color: var(--primary)" id="twillTotal">0</span>
             <div class="sub-grid">
                 <div class="sub-item"><span class="sub-label">6-1</span><span class="sub-number" id="t1">0</span></div>
                 <div class="sub-item"><span class="sub-label">6-2</span><span class="sub-number" id="t2">0</span></div>
@@ -133,8 +161,8 @@
         </div>
 
         <div class="metric-card">
-            <span class="label-small">Drawstring Total</span>
-            <span class="number-large txt-green" id="drawTotal">0</span>
+            <span class="label-small">Drawstring Today</span>
+            <span class="number-large" style="color: var(--success)" id="drawTotal">0</span>
             <div class="sub-grid">
                 <div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="d1">0</span></div>
                 <div class="sub-item"><span class="sub-label">16H-2</span><span class="sub-number" id="d2">0</span></div>
@@ -153,32 +181,40 @@
 
     </div>
 
+    <a href="form.html" class="nav-links">← Back to Entry Form</a>
+
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyXy0Tip2_2x0t-iFBrVZ8ORCLNyRWBJTDwEvsfg0FXxX6TFaPvKGoX-0XUO_ToWsVn/exec';
 
         async function fetchData() {
-            console.log("Fetching data...");
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+
             try {
                 const response = await fetch(scriptURL);
-                if (!response.ok) throw new Error('Network error');
+                if (!response.ok) throw new Error('Network response was not ok');
                 
                 const data = await response.json();
-                console.log("Data:", data);
-
+                
                 if (data && data.length > 0) {
-                    updateUI(data[0]); // Using the first row of your Summary sheet
-                } else {
-                    alert("Dashboard-Summary sheet is empty.");
+                    updateUI(data[0]);
                 }
+                
+                // Hide loader
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
+
             } catch (e) {
-                console.error("Fail:", e);
-                alert("Connection failed. Check your App Script Deployment.");
+                console.error("Fetch Error:", e);
+                document.getElementById('fullDate').innerText = "Connection Error";
+                alert("Failed to sync data. Please check your internet.");
             }
         }
 
         function updateUI(r) {
             try {
-                // Values from JSON (Keys from your Dashboard-Summary headers)
+                // Map values based on your Dashboard-Summary headers
                 const t1 = Number(r['T-6-1']) || 0;
                 const t2 = Number(r['T-6-2']) || 0;
                 const t3 = Number(r['T-10-2']) || 0;
@@ -195,14 +231,17 @@
                 document.getElementById('d3').innerText = d3;
                 document.getElementById('drawTotal').innerText = (d1 + d2 + d3).toLocaleString();
 
-                document.getElementById('tipVal').innerText = r['Tipping'] || 0;
-                document.getElementById('starchVal').innerText = r['Starching'] || 0;
+                document.getElementById('tipVal').innerText = (Number(r['Tipping']) || 0).toLocaleString();
+                document.getElementById('starchVal').innerText = (Number(r['Starching']) || 0).toLocaleString();
                 document.getElementById('fgVal').innerText = (Number(r['FG']) || 0).toLocaleString();
                 
-                if(r.Date) document.getElementById('fullDate').innerText = "Last Update: " + r.Date;
+                if(r.Date) {
+                    const d = new Date(r.Date);
+                    document.getElementById('fullDate').innerText = d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric'});
+                }
 
             } catch (err) {
-                console.error("UI Error:", err);
+                console.error("UI Update Error:", err);
             }
         }
 
