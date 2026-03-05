@@ -12,6 +12,7 @@
             --danger: #ff4b2b;
             --bg: #eef2f5;
             --brand-dark: #1a1f36;
+            --border: #e2e8f0;
         }
 
         body {
@@ -22,43 +23,39 @@
         }
 
         .form-container {
-            position: relative; /* Required for the floating edit button */
+            position: relative;
             background: white; padding: 30px; border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             width: 100%; max-width: 500px;
         }
 
-        /* Symbolic Edit Button Style */
-        .edit-shortcut {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            text-decoration: none;
-            background: #f8fafc;
-            color: var(--brand-dark);
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            font-size: 18px;
-            transition: all 0.2s ease;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .edit-shortcut:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
         /* Branding Header */
-        .brand-header { text-align: center; margin-bottom: 25px; }
+        .brand-header { text-align: center; margin-bottom: 20px; }
         .brand-header h1 { font-size: 14px; color: var(--brand-dark); margin: 0; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; }
         .brand-header h2 { font-size: 24px; color: #333; margin: 5px 0 0 0; }
+
+        /* Dynamic Navigation Button (Option 2 - Clipboard) */
+        .nav-link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            color: #475569;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: none;
+            margin: 12px auto 20px auto;
+            transition: all 0.2s ease;
+        }
+        .nav-link-btn:hover { 
+            background: #e2e8f0; 
+            color: var(--brand-dark);
+            transform: translateY(-1px);
+        }
+        .nav-link-btn svg { margin-right: 8px; }
 
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: 600; color: #64748b; font-size: 12px; text-transform: uppercase; }
@@ -66,7 +63,6 @@
         input {
             width: 100%; padding: 12px; border: 1px solid #ddd;
             border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none;
-            transition: border 0.2s;
         }
         input:focus { border-color: var(--primary); background: #fcfdfe; }
 
@@ -87,7 +83,6 @@
             border: 1px solid #fed7d7;
         }
 
-        /* Success Modal */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
@@ -101,11 +96,17 @@
 <body>
 
 <div class="form-container">
-    <a href="daily_edit.html" class="edit-shortcut" title="Edit Today's Entries">✏️</a>
-
     <div class="brand-header">
         <h1>Swiss-Bangla Trims & Accessories</h1>
         <h2>Production Entry</h2>
+        
+        <a href="daily_edit.html" class="nav-link-btn" id="dynamicDateBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span id="dateText">Loading...</span>
+        </a>
     </div>
 
     <form id="productionForm">
@@ -151,8 +152,17 @@
     const form = document.getElementById('productionForm');
     const errBox = document.getElementById('errorDisplay');
     const dateInput = document.getElementById('dateField');
+    const dateText = document.getElementById('dateText');
     
     dateInput.value = new Date().toISOString().split('T')[0];
+
+    function setDynamicLabel() {
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = now.toLocaleString('en-GB', { month: 'short' });
+        const year = String(now.getFullYear()).slice(-2);
+        dateText.innerText = `${day} ${month} ${year}`;
+    }
 
     function hFocus(i) { if(i.value === "0") i.value = ""; errBox.style.display = "none"; }
     function hBlur(i) { if(i.value === "") i.value = "0"; }
@@ -204,6 +214,8 @@
             btn.innerText = 'Final Submit';
         }
     });
+
+    window.onload = setDynamicLabel;
 </script>
 </body>
 </html>
