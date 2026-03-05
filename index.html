@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swiss-Bangla Trims | Welcome</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@300;500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -15,7 +15,6 @@
             background-color: #000;
         }
 
-        /* --- Cinematic Video Background --- */
         .video-background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -29,13 +28,13 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             object-fit: cover;
-            filter: brightness(25%) contrast(110%);
+            filter: brightness(25%) contrast(120%) grayscale(30%);
         }
 
         .video-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.9) 100%);
         }
 
         .container {
@@ -46,75 +45,61 @@
             align-items: center;
             position: relative;
             z-index: 10;
-            padding: 0 4vw; 
-            text-align: center;
-            width: 100%;
+            padding: 0 10px;
         }
 
-        /* --- Optimized Responsive Brand Name --- */
+        /* --- TITLE FONT: Montserrat --- */
         .brand-name {
             font-family: 'Montserrat', sans-serif;
-            /* Reduced minimum and middle scaling to ensure mobile fit */
-            font-size: clamp(12px, 4.2vw, 42px); 
             font-weight: 700;
             color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.6);
-            animation: fadeInScale 1.5s ease-out forwards;
-            line-height: 1.2;
-            width: 100%;
+            text-align: center;
             white-space: nowrap; 
-            overflow: visible; /* Ensure we can see it all */
-        }
-
-        /* Balanced Ampersand */
-        .brand-name span {
-            font-size: 0.95em;
-            color: #ffffff;
-            margin: 0 2px;
-        }
-
-        .tagline {
-            /* Scaled down slightly to match the smaller brand size */
-            font-size: clamp(9px, 1.8vw, 14px);
             text-transform: uppercase;
-            letter-spacing: clamp(2px, 0.6vw, 6px);
-            color: #ff4b2b;
-            margin-top: clamp(8px, 2.5vh, 18px);
-            opacity: 0;
-            font-weight: 600;
-            animation: fadeIn 2s ease forwards 0.8s;
+            
+            /* Fixed Mobile-First Sizing to prevent fluctuation */
+            font-size: 18px; 
+            letter-spacing: 0.5px;
         }
 
-        /* --- Sewing Track --- */
+        /* Desktop Size */
+        @media (min-width: 768px) {
+            .brand-name { font-size: 42px; letter-spacing: 1px; }
+        }
+
+        .brand-name span { margin: 0 4px; }
+
+        /* Rest of the styles as per your original code */
+        .tagline {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #ff4b2b;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
         .sewing-track {
-            width: 55%; 
-            max-width: 350px; 
+            width: 85%; 
+            max-width: 500px; 
             height: 1px;
-            background: rgba(255, 255, 255, 0.15);
-            margin: clamp(35px, 7vh, 55px) auto;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 60px auto 40px auto;
             position: relative;
         }
 
         .stitch-progress {
             position: absolute;
             left: 0; top: 0; height: 100%; width: 0%;
-            background: repeating-linear-gradient(90deg, 
-                #ff4b2b, #ff4b2b 4px, 
-                transparent 4px, transparent 8px);
-            animation: stitchEffect 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            background: repeating-linear-gradient(90deg, #ff4b2b, #ff4b2b 4px, transparent 4px, transparent 8px);
+            animation: stitchEffect 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
         }
 
         .pulse-needle {
             position: absolute;
-            top: -40px;
-            left: 0%;
-            width: 2px;
-            height: 42px;
-            background: linear-gradient(to bottom, transparent, #ffffff);
-            z-index: 20;
-            animation: needleTravel 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            top: -48px; left: 0%; width: 3px; height: 50px;
+            background: linear-gradient(to right, #7f8c8d, #ffffff, #bdc3c7);
+            animation: needleTravel 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
         }
 
         .pulse-needle::after {
@@ -125,60 +110,24 @@
             width: 6px; height: 6px;
             background: #ff4b2b;
             border-radius: 50%;
-            box-shadow: 0 0 12px #ff4b2b;
-            animation: tipPulse 0.4s infinite alternate;
+            box-shadow: 0 0 10px #ff4b2b;
+            animation: tipPulse 0.3s infinite alternate;
         }
 
-        /* --- Loader Info --- */
-        .loader-info {
-            margin-top: 5px;
-        }
+        .loader-info { margin-top: 20px; text-align: center; }
+        .progress-bar { width: 140px; height: 1px; background: rgba(255,255,255,0.1); position: relative; overflow: hidden; margin: 0 auto; }
+        .progress-fill { height: 100%; width: 0%; background: #ffffff; animation: fillBar 5s linear forwards; }
+        .loading-text { font-size: 10px; color: #888; margin-top: 12px; letter-spacing: 3px; font-weight: 700; text-transform: uppercase;}
 
-        .progress-bar {
-            width: 130px;
-            height: 2px;
-            background: rgba(255,255,255,0.1);
-            position: relative;
-            overflow: hidden;
-            margin: 0 auto 12px auto;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #ffffff;
-            animation: fillBar 5s linear forwards;
-        }
-
-        .loading-text {
-            font-size: clamp(8px, 1.1vw, 10px);
-            color: #aaa;
-            letter-spacing: 3px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        /* --- Animations --- */
         @keyframes needleTravel {
             0% { left: 0%; transform: translateY(0); }
-            5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateY(-6px); }
+            5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateY(-8px); }
             10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% { transform: translateY(0); }
             100% { left: 100%; transform: translateY(0); }
         }
-
-        @keyframes tipPulse {
-            from { transform: translateX(-50%) scale(0.8); }
-            to { transform: translateX(-50%) scale(1.2); }
-        }
-
+        @keyframes tipPulse { from { transform: translateX(-50%) scale(0.7); } to { transform: translateX(-50%) scale(1.1); } }
         @keyframes stitchEffect { to { width: 100%; } }
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes fadeIn { to { opacity: 1; } }
         @keyframes fillBar { to { width: 100%; } }
-
     </style>
 </head>
 <body>
@@ -191,7 +140,7 @@
     </div>
 
     <div class="container">
-        <h1 class="brand-name">Swiss-Bangla Trims <span>&</span> Accessories</h1>
+        <div class="brand-name">Swiss-Bangla Trims <span>&</span> Accessories</div>
         <div class="tagline">Smart Production Monitoring</div>
 
         <div class="sewing-track">
@@ -208,9 +157,7 @@
     </div>
 
     <script>
-        setTimeout(() => {
-            window.location.href = "home.html";
-        }, 5000);
+        setTimeout(() => { window.location.href = "home.html"; }, 5000);
     </script>
 </body>
 </html>
