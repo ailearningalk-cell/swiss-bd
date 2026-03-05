@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swiss-Bangla | Daily Edit</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --primary: #4285f4; --brand-dark: #1a1f36; --bg: #f4f7f9; --border: #e2e8f0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        
+        h2 { color: var(--brand-dark); font-size: 18px; margin-bottom: 20px; text-align: center; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
+        h3 { font-size: 13px; text-transform: uppercase; color: #64748b; margin-top: 20px; letter-spacing: 1px; }
+
+        .edit-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .edit-table th { font-size: 11px; color: #94a3b8; text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+        .edit-table td { padding: 5px; }
+        
+        .inline-input {
+            width: 100%; padding: 10px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 16px; font-weight: 600;
+            color: var(--brand-dark); text-align: center; outline: none;
+        }
+        .inline-input:focus { border-color: var(--primary); background: #f0f7ff; }
+
+        .update-btn {
+            position: sticky; bottom: 20px; width: 100%; padding: 16px;
+            background: var(--brand-dark); color: white; border: none;
+            border-radius: 12px; font-size: 16px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-top: 30px;
+        }
+        .status-tag { font-size: 12px; color: var(--success); text-align: center; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Today's Production Sync</h2>
+    
+    <div id="loading" style="text-align:center; padding:20px;">Fetching today's logs...</div>
+
+    <form id="bulkEditForm" style="display:none;">
+        <h3>Twill Tape Section</h3>
+        <table class="edit-table">
+            <thead><tr><th>(6)-1</th><th>(6)-2</th><th>(10)-2</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><input type="number" name="twill_6_1" class="inline-input" value="0"></td>
+                    <td><input type="number" name="twill_6_2" class="inline-input" value="0"></td>
+                    <td><input type="number" name="twill_10_2" class="inline-input" value="0"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Drawstring Section</h3>
+        <table class="edit-table">
+            <thead><tr><th>16H-1</th><th>16H-2</th><th>48H-3</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><input type="number" name="ds_16h_1" class="inline-input" value="0"></td>
+                    <td><input type="number" name="ds_16h_2" class="inline-input" value="0"></td>
+                    <td><input type="number" name="ds_48h_3" class="inline-input" value="0"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Other Processes & Finishing</h3>
+        <table class="edit-table">
+            <thead><tr><th>Crochet</th><th>Tipping</th><th>Finished</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><input type="number" name="crochet_1" class="inline-input" value="0"></td>
+                    <td><input type="number" name="tipping" class="inline-input" value="0"></td>
+                    <td><input type="number" name="finished_goods" class="inline-input" value="0"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="submit" class="update-btn" id="saveBtn">Update Today's Logs</button>
+        <div id="status" class="status-tag">✅ Successfully updated!</div>
+    </form>
+</div>
+
+<script>
+    const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    let currentEntryId = null;
+
+    async function loadData() {
+        const today = new Date().toISOString().split('T')[0];
+        const { data, error } = await _supabase
+            .from('production_logs')
+            .select('*')
+            .eq('entry_date', today)
+            .maybeSingle();
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('bulkEditForm').style.display = 'block';
+
+        if (data) {
+            currentEntryId = data.id;
+            const form = document.getElementById('bulkEditForm');
+            // Mapping database values to the tabular inputs
+            for (let key in data) {
+                if (form[key]) form[key].value = data[key];
+            }
+        }
+    }
+
+    document.getElementById('bulkEditForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('saveBtn');
+        const status = document.getElementById('status');
+        btn.innerText = "Syncing...";
+        
+        const formData = new FormData(e.target);
+        const updateData = {};
+        formData.forEach((value, key) => {
+            updateData[key] = parseInt(value) || 0;
+        });
+
+        // Add back the metadata
+        updateData.entry_date = new Date().toISOString().split('T')[0];
+        if(currentEntryId) updateData.id = currentEntryId;
+
+        const { error } = await _supabase.from('production_logs').upsert([updateData]);
+
+        if (!error) {
+            btn.innerText = "Update Today's Logs";
+            status.style.display = "block";
+            setTimeout(() => { status.style.display = "none"; }, 3000);
+        } else {
+            alert("Error updating: " + error.message);
+            btn.innerText = "Try Again";
+        }
+    };
+
+    window.onload = loadData;
+</script>
+</body>
+</html>
