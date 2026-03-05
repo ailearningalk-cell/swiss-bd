@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Entry (Supabase)</title>
+    <title>Production Entry (Fast-Sync)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -63,7 +63,6 @@
 
         .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* Modal Styles */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -101,7 +100,7 @@
 <body>
 
 <div class="form-container">
-    <h2>Production Entry (Fast-Sync)</h2>
+    <h2>Production Entry</h2>
     <form id="productionForm">
         <div class="form-group">
             <label>Date (Mandatory)</label>
@@ -109,18 +108,18 @@
         </div>
 
         <div class="grid">
-            <div class="form-group"><label>Twill Tape (6)-1</label><input type="number" name="t61" value="0"></div>
-            <div class="form-group"><label>Twill Tape (6)-2</label><input type="number" name="t62" value="0"></div>
-            <div class="form-group"><label>Twill Tape (10)-2</label><input type="number" name="t102" value="0"></div>
-            <div class="form-group"><label>Drawstring-16H-1</label><input type="number" name="d16h1" value="0"></div>
-            <div class="form-group"><label>Drawstring-16H-2</label><input type="number" name="d16h2" value="0"></div>
-            <div class="form-group"><label>Drawstring-48H-3</label><input type="number" name="d48h3" value="0"></div>
-            <div class="form-group"><label>Crochet-1</label><input type="number" name="c1" value="0"></div>
-            <div class="form-group"><label>Crochet-2</label><input type="number" name="c2" value="0"></div>
-            <div class="form-group"><label>Crochet-3</label><input type="number" name="c3" value="0"></div>
-            <div class="form-group"><label>Tipping Machine</label><input type="number" name="tipping" value="0"></div>
-            <div class="form-group"><label>Starching</label><input type="number" name="starching" value="0"></div>
-            <div class="form-group"><label>Finished Goods</label><input type="number" name="fg" value="0"></div>
+            <div class="form-group"><label>Twill Tape (6)-1</label><input type="number" name="t61" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Twill Tape (6)-2</label><input type="number" name="t62" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Twill Tape (10)-2</label><input type="number" name="t102" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Drawstring-16H-1</label><input type="number" name="d16h1" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Drawstring-16H-2</label><input type="number" name="d16h2" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Drawstring-48H-3</label><input type="number" name="d48h3" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Crochet-1</label><input type="number" name="c1" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Crochet-2</label><input type="number" name="c2" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Crochet-3</label><input type="number" name="c3" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Tipping Machine</label><input type="number" name="tipping" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Starching</label><input type="number" name="starching" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Finished Goods</label><input type="number" name="fg" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
         </div>
 
         <button type="submit" class="submit-btn" id="submitBtn">Final Submit</button>
@@ -137,7 +136,6 @@
 </div>
 
 <script>
-    // 2. Initialize Supabase Client
     const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -145,19 +143,45 @@
     const form = document.getElementById('productionForm');
     const dateInput = document.getElementById('dateField');
     
-    // Set today's date
+    // Default today's date
     dateInput.value = new Date().toISOString().split('T')[0];
+
+    // UX: Omit 0 when clicking
+    function handleFocus(input) {
+        if (input.value === "0") {
+            input.value = "";
+        }
+    }
+
+    // UX: Restore 0 if left empty
+    function handleBlur(input) {
+        if (input.value === "") {
+            input.value = "0";
+        }
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
         const btn = document.getElementById('submitBtn');
+        const formData = new FormData(form);
+
+        // Validation: All can't be 0
+        let totalItems = 0;
+        const itemFields = ['t61', 't62', 't102', 'd16h1', 'd16h2', 'd48h3', 'c1', 'c2', 'c3', 'tipping', 'starching', 'fg'];
+        
+        itemFields.forEach(field => {
+            totalItems += parseInt(formData.get(field)) || 0;
+        });
+
+        if (totalItems === 0) {
+            alert('Error: You cannot submit a form where all item values are 0.');
+            return;
+        }
+
         btn.disabled = true;
         btn.innerText = 'Syncing...';
 
-        const formData = new FormData(form);
-
-        // 3. Map values to your Supabase Column Names
-        // Ensure these match your database exactly!
         const { error } = await _supabase
             .from('production_logs')
             .insert([{ 
