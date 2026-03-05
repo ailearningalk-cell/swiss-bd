@@ -55,7 +55,6 @@
         /* --- Single Line Brand Name --- */
         .brand-name {
             font-family: 'Playfair Display', serif;
-            /* Adjusted font-size for mobile to prevent overflow while staying on one line */
             font-size: clamp(16px, 4.5vw, 48px); 
             font-weight: 700;
             color: #ffffff;
@@ -63,28 +62,28 @@
             text-shadow: 0 10px 30px rgba(0,0,0,0.8);
             animation: fadeInScale 2s ease-out forwards;
             text-align: center;
-            /* Force single line */
             white-space: nowrap; 
             width: 100%;
             max-width: 100vw;
         }
 
-        /* Styling the & symbol */
+        /* Styling removed from & symbol to match brand text */
         .brand-name span {
-            font-size: 0.8em;
-            font-style: italic;
-            color: rgba(255,255,255,0.6);
+            font-size: inherit;
+            font-style: inherit;
+            color: inherit;
             margin: 0 4px;
         }
 
         .tagline {
-            font-size: clamp(9px, 1.8vw, 12px);
+            /* Increased font size for Smart Production Monitoring */
+            font-size: clamp(12px, 2.2vw, 16px);
             text-transform: uppercase;
             letter-spacing: clamp(3px, 1.2vw, 8px);
             color: #ff4b2b;
-            margin-top: 12px;
+            margin-top: 15px;
             opacity: 0;
-            font-weight: 500;
+            font-weight: 600;
             animation: fadeIn 2s ease forwards 1s;
         }
 
@@ -138,7 +137,7 @@
         }
 
         .progress-bar {
-            width: 140px;
+            width: 180px; /* Widened slightly for balance */
             height: 1px;
             background: rgba(255,255,255,0.1);
             position: relative;
@@ -154,10 +153,11 @@
         }
 
         .loading-text {
-            font-size: 8px;
-            color: #555;
-            margin-top: 12px;
-            letter-spacing: 3px;
+            /* Increased font size for connecting text */
+            font-size: 11px;
+            color: #888; /* Brightened slightly for visibility */
+            margin-top: 15px;
+            letter-spacing: 4px;
             font-weight: 700;
         }
 
