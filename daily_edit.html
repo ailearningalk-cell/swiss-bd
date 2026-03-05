@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiss-Bangla | Category Edit</title>
+    <title>Swiss-Bangla | Daily Edit</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary: #4285f4; --brand-dark: #1a1f36; --bg: #f4f7f9; --border: #e2e8f0; --success: #34a853; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
-        h2 { color: var(--brand-dark); font-size: 18px; margin-bottom: 20px; text-align: center; }
-        .category-block { margin-bottom: 30px; border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
-        .cat-title { font-size: 12px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .header-area { text-align: center; margin-bottom: 25px; }
+        .header-area h2 { color: var(--brand-dark); font-size: 20px; margin: 0; }
+        .header-area p { color: #64748b; font-weight: 600; font-size: 14px; margin: 5px 0 0 0; }
 
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { font-size: 10px; color: #94a3b8; text-transform: uppercase; padding: 5px; text-align: center; }
-        td { padding: 4px; vertical-align: middle; }
+        .category-block { margin-top: 25px; border: 1px solid var(--border); border-radius: 12px; padding: 12px; overflow-x: auto; }
+        .cat-title { font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; display: block; background: #f8fbff; padding: 5px 10px; border-radius: 4px; width: fit-content; }
+
+        table { width: 100%; border-collapse: collapse; min-width: 400px; }
+        th { font-size: 10px; color: #94a3b8; text-transform: uppercase; padding: 8px; text-align: center; border-bottom: 1px solid var(--bg); }
+        td { padding: 6px; vertical-align: middle; border-bottom: 1px solid #f9fafb; }
         
         .inline-input {
             width: 100%; padding: 8px; border: 1px solid var(--border);
@@ -25,16 +28,16 @@
         }
         .inline-input:focus { border-color: var(--primary); background: #f0f7ff; }
 
-        .row-id-label { font-size: 10px; color: #94a3b8; font-weight: bold; text-align: center; }
+        .time-label { font-size: 11px; color: #1e293b; font-weight: 700; white-space: nowrap; text-align: center; }
 
         .update-all-btn {
-            position: sticky; bottom: 20px; width: 100%; padding: 18px;
-            background: var(--brand-dark); color: white; border: none;
-            border-radius: 12px; font-size: 16px; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 100%; padding: 18px; background: var(--brand-dark); 
+            color: white; border: none; border-radius: 12px; 
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            margin-top: 35px; transition: 0.2s;
         }
+        .update-all-btn:active { transform: scale(0.98); }
 
-        /* Success Modal Styles */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
@@ -46,14 +49,18 @@
 <body>
 
 <div class="container">
-    <h2>Daily Production Logs</h2>
-    <div id="loading" style="text-align:center; padding:20px;">🔄 Loading Rows...</div>
+    <div class="header-area">
+        <h2>Daily Production Logs</h2>
+        <p id="displayDate"></p>
+    </div>
+
+    <div id="loading" style="text-align:center; padding:40px; color:#64748b;">🔄 Loading current entries...</div>
     
     <div id="editorContent" style="display:none;">
         <div class="category-block">
             <span class="cat-title">Twill Tape Items</span>
             <table id="twillTable">
-                <thead><tr><th width="40">Entry</th><th>(6)-1</th><th>(6)-2</th><th>(10)-2</th></tr></thead>
+                <thead><tr><th width="70">Time</th><th>(6)-1</th><th>(6)-2</th><th>(10)-2</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -61,7 +68,7 @@
         <div class="category-block">
             <span class="cat-title">Drawstring Items</span>
             <table id="dsTable">
-                <thead><tr><th width="40">Entry</th><th>16H-1</th><th>16H-2</th><th>48H-3</th></tr></thead>
+                <thead><tr><th width="70">Time</th><th>16H-1</th><th>16H-2</th><th>48H-3</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -69,7 +76,7 @@
         <div class="category-block">
             <span class="cat-title">Finishing & Output</span>
             <table id="finishingTable">
-                <thead><tr><th width="40">Entry</th><th>Crochet</th><th>Tipping</th><th>F. Goods</th></tr></thead>
+                <thead><tr><th width="70">Time</th><th>Crochet</th><th>Tipping</th><th>F. Goods</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -81,8 +88,8 @@
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h1 style="color:var(--success); margin:0;">✅</h1>
-        <h3>Updated!</h3>
-        <p style="font-size: 13px; color: #64748b;">All individual entries have been synced.</p>
+        <h3>Logs Updated</h3>
+        <p style="font-size: 13px; color: #64748b;">Daily entries synchronized successfully.</p>
         <button onclick="window.location.href='home.html'" style="background:var(--brand-dark); color:white; border:none; padding:12px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer;">OK</button>
     </div>
 </div>
@@ -94,6 +101,11 @@
 
     let todayData = [];
 
+    function formatHeaderDate() {
+        const options = { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' };
+        document.getElementById('displayDate').innerText = new Date().toLocaleDateString('en-GB', options);
+    }
+
     async function loadData() {
         const today = new Date().toISOString().split('T')[0];
         const { data } = await _supabase.from('production_logs').select('*').eq('entry_date', today).order('created_at', {ascending: true});
@@ -102,7 +114,7 @@
             todayData = data;
             renderTables();
         } else {
-            document.getElementById('loading').innerText = "No data found for today.";
+            document.getElementById('loading').innerText = "No entries found for today.";
         }
     }
 
@@ -114,25 +126,25 @@
         const dsBody = document.querySelector('#dsTable tbody');
         const finBody = document.querySelector('#finishingTable tbody');
 
-        todayData.forEach((row, i) => {
-            const entryNum = i + 1;
+        todayData.forEach((row) => {
+            const timeStr = new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
             twillBody.innerHTML += `<tr data-id="${row.id}">
-                <td class="row-id-label">#${entryNum}</td>
+                <td class="time-label">${timeStr}</td>
                 <td><input type="number" class="inline-input" data-col="twill_6_1" value="${row.twill_6_1}"></td>
                 <td><input type="number" class="inline-input" data-col="twill_6_2" value="${row.twill_6_2}"></td>
                 <td><input type="number" class="inline-input" data-col="twill_10_2" value="${row.twill_10_2}"></td>
             </tr>`;
 
             dsBody.innerHTML += `<tr data-id="${row.id}">
-                <td class="row-id-label">#${entryNum}</td>
+                <td class="time-label">${timeStr}</td>
                 <td><input type="number" class="inline-input" data-col="ds_16h_1" value="${row.ds_16h_1}"></td>
                 <td><input type="number" class="inline-input" data-col="ds_16h_2" value="${row.ds_16h_2}"></td>
                 <td><input type="number" class="inline-input" data-col="ds_48h_3" value="${row.ds_48h_3}"></td>
             </tr>`;
 
             finBody.innerHTML += `<tr data-id="${row.id}">
-                <td class="row-id-label">#${entryNum}</td>
+                <td class="time-label">${timeStr}</td>
                 <td><input type="number" class="inline-input" data-col="crochet_1" value="${row.crochet_1}"></td>
                 <td><input type="number" class="inline-input" data-col="tipping" value="${row.tipping}"></td>
                 <td><input type="number" class="inline-input" data-col="finished_goods" value="${row.finished_goods}"></td>
@@ -142,7 +154,7 @@
 
     async function saveAllChanges() {
         const btn = document.querySelector('.update-all-btn');
-        btn.innerText = "Syncing All...";
+        btn.innerText = "Syncing...";
         btn.disabled = true;
 
         const updates = todayData.map(row => {
@@ -158,13 +170,16 @@
         if (!error) {
             document.getElementById('modalOverlay').style.display = 'flex';
         } else {
-            alert("Update Failed: " + error.message);
+            alert("Error: " + error.message);
             btn.disabled = false;
             btn.innerText = "Update All Entries";
         }
     }
 
-    window.onload = loadData;
+    window.onload = () => {
+        formatHeaderDate();
+        loadData();
+    };
 </script>
 </body>
 </html>
