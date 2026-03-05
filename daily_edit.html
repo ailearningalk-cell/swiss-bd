@@ -3,83 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiss-Bangla | Daily Edit</title>
+    <title>Swiss-Bangla | Multi-Row Edit</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #4285f4; --brand-dark: #1a1f36; --bg: #f4f7f9; --border: #e2e8f0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        :root { --primary: #4285f4; --brand-dark: #1a1f36; --bg: #f4f7f9; --border: #e2e8f0; --success: #34a853; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
-        h2 { color: var(--brand-dark); font-size: 18px; margin-bottom: 20px; text-align: center; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
-        h3 { font-size: 13px; text-transform: uppercase; color: #64748b; margin-top: 20px; letter-spacing: 1px; }
+        h2 { color: var(--brand-dark); font-size: 18px; margin-bottom: 20px; text-align: center; }
+        .section-title { background: var(--brand-dark); color: white; padding: 8px 15px; font-size: 12px; border-radius: 6px; margin-top: 20px; }
 
-        .edit-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        .edit-table th { font-size: 11px; color: #94a3b8; text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
-        .edit-table td { padding: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+        th { font-size: 10px; color: #94a3b8; text-transform: uppercase; padding: 8px; border-bottom: 2px solid var(--bg); }
+        td { padding: 4px; }
         
         .inline-input {
-            width: 100%; padding: 10px; border: 1px solid var(--border);
-            border-radius: 6px; font-size: 16px; font-weight: 600;
-            color: var(--brand-dark); text-align: center; outline: none;
+            width: 100%; padding: 8px; border: 1px solid var(--border);
+            border-radius: 4px; font-size: 15px; font-weight: 600;
+            text-align: center; outline: none; transition: 0.2s;
         }
         .inline-input:focus { border-color: var(--primary); background: #f0f7ff; }
 
         .update-btn {
-            position: sticky; bottom: 20px; width: 100%; padding: 16px;
-            background: var(--brand-dark); color: white; border: none;
-            border-radius: 12px; font-size: 16px; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-top: 30px;
+            background: var(--success); color: white; border: none; 
+            padding: 8px 12px; border-radius: 6px; font-size: 12px;
+            font-weight: bold; cursor: pointer; width: 100%;
         }
-        .status-tag { font-size: 12px; color: var(--success); text-align: center; margin-top: 10px; display: none; }
+        .update-btn:active { transform: scale(0.95); }
+
+        .loading-text { text-align: center; padding: 40px; color: #64748b; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Today's Production Sync</h2>
-    
-    <div id="loading" style="text-align:center; padding:20px;">Fetching today's logs...</div>
-
-    <form id="bulkEditForm" style="display:none;">
-        <h3>Twill Tape Section</h3>
-        <table class="edit-table">
-            <thead><tr><th>(6)-1</th><th>(6)-2</th><th>(10)-2</th></tr></thead>
-            <tbody>
-                <tr>
-                    <td><input type="number" name="twill_6_1" class="inline-input" value="0"></td>
-                    <td><input type="number" name="twill_6_2" class="inline-input" value="0"></td>
-                    <td><input type="number" name="twill_10_2" class="inline-input" value="0"></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>Drawstring Section</h3>
-        <table class="edit-table">
-            <thead><tr><th>16H-1</th><th>16H-2</th><th>48H-3</th></tr></thead>
-            <tbody>
-                <tr>
-                    <td><input type="number" name="ds_16h_1" class="inline-input" value="0"></td>
-                    <td><input type="number" name="ds_16h_2" class="inline-input" value="0"></td>
-                    <td><input type="number" name="ds_48h_3" class="inline-input" value="0"></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>Other Processes & Finishing</h3>
-        <table class="edit-table">
-            <thead><tr><th>Crochet</th><th>Tipping</th><th>Finished</th></tr></thead>
-            <tbody>
-                <tr>
-                    <td><input type="number" name="crochet_1" class="inline-input" value="0"></td>
-                    <td><input type="number" name="tipping" class="inline-input" value="0"></td>
-                    <td><input type="number" name="finished_goods" class="inline-input" value="0"></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <button type="submit" class="update-btn" id="saveBtn">Update Today's Logs</button>
-        <div id="status" class="status-tag">✅ Successfully updated!</div>
-    </form>
+    <h2>Today's Production Entries</h2>
+    <div id="logsContainer">
+        <div class="loading-text">Searching for today's rows...</div>
+    </div>
 </div>
 
 <script>
@@ -87,58 +48,91 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    let currentEntryId = null;
-
-    async function loadData() {
+    async function loadAllTodayRows() {
         const today = new Date().toISOString().split('T')[0];
+        const container = document.getElementById('logsContainer');
+        
         const { data, error } = await _supabase
             .from('production_logs')
             .select('*')
             .eq('entry_date', today)
-            .maybeSingle();
+            .order('created_at', { ascending: true });
 
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('bulkEditForm').style.display = 'block';
+        if (error || !data || data.length === 0) {
+            container.innerHTML = `<div class="loading-text">No entries found for today.</div>`;
+            return;
+        }
 
-        if (data) {
-            currentEntryId = data.id;
-            const form = document.getElementById('bulkEditForm');
-            // Mapping database values to the tabular inputs
-            for (let key in data) {
-                if (form[key]) form[key].value = data[key];
-            }
+        container.innerHTML = ''; // Clear loading
+
+        // We build one combined table for all entries
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Time</th>
+                        <th>(6)-1</th><th>(6)-2</th><th>(10)-2</th>
+                        <th>16H-1</th><th>16H-2</th><th>48H-3</th>
+                        <th style="width: 80px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.forEach((row, index) => {
+            const time = new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            html += `
+                <tr id="row-${row.id}">
+                    <td style="font-size: 11px; font-weight: bold; color: #64748b; text-align: center;">${time}</td>
+                    <td><input type="number" class="inline-input" data-col="twill_6_1" value="${row.twill_6_1}"></td>
+                    <td><input type="number" class="inline-input" data-col="twill_6_2" value="${row.twill_6_2}"></td>
+                    <td><input type="number" class="inline-input" data-col="twill_10_2" value="${row.twill_10_2}"></td>
+                    <td><input type="number" class="inline-input" data-col="ds_16h_1" value="${row.ds_16h_1}"></td>
+                    <td><input type="number" class="inline-input" data-col="ds_16h_2" value="${row.ds_16h_2}"></td>
+                    <td><input type="number" class="inline-input" data-col="ds_48h_3" value="${row.ds_48h_3}"></td>
+                    <td><button class="update-btn" onclick="updateSingleRow(${row.id})">Update</button></td>
+                </tr>
+            `;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    async function updateSingleRow(id) {
+        const rowElement = document.getElementById(`row-${id}`);
+        const inputs = rowElement.querySelectorAll('.inline-input');
+        const btn = rowElement.querySelector('.update-btn');
+        
+        btn.innerText = "Saving...";
+        btn.disabled = true;
+
+        const updateData = {};
+        inputs.forEach(input => {
+            updateData[input.getAttribute('data-col')] = parseInt(input.value) || 0;
+        });
+
+        const { error } = await _supabase
+            .from('production_logs')
+            .update(updateData)
+            .eq('id', id);
+
+        if (!error) {
+            btn.innerText = "Updated!";
+            btn.style.background = "#1a1f36";
+            setTimeout(() => {
+                btn.innerText = "Update";
+                btn.style.background = "#34a853";
+                btn.disabled = false;
+            }, 2000);
+        } else {
+            alert("Error: " + error.message);
+            btn.innerText = "Error";
+            btn.disabled = false;
         }
     }
 
-    document.getElementById('bulkEditForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('saveBtn');
-        const status = document.getElementById('status');
-        btn.innerText = "Syncing...";
-        
-        const formData = new FormData(e.target);
-        const updateData = {};
-        formData.forEach((value, key) => {
-            updateData[key] = parseInt(value) || 0;
-        });
-
-        // Add back the metadata
-        updateData.entry_date = new Date().toISOString().split('T')[0];
-        if(currentEntryId) updateData.id = currentEntryId;
-
-        const { error } = await _supabase.from('production_logs').upsert([updateData]);
-
-        if (!error) {
-            btn.innerText = "Update Today's Logs";
-            status.style.display = "block";
-            setTimeout(() => { status.style.display = "none"; }, 3000);
-        } else {
-            alert("Error updating: " + error.message);
-            btn.innerText = "Try Again";
-        }
-    };
-
-    window.onload = loadData;
+    window.onload = loadAllTodayRows;
 </script>
 </body>
 </html>
