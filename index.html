@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swiss-Bangla Trims | Welcome</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -29,16 +29,13 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             object-fit: cover;
-            filter: brightness(25%) contrast(120%) grayscale(30%);
+            filter: brightness(25%) contrast(110%);
         }
 
         .video-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, 
-                rgba(0,0,0,0.1) 0%, 
-                rgba(0,0,0,0.4) 50%, 
-                rgba(0,0,0,0.9) 100%);
+            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
         }
 
         .container {
@@ -49,51 +46,51 @@
             align-items: center;
             position: relative;
             z-index: 10;
-            padding: 0 10px;
+            padding: 0 5vw; /* Side padding relative to screen width */
+            text-align: center;
         }
 
-        /* --- Single Line Brand Name --- */
+        /* --- Responsive Brand Name (One Line Guarantee) --- */
         .brand-name {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(16px, 4.5vw, 48px); 
+            font-family: 'Montserrat', sans-serif;
+            /* Using vw ensures it shrinks exactly with the screen width */
+            font-size: clamp(14px, 4.8vw, 48px); 
             font-weight: 700;
             color: #ffffff;
+            text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            animation: fadeInScale 2s ease-out forwards;
-            text-align: center;
-            white-space: nowrap; 
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            animation: fadeInScale 1.5s ease-out forwards;
+            line-height: 1.2;
             width: 100%;
-            max-width: 100vw;
+            white-space: nowrap; /* Forces one line on all devices */
         }
 
-        /* Styling removed from & symbol to match brand text */
+        /* Balanced Ampersand */
         .brand-name span {
-            font-size: inherit;
-            font-style: inherit;
-            color: inherit;
+            font-size: 0.95em; /* Increased from 0.85em */
+            color: #ffffff;
             margin: 0 4px;
         }
 
         .tagline {
-            /* Increased font size for Smart Production Monitoring */
-            font-size: clamp(11px, 2.2vw, 16px);
+            font-size: clamp(10px, 2vw, 15px);
             text-transform: uppercase;
-            letter-spacing: clamp(3px, 1.2vw, 8px);
+            letter-spacing: clamp(3px, 0.8vw, 8px);
             color: #ff4b2b;
-            margin-top: 15px;
+            margin-top: clamp(10px, 3vh, 20px);
             opacity: 0;
             font-weight: 600;
-            animation: fadeIn 2s ease forwards 1s;
+            animation: fadeIn 2s ease forwards 0.8s;
         }
 
-        /* --- Flexible Sewing Track --- */
+        /* --- Sewing Track --- */
         .sewing-track {
-            width: 85%; 
-            max-width: 500px; 
+            width: 60%; 
+            max-width: 400px; 
             height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: clamp(40px, 8vh, 80px) auto 40px auto;
+            background: rgba(255, 255, 255, 0.15);
+            margin: clamp(40px, 8vh, 60px) auto;
             position: relative;
         }
 
@@ -103,19 +100,18 @@
             background: repeating-linear-gradient(90deg, 
                 #ff4b2b, #ff4b2b 4px, 
                 transparent 4px, transparent 8px);
-            animation: stitchEffect 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+            animation: stitchEffect 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .pulse-needle {
             position: absolute;
-            top: -48px;
+            top: -40px;
             left: 0%;
-            width: 3px;
-            height: 50px;
-            background: linear-gradient(to right, #7f8c8d, #ffffff, #bdc3c7);
-            border-radius: 2px;
+            width: 2px;
+            height: 42px;
+            background: linear-gradient(to bottom, transparent, #ffffff);
             z-index: 20;
-            animation: needleTravel 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+            animation: needleTravel 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .pulse-needle::after {
@@ -126,23 +122,22 @@
             width: 6px; height: 6px;
             background: #ff4b2b;
             border-radius: 50%;
-            box-shadow: 0 0 10px #ff4b2b, 0 0 20px rgba(255, 75, 43, 0.6);
-            animation: tipPulse 0.3s infinite alternate;
+            box-shadow: 0 0 12px #ff4b2b;
+            animation: tipPulse 0.4s infinite alternate;
         }
 
-        /* --- Loading Footer --- */
+        /* --- Loader Info --- */
         .loader-info {
-            margin-top: 20px;
-            text-align: center;
+            margin-top: 10px;
         }
 
         .progress-bar {
-            width: 180px; /* Widened slightly for balance */
-            height: 1px;
+            width: clamp(120px, 20vw, 180px);
+            height: 2px;
             background: rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
-            margin: 0 auto;
+            margin: 0 auto 15px auto;
         }
 
         .progress-fill {
@@ -153,30 +148,29 @@
         }
 
         .loading-text {
-            /* Increased font size for connecting text */
-            font-size: 11px;
-            color: #888; /* Brightened slightly for visibility */
-            margin-top: 15px;
-            letter-spacing: 4px;
+            font-size: clamp(9px, 1.2vw, 11px);
+            color: #bbb;
+            letter-spacing: 3px;
             font-weight: 700;
+            text-transform: uppercase;
         }
 
         /* --- Animations --- */
         @keyframes needleTravel {
             0% { left: 0%; transform: translateY(0); }
-            5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateY(-8px); }
+            5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateY(-6px); }
             10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% { transform: translateY(0); }
             100% { left: 100%; transform: translateY(0); }
         }
 
         @keyframes tipPulse {
-            from { transform: translateX(-50%) scale(0.7); opacity: 0.6; }
-            to { transform: translateX(-50%) scale(1.1); opacity: 1; }
+            from { transform: translateX(-50%) scale(0.8); }
+            to { transform: translateX(-50%) scale(1.2); }
         }
 
         @keyframes stitchEffect { to { width: 100%; } }
         @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.96); }
+            from { opacity: 0; transform: scale(0.98); }
             to { opacity: 1; transform: scale(1); }
         }
         @keyframes fadeIn { to { opacity: 1; } }
@@ -194,7 +188,7 @@
     </div>
 
     <div class="container">
-        <div class="brand-name">Swiss-Bangla Trims <span>&</span> Accessories</div>
+        <h1 class="brand-name">Swiss-Bangla Trims <span>&</span> Accessories</h1>
         <div class="tagline">Smart Production Monitoring</div>
 
         <div class="sewing-track">
@@ -206,7 +200,7 @@
             <div class="progress-bar">
                 <div class="progress-fill"></div>
             </div>
-            <p class="loading-text">CONNECTING TO DASHBOARD</p>
+            <p class="loading-text">Connecting to Dashboard</p>
         </div>
     </div>
 
