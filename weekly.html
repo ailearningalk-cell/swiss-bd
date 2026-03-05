@@ -27,59 +27,48 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
+        .container { width: 100%; max-width: 500px; }
+
         .header-wrapper {
-            width: 100%; max-width: 500px;
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 20px;
         }
         .header-wrapper h1 { font-size: 24px; margin: 0; color: var(--text-dark); }
-        
-        .btn-pdf {
-            background: var(--brand); color: white; border: none;
-            padding: 10px 18px; border-radius: 12px; font-weight: 600;
-            cursor: pointer; font-size: 13px;
-        }
+        .back-link { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; }
 
-        /* --- Calendar Strip (Sunday Start) --- */
-        .calendar-section {
-            width: 100%; max-width: 500px;
+        /* --- Uniform Card Sizing (180px Height) --- */
+        .uniform-card {
             background: #fff; border-radius: 18px;
-            padding: 20px; margin-bottom: 16px;
             border: 1px solid var(--card-border);
             box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            margin-bottom: 16px;
+            height: 180px; /* Fixed Height for Symmetry */
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 20px; box-sizing: border-box;
         }
+
+        /* --- Calendar Strip --- */
         .calendar-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 15px; display: block; }
-        
-        .calendar-grid {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;
-        }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
         .day-box { display: flex; flex-direction: column; align-items: center; }
         .day-name { font-size: 11px; font-weight: 700; color: var(--text-light); }
         .day-num { font-size: 16px; font-weight: 800; margin-top: 4px; color: var(--text-dark); }
 
-        /* Color States */
         .text-green { color: var(--success) !important; }
         .text-red { color: var(--danger) !important; }
 
-        /* --- Stats Overview --- */
-        .stats-container {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-            width: 100%; max-width: 500px; margin-bottom: 16px;
-        }
-        .stat-card {
-            background: #fff; padding: 18px; border-radius: 18px;
-            border: 1px solid var(--card-border);
-        }
+        /* --- Stats Row --- */
+        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat-card { background: #fff; padding: 18px; border-radius: 18px; border: 1px solid var(--card-border); }
         .stat-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; }
         .stat-val { font-size: 22px; font-weight: 800; margin-top: 5px; color: var(--brand); }
 
-        /* --- Responsive Table (Matches Dashboard Size) --- */
+        /* --- Main Data Table (Scrollable) --- */
         .table-card {
-            width: 100%; max-width: 500px;
             background: #fff; border-radius: 18px;
             border: 1px solid var(--card-border);
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            margin-bottom: 20px;
         }
         .table-responsive { overflow-x: auto; width: 100%; }
         table { width: 100%; border-collapse: collapse; min-width: 450px; }
@@ -89,54 +78,67 @@
             border-bottom: 1px solid var(--card-border); text-transform: uppercase;
         }
         td { padding: 14px 12px; font-size: 13px; border-bottom: 1px solid #f8f9fb; color: var(--text-dark); }
-        .row-date { font-weight: 700; }
         .row-total { font-weight: 800; color: var(--primary); text-align: right; }
+
+        /* --- Footer Button --- */
+        .footer-actions { width: 100%; display: flex; justify-content: flex-end; padding-bottom: 40px; }
+        .btn-pdf {
+            background: var(--brand); color: white; border: none;
+            padding: 12px 24px; border-radius: 12px; font-weight: 600;
+            cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
 
         .loading { padding: 40px; text-align: center; color: var(--text-light); font-size: 13px; }
     </style>
 </head>
 <body>
 
-    <div class="header-wrapper">
-        <h1>Weekly</h1>
-        <button class="btn-pdf" onclick="generatePDF()">Export PDF</button>
-    </div>
+    <div class="container">
+        <div class="header-wrapper">
+            <h1>Weekly Report</h1>
+            <a href="home.html" class="back-link">Dashboard</a>
+        </div>
 
-    <div class="calendar-section">
-        <span class="calendar-label" id="weekRangeDisplay">This Week</span>
-        <div class="calendar-grid" id="calendarGrid">
+        <div class="uniform-card">
+            <span class="calendar-label">Current Work Week</span>
+            <div class="calendar-grid" id="calendarGrid">
+                </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <span class="stat-label">Total Output</span>
+                <div id="week_total" class="stat-val">0</div>
             </div>
-    </div>
+            <div class="stat-card">
+                <span class="stat-label">Daily Avg</span>
+                <div id="avg_total" class="stat-val" style="color: var(--success)">0</div>
+            </div>
+        </div>
 
-    <div class="stats-container">
-        <div class="stat-card">
-            <span class="stat-label">Total Output</span>
-            <div id="week_total" class="stat-val">0</div>
+        <div class="table-card">
+            <div class="table-responsive">
+                <table id="reportTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Twill</th>
+                            <th>Draw</th>
+                            <th>Croc</th>
+                            <th>Tip</th>
+                            <th>Starch</th>
+                            <th style="text-align: right;">Total FG</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <div id="loader" class="loading">Loading records...</div>
         </div>
-        <div class="stat-card">
-            <span class="stat-label">Daily Avg</span>
-            <div id="avg_total" class="stat-val" style="color: var(--success)">0</div>
-        </div>
-    </div>
 
-    <div class="table-card">
-        <div class="table-responsive">
-            <table id="reportTable">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Twill</th>
-                        <th>Draw</th>
-                        <th>Croc</th>
-                        <th>Tip</th>
-                        <th>Starch</th>
-                        <th style="text-align: right;">Total FG</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+        <div class="footer-actions">
+            <button class="btn-pdf" onclick="generatePDF()">Download PDF</button>
         </div>
-        <div id="loader" class="loading">Fetching production logs...</div>
     </div>
 
     <script>
@@ -146,9 +148,7 @@
 
         function setupCalendar() {
             const now = new Date();
-            const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
-            
-            // Start of week = Sunday (Day 0)
+            const dayOfWeek = now.getDay();
             const sunDate = new Date(now);
             sunDate.setDate(now.getDate() - dayOfWeek);
 
@@ -159,42 +159,33 @@
             for (let i = 0; i < 7; i++) {
                 const current = new Date(sunDate);
                 current.setDate(sunDate.getDate() + i);
-                
                 const isToday = current.toDateString() === now.toDateString();
                 const isFriday = current.getDay() === 5;
                 
-                let textColorClass = "";
-                if (isToday) textColorClass = "text-green";
-                else if (isFriday) textColorClass = "text-red";
+                let colorClass = "";
+                if (isToday) colorClass = "text-green";
+                else if (isFriday) colorClass = "text-red";
 
                 grid.innerHTML += `
                     <div class="day-box">
-                        <span class="day-name ${textColorClass}">${dayNames[i]}</span>
-                        <span class="day-num ${textColorClass}">${current.getDate()}</span>
+                        <span class="day-name ${colorClass}">${dayNames[i]}</span>
+                        <span class="day-num ${colorClass}">${current.getDate()}</span>
                     </div>
                 `;
             }
-            // Logic for Sat-Thu Data Range
-            const satDate = new Date(sunDate);
-            satDate.setDate(sunDate.getDate() - 1); // Previous Sat
-            const thursDate = new Date(sunDate);
-            thursDate.setDate(sunDate.getDate() + 4); // This Thurs
-
+            // Sat-Thu Window Logic
+            const satDate = new Date(sunDate); satDate.setDate(sunDate.getDate() - 1);
+            const thursDate = new Date(sunDate); thursDate.setDate(sunDate.getDate() + 4);
             return { start: satDate.toISOString().split('T')[0], end: thursDate.toISOString().split('T')[0] };
         }
 
         async function fetchWeeklyData() {
             const range = setupCalendar();
             try {
-                const { data, error } = await _supabase
-                    .from('production_logs')
-                    .select('*')
-                    .gte('entry_date', range.start)
-                    .lte('entry_date', range.end)
+                const { data, error } = await _supabase.from('production_logs').select('*')
+                    .gte('entry_date', range.start).lte('entry_date', range.end)
                     .order('entry_date', { ascending: false });
-
-                if (error) throw error;
-                processData(data);
+                if (!error) processData(data);
             } catch (err) { console.error(err); }
         }
 
@@ -202,9 +193,8 @@
             const tableBody = document.getElementById('tableBody');
             document.getElementById('loader').style.display = "none";
             tableBody.innerHTML = "";
-
-            const grouped = {};
             let grandTotal = 0;
+            const grouped = {};
 
             data.forEach(row => {
                 const d = row.entry_date;
@@ -222,7 +212,7 @@
                 const day = grouped[date];
                 tableBody.innerHTML += `
                     <tr>
-                        <td class="row-date">${formatDate(date)}</td>
+                        <td><b>${new Date(date).getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][new Date(date).getMonth()]}</b></td>
                         <td>${day.twill.toLocaleString()}</td>
                         <td>${day.ds.toLocaleString()}</td>
                         <td>${day.crochet.toLocaleString()}</td>
@@ -232,29 +222,15 @@
                     </tr>
                 `;
             });
-
             document.getElementById('week_total').innerText = grandTotal.toLocaleString();
             document.getElementById('avg_total').innerText = Math.round(grandTotal / (Object.keys(grouped).length || 1)).toLocaleString();
-        }
-
-        function formatDate(dateInput) {
-            const d = new Date(dateInput);
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            return `${d.getDate()} ${months[d.getMonth()]}`;
         }
 
         function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'pt', 'a4');
-            doc.setFontSize(14);
-            doc.text("Swiss-Bangla Production Report (Weekly)", 40, 50);
-            doc.autoTable({ 
-                html: '#reportTable', 
-                startY: 70, 
-                theme: 'striped', 
-                headStyles: { fillColor: [26, 31, 54] },
-                styles: { fontSize: 8 } 
-            });
+            doc.text("Swiss-Bangla Production Report", 40, 50);
+            doc.autoTable({ html: '#reportTable', startY: 70, headStyles: { fillColor: [26, 31, 54] } });
             doc.save(`Production_Weekly_${new Date().toLocaleDateString()}.pdf`);
         }
 
