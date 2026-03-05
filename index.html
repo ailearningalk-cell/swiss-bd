@@ -1,437 +1,278 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Swiss-Bangla Trims | Welcome</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-
     <style>
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-
-
         body, html {
-
             height: 100%;
-
             overflow: hidden;
-
             font-family: 'Poppins', sans-serif;
-
             background-color: #000;
-
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
-
-
 
         /* --- Cinematic Video Background --- */
-
         .video-background {
-
             position: fixed;
-
             top: 0; left: 0; width: 100%; height: 100%;
-
             z-index: -1;
-
         }
-
-
 
         .video-background video {
-
             min-width: 100%; min-height: 100%;
-
             width: auto; height: auto;
-
             position: absolute;
-
             top: 50%; left: 50%;
-
             transform: translate(-50%, -50%);
-
             object-fit: cover;
-
             filter: brightness(25%) contrast(120%) grayscale(30%);
-
         }
-
-
 
         .video-overlay {
-
             position: absolute;
-
             top: 0; left: 0; width: 100%; height: 100%;
-
             background: linear-gradient(to bottom, 
-
                 rgba(0,0,0,0.1) 0%, 
-
                 rgba(0,0,0,0.4) 50%, 
-
                 rgba(0,0,0,0.9) 100%);
-
         }
-
-
 
         .container {
-
             height: 100vh;
-
             display: flex;
-
             flex-direction: column;
-
             justify-content: center;
-
             align-items: center;
-
             position: relative;
-
             z-index: 10;
-
-            padding: 0 10px;
-
+            padding: 0 15px;
         }
 
-
-
-        /* --- Single Line Brand Name --- */
-
+        /* --- Fixed Brand Name for Mobile --- */
         .brand-name {
-
             font-family: 'Playfair Display', serif;
-
-            /* Adjusted font-size for mobile to prevent overflow while staying on one line */
-
-            font-size: clamp(16px, 4.5vw, 48px); 
-
             font-weight: 700;
-
             color: #ffffff;
-
             letter-spacing: 1px;
-
             text-shadow: 0 10px 30px rgba(0,0,0,0.8);
-
             animation: fadeInScale 2s ease-out forwards;
-
             text-align: center;
-
-            /* Force single line */
-
-            white-space: nowrap; 
-
-            width: 100%;
-
-            max-width: 100vw;
-
+            
+            /* Fixed font sizing for mobile */
+            font-size: 28px; /* Base size for smaller phones */
+            line-height: 1.2;
+            max-width: 100%;
+            
+            /* Allow wrapping on very small screens */
+            white-space: normal;
+            
+            /* Better text rendering */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
+        /* Tablet and larger phones */
+        @media (min-width: 375px) {
+            .brand-name {
+                font-size: 32px;
+            }
+        }
 
+        /* Small tablets */
+        @media (min-width: 600px) {
+            .brand-name {
+                font-size: 42px;
+                white-space: nowrap; /* Re-enable nowrap for larger screens */
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1024px) {
+            .brand-name {
+                font-size: 48px;
+            }
+        }
 
         /* Styling the & symbol */
-
         .brand-name span {
-
             font-size: 0.8em;
-
             font-style: italic;
-
             color: rgba(255,255,255,0.6);
-
             margin: 0 4px;
-
+            display: inline-block; /* Prevent font shifting */
         }
-
-
 
         .tagline {
-
-            font-size: clamp(9px, 1.8vw, 12px);
-
+            font-size: 10px;
             text-transform: uppercase;
-
-            letter-spacing: clamp(3px, 1.2vw, 8px);
-
+            letter-spacing: 4px;
             color: #ff4b2b;
-
             margin-top: 12px;
-
             opacity: 0;
-
             font-weight: 500;
-
             animation: fadeIn 2s ease forwards 1s;
-
+            
+            /* Responsive letter spacing */
+            @media (min-width: 768px) {
+                font-size: 12px;
+                letter-spacing: 8px;
+            }
         }
-
-
 
         /* --- Flexible Sewing Track --- */
-
         .sewing-track {
-
             width: 85%; 
-
             max-width: 500px; 
-
             height: 1px;
-
             background: rgba(255, 255, 255, 0.1);
-
-            margin: clamp(40px, 8vh, 80px) auto 40px auto;
-
+            margin: 40px auto 40px auto;
             position: relative;
-
         }
 
-
+        /* Responsive spacing */
+        @media (min-width: 768px) {
+            .sewing-track {
+                margin: 60px auto 40px auto;
+            }
+        }
 
         .stitch-progress {
-
             position: absolute;
-
             left: 0; top: 0; height: 100%; width: 0%;
-
             background: repeating-linear-gradient(90deg, 
-
                 #ff4b2b, #ff4b2b 4px, 
-
                 transparent 4px, transparent 8px);
-
             animation: stitchEffect 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-
         }
-
-
 
         .pulse-needle {
-
             position: absolute;
-
             top: -48px;
-
             left: 0%;
-
             width: 3px;
-
             height: 50px;
-
             background: linear-gradient(to right, #7f8c8d, #ffffff, #bdc3c7);
-
             border-radius: 2px;
-
             z-index: 20;
-
             animation: needleTravel 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-
+            will-change: left, transform; /* Optimize animation performance */
         }
-
-
 
         .pulse-needle::after {
-
             content: '';
-
             position: absolute;
-
             bottom: -3px; left: 50%;
-
             transform: translateX(-50%);
-
             width: 6px; height: 6px;
-
             background: #ff4b2b;
-
             border-radius: 50%;
-
             box-shadow: 0 0 10px #ff4b2b, 0 0 20px rgba(255, 75, 43, 0.6);
-
             animation: tipPulse 0.3s infinite alternate;
-
         }
-
-
 
         /* --- Loading Footer --- */
-
         .loader-info {
-
             margin-top: 20px;
-
             text-align: center;
-
         }
-
-
 
         .progress-bar {
-
             width: 140px;
-
             height: 1px;
-
             background: rgba(255,255,255,0.1);
-
             position: relative;
-
             overflow: hidden;
-
             margin: 0 auto;
-
         }
-
-
 
         .progress-fill {
-
             height: 100%;
-
             width: 0%;
-
             background: #ffffff;
-
             animation: fillBar 5s linear forwards;
-
         }
-
-
 
         .loading-text {
-
             font-size: 8px;
-
             color: #555;
-
             margin-top: 12px;
-
             letter-spacing: 3px;
-
             font-weight: 700;
-
+            text-transform: uppercase;
+            
+            @media (min-width: 768px) {
+                font-size: 10px;
+                letter-spacing: 4px;
+            }
         }
-
-
 
         /* --- Animations --- */
-
         @keyframes needleTravel {
-
             0% { left: 0%; transform: translateY(0); }
-
             5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateY(-8px); }
-
             10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% { transform: translateY(0); }
-
             100% { left: 100%; transform: translateY(0); }
-
         }
-
-
 
         @keyframes tipPulse {
-
             from { transform: translateX(-50%) scale(0.7); opacity: 0.6; }
-
             to { transform: translateX(-50%) scale(1.1); opacity: 1; }
-
         }
-
-
 
         @keyframes stitchEffect { to { width: 100%; } }
-
         @keyframes fadeInScale {
-
             from { opacity: 0; transform: scale(0.96); }
-
             to { opacity: 1; transform: scale(1); }
-
         }
-
         @keyframes fadeIn { to { opacity: 1; } }
-
         @keyframes fillBar { to { width: 100%; } }
-
-
-
     </style>
-
 </head>
-
 <body>
-
-
-
     <div class="video-background">
-
         <div class="video-overlay"></div>
-
         <video autoplay muted loop playsinline>
-
             <source src="https://assets.mixkit.co/videos/preview/mixkit-close-up-of-a-sewing-machine-needle-in-action-14285-large.mp4" type="video/mp4">
-
         </video>
-
     </div>
-
-
 
     <div class="container">
-
         <div class="brand-name">Swiss-Bangla Trims <span>&</span> Accessories</div>
-
         <div class="tagline">Smart Production Monitoring</div>
 
-
-
         <div class="sewing-track">
-
             <div class="stitch-progress"></div>
-
             <div class="pulse-needle"></div>
-
         </div>
-
-
 
         <div class="loader-info">
-
             <div class="progress-bar">
-
                 <div class="progress-fill"></div>
-
             </div>
-
             <p class="loading-text">CONNECTING TO DASHBOARD</p>
-
         </div>
-
     </div>
 
-
-
     <script>
-
-        setTimeout(() => {
-
-            window.location.href = "home.html";
-
-        }, 5000);
-
+        // Check if it's a mobile device and handle accordingly
+        if (window.innerWidth <= 600) {
+            // Add a small delay to ensure smooth rendering
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 5000);
+        } else {
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 5000);
+        }
     </script>
-
 </body>
-
 </html>
