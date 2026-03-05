@@ -3,91 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiss-Bangla | Production Entry</title>
+    <title>Swiss-Bangla | Entry Form</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #4285f4;
             --success: #34a853;
             --danger: #ff4b2b;
-            --bg: #f4f7f9;
+            --bg: #eef2f5;
             --brand-dark: #1a1f36;
-            --border: #e2e8f0;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg);
-            display: flex; justify-content: center; padding: 20px; margin: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px; margin: 0;
         }
 
         .form-container {
-            background: white; padding: 25px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            background: white; padding: 30px; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             width: 100%; max-width: 500px;
         }
 
-        .brand-header { text-align: center; margin-bottom: 20px; }
-        .brand-header h1 { font-size: 16px; color: var(--brand-dark); margin: 0; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
-        .brand-header h2 { font-size: 22px; color: #1e293b; margin: 5px 0 0 0; }
+        /* Branding Header */
+        .brand-header { text-align: center; margin-bottom: 25px; }
+        .brand-header h1 { font-size: 18px; color: var(--brand-dark); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .brand-header h2 { font-size: 22px; color: #333; margin: 5px 0 0 0; }
 
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; font-weight: 700; color: #64748b; font-size: 11px; text-transform: uppercase; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; font-size: 13px; }
         
         input {
-            width: 100%; padding: 12px; border: 1.5px solid var(--border);
-            border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.2s;
+            width: 100%; padding: 12px; border: 1px solid #ddd;
+            border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none;
         }
-        input:focus { border-color: var(--primary); background: #f8fbff; }
+        input:focus { border-color: var(--primary); }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .submit-btn {
             width: 100%; padding: 16px; background: var(--brand-dark);
-            color: white; border: none; border-radius: 12px;
+            color: white; border: none; border-radius: 10px;
             font-size: 16px; font-weight: bold; cursor: pointer;
             margin-top: 20px; transition: 0.3s;
         }
-        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .submit-btn:disabled { background: #ccc; }
 
-        /* --- Recent Activity Card --- */
-        .recent-card {
-            margin-top: 25px; padding: 18px; border-radius: 15px;
-            background: #f8fafc; border: 1px solid var(--border);
-            display: none; animation: slideUp 0.4s ease;
-        }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .recent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .recent-title { font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
-        
-        .action-group { display: flex; gap: 8px; }
-        .btn-action {
-            border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px;
-            font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px;
-        }
-        .btn-edit { background: #e0e7ff; color: #4338ca; }
-        .btn-delete { background: #fee2e2; color: #b91c1c; }
-        .btn-action:active { transform: scale(0.95); }
-
-        .recent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .recent-item { font-size: 10px; color: #64748b; font-weight: 600; }
-        .recent-item b { display: block; font-size: 14px; color: var(--brand-dark); margin-top: 2px; }
-
-        /* Error/Status Messages */
-        #errorDisplay {
-            display: none; color: var(--danger); font-size: 13px; font-weight: 600;
-            text-align: center; margin-top: 15px; padding: 10px; background: #fff5f5; border-radius: 8px;
+        /* Inline Error Message Style */
+        .error-box {
+            display: none; color: var(--danger); font-size: 13px;
+            font-weight: 600; text-align: center; margin-top: 15px;
+            padding: 10px; background: #fff5f5; border-radius: 8px;
         }
 
-        /* Success Overlay */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
             justify-content: center; align-items: center; z-index: 1000;
         }
-        .modal { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 280px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        
+        .modal { background: white; padding: 40px; border-radius: 15px; text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -121,27 +98,16 @@
         </div>
 
         <button type="submit" class="submit-btn" id="submitBtn">Final Submit</button>
-        <div id="errorDisplay">⚠️ Please enter at least one value.</div>
+        <div id="errorDisplay" class="error-box">⚠️ Please enter at least one production value.</div>
     </form>
-
-    <div id="recentActivity" class="recent-card">
-        <div class="recent-header">
-            <span class="recent-title">Today's Data Sync</span>
-            <div class="action-group">
-                <button type="button" class="btn-action btn-edit" onclick="startEdit()">✏️ Edit</button>
-                <button type="button" class="btn-action btn-delete" onclick="confirmDelete()">🗑️ Delete</button>
-            </div>
-        </div>
-        <div id="recentDetails" class="recent-grid"></div>
-    </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-        <h1 style="color:var(--success); margin:0;">✅</h1>
-        <h3>Success!</h3>
-        <p id="modalMsg" style="font-size: 13px; color: #64748b;">Action completed successfully.</p>
-        <button onclick="closeModal()" style="background:var(--brand-dark); color:white; border:none; padding:10px 20px; border-radius:8px; width:100%; font-weight:bold;">OK</button>
+        <h1 style="color:var(--success)">✅</h1>
+        <h3>Data Saved!</h3>
+        <p>Production logged successfully.</p>
+        <a href="home.html" style="background:var(--success); color:white; padding:12px 25px; text-decoration:none; border-radius:8px; display:inline-block; margin-top:15px; font-weight:bold;">Dashboard</a>
     </div>
 </div>
 
@@ -151,36 +117,13 @@
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     const form = document.getElementById('productionForm');
-    const dateInput = document.getElementById('dateField');
     const errBox = document.getElementById('errorDisplay');
-    let currentEntryId = null; 
-
+    const dateInput = document.getElementById('dateField');
+    
     dateInput.value = new Date().toISOString().split('T')[0];
 
     function hFocus(i) { if(i.value === "0") i.value = ""; errBox.style.display = "none"; }
     function hBlur(i) { if(i.value === "") i.value = "0"; }
-
-    // Check for existing data on load
-    async function checkExisting() {
-        const { data, error } = await _supabase.from('production_logs')
-            .select('*').eq('entry_date', dateInput.value).maybeSingle();
-        if (data) {
-            currentEntryId = data.id;
-            renderRecent(data);
-        } else {
-            document.getElementById('recentActivity').style.display = "none";
-            currentEntryId = null;
-        }
-    }
-
-    function renderRecent(data) {
-        document.getElementById('recentActivity').style.display = "block";
-        document.getElementById('recentDetails').innerHTML = `
-            <div class="recent-item">Twill Tape<b>${(data.twill_6_1 + data.twill_6_2 + data.twill_10_2).toLocaleString()}</b></div>
-            <div class="recent-item">Drawstring<b>${(data.ds_16h_1 + data.ds_16h_2 + data.ds_48h_3).toLocaleString()}</b></div>
-            <div class="recent-item">Finished<b>${data.finished_goods.toLocaleString()}</b></div>
-        `;
-    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -188,15 +131,19 @@
         const formData = new FormData(form);
         
         let total = 0;
-        const fields = ['t61','t62','t102','d16h1','d16h2','d48h3','c1','c2','c3','tipping','starching','fg'];
-        fields.forEach(f => total += parseInt(formData.get(f)) || 0);
+        ['t61','t62','t102','d16h1','d16h2','d48h3','c1','c2','c3','tipping','starching','fg'].forEach(f => {
+            total += parseInt(formData.get(f)) || 0;
+        });
 
-        if (total === 0) { errBox.style.display = "block"; return; }
+        if (total === 0) {
+            errBox.style.display = "block";
+            return;
+        }
 
         btn.disabled = true;
         btn.innerText = 'Syncing...';
 
-        const payload = {
+        const { error } = await _supabase.from('production_logs').insert([{ 
             entry_date: formData.get('Date'),
             twill_6_1: parseInt(formData.get('t61')) || 0,
             twill_6_2: parseInt(formData.get('t62')) || 0,
@@ -210,60 +157,21 @@
             tipping: parseInt(formData.get('tipping')) || 0,
             starching: parseInt(formData.get('starching')) || 0,
             finished_goods: parseInt(formData.get('fg')) || 0
-        };
-
-        if (currentEntryId) payload.id = currentEntryId;
-
-        const { error } = await _supabase.from('production_logs').upsert([payload]);
+        }]);
 
         if (error) {
-            alert("Error: " + error.message);
+            errBox.innerText = "❌ Sync Failed: " + error.message;
+            errBox.style.display = "block";
             btn.disabled = false;
-        } else {
-            document.getElementById('modalMsg').innerText = "Production data synced successfully.";
-            document.getElementById('modalOverlay').style.display = 'flex';
             btn.innerText = 'Final Submit';
+        } else {
+            document.getElementById('modalOverlay').style.display = 'flex';
+            form.reset();
+            dateInput.value = new Date().toISOString().split('T')[0];
             btn.disabled = false;
+            btn.innerText = 'Final Submit';
         }
     });
-
-    async function startEdit() {
-        if (!currentEntryId) return;
-        const { data } = await _supabase.from('production_logs').select('*').eq('id', currentEntryId).single();
-        form.t61.value = data.twill_6_1;
-        form.t62.value = data.twill_6_2;
-        form.t102.value = data.twill_10_2;
-        form.d16h1.value = data.ds_16h_1;
-        form.d16h2.value = data.ds_16h_2;
-        form.d48h3.value = data.ds_48h_3;
-        form.c1.value = data.crochet_1;
-        form.c2.value = data.crochet_2;
-        form.c3.value = data.crochet_3;
-        form.tipping.value = data.tipping;
-        form.starching.value = data.starching;
-        form.fg.value = data.finished_goods;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    async function confirmDelete() {
-        if (confirm("⚠️ Are you sure? This will permanently delete today's production data.")) {
-            const { error } = await _supabase.from('production_logs').delete().eq('id', currentEntryId);
-            if (!error) {
-                document.getElementById('modalMsg').innerText = "Entry has been deleted.";
-                document.getElementById('modalOverlay').style.display = 'flex';
-            }
-        }
-    }
-
-    function closeModal() {
-        document.getElementById('modalOverlay').style.display = 'none';
-        form.reset();
-        dateInput.value = new Date().toISOString().split('T')[0];
-        checkExisting();
-    }
-
-    window.onload = checkExisting;
-    dateInput.onchange = checkExisting;
 </script>
 </body>
 </html>
