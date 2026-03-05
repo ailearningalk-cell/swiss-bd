@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Swiss-Bangla Trims | Welcome</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
@@ -15,7 +15,8 @@
             background-color: #000;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
 
         /* --- Cinematic Video Background --- */
@@ -52,10 +53,17 @@
             align-items: center;
             position: relative;
             z-index: 10;
-            padding: 0 15px;
+            padding: 0 10px;
         }
 
-        /* --- Fixed Brand Name for Mobile --- */
+        /* --- Fixed Single Line Brand Name --- */
+        .brand-wrapper {
+            width: 100%;
+            overflow: hidden;
+            text-align: center;
+            padding: 0 5px;
+        }
+
         .brand-name {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
@@ -63,42 +71,63 @@
             letter-spacing: 1px;
             text-shadow: 0 10px 30px rgba(0,0,0,0.8);
             animation: fadeInScale 2s ease-out forwards;
-            text-align: center;
             
-            /* Fixed font sizing for mobile */
-            font-size: 28px; /* Base size for smaller phones */
-            line-height: 1.2;
+            /* Force single line */
+            white-space: nowrap;
+            display: inline-block;
+            
+            /* Fixed font size for mobile - adjusted to fit one line */
+            font-size: 22px;
+            
+            /* Ensure it stays within bounds */
             max-width: 100%;
             
-            /* Allow wrapping on very small screens */
-            white-space: normal;
+            /* Prevent any transformation issues */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
             
             /* Better text rendering */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
+            text-rendering: optimizeSpeed;
         }
 
-        /* Tablet and larger phones */
+        /* Responsive font sizes that keep text in one line */
+        @media (min-width: 360px) {
+            .brand-name { font-size: 24px; }
+        }
+        
         @media (min-width: 375px) {
-            .brand-name {
-                font-size: 32px;
-            }
+            .brand-name { font-size: 26px; }
         }
-
-        /* Small tablets */
+        
+        @media (min-width: 390px) {
+            .brand-name { font-size: 27px; }
+        }
+        
+        @media (min-width: 414px) {
+            .brand-name { font-size: 28px; }
+        }
+        
+        @media (min-width: 430px) {
+            .brand-name { font-size: 29px; }
+        }
+        
+        @media (min-width: 480px) {
+            .brand-name { font-size: 32px; }
+        }
+        
         @media (min-width: 600px) {
-            .brand-name {
-                font-size: 42px;
-                white-space: nowrap; /* Re-enable nowrap for larger screens */
-            }
+            .brand-name { font-size: 36px; }
         }
-
-        /* Desktop */
+        
+        @media (min-width: 768px) {
+            .brand-name { font-size: 42px; }
+        }
+        
         @media (min-width: 1024px) {
-            .brand-name {
-                font-size: 48px;
-            }
+            .brand-name { font-size: 48px; }
         }
 
         /* Styling the & symbol */
@@ -106,24 +135,28 @@
             font-size: 0.8em;
             font-style: italic;
             color: rgba(255,255,255,0.6);
-            margin: 0 4px;
-            display: inline-block; /* Prevent font shifting */
+            margin: 0 2px;
+            display: inline-block;
+            transform: translateZ(0);
         }
 
         .tagline {
             font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             color: #ff4b2b;
             margin-top: 12px;
             opacity: 0;
             font-weight: 500;
             animation: fadeIn 2s ease forwards 1s;
-            
-            /* Responsive letter spacing */
-            @media (min-width: 768px) {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .tagline {
                 font-size: 12px;
-                letter-spacing: 8px;
+                letter-spacing: 6px;
             }
         }
 
@@ -135,13 +168,7 @@
             background: rgba(255, 255, 255, 0.1);
             margin: 40px auto 40px auto;
             position: relative;
-        }
-
-        /* Responsive spacing */
-        @media (min-width: 768px) {
-            .sewing-track {
-                margin: 60px auto 40px auto;
-            }
+            transform: translateZ(0);
         }
 
         .stitch-progress {
@@ -151,6 +178,7 @@
                 #ff4b2b, #ff4b2b 4px, 
                 transparent 4px, transparent 8px);
             animation: stitchEffect 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+            transform: translateZ(0);
         }
 
         .pulse-needle {
@@ -163,25 +191,29 @@
             border-radius: 2px;
             z-index: 20;
             animation: needleTravel 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-            will-change: left, transform; /* Optimize animation performance */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: left;
         }
 
         .pulse-needle::after {
             content: '';
             position: absolute;
             bottom: -3px; left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateZ(0);
             width: 6px; height: 6px;
             background: #ff4b2b;
             border-radius: 50%;
             box-shadow: 0 0 10px #ff4b2b, 0 0 20px rgba(255, 75, 43, 0.6);
             animation: tipPulse 0.3s infinite alternate;
+            backface-visibility: hidden;
         }
 
         /* --- Loading Footer --- */
         .loader-info {
             margin-top: 20px;
             text-align: center;
+            transform: translateZ(0);
         }
 
         .progress-bar {
@@ -191,6 +223,7 @@
             position: relative;
             overflow: hidden;
             margin: 0 auto;
+            transform: translateZ(0);
         }
 
         .progress-fill {
@@ -198,6 +231,7 @@
             width: 0%;
             background: #ffffff;
             animation: fillBar 5s linear forwards;
+            transform: translateZ(0);
         }
 
         .loading-text {
@@ -206,34 +240,46 @@
             margin-top: 12px;
             letter-spacing: 3px;
             font-weight: 700;
-            text-transform: uppercase;
-            
-            @media (min-width: 768px) {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .loading-text {
                 font-size: 10px;
                 letter-spacing: 4px;
             }
         }
 
-        /* --- Animations --- */
+        /* --- Optimized Animations --- */
         @keyframes needleTravel {
-            0% { left: 0%; transform: translateY(0); }
-            5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateY(-8px); }
-            10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% { transform: translateY(0); }
-            100% { left: 100%; transform: translateY(0); }
+            0% { left: 0%; }
+            5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateY(-8px) translateZ(0); }
+            10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% { transform: translateY(0) translateZ(0); }
+            100% { left: 100%; transform: translateY(0) translateZ(0); }
         }
 
         @keyframes tipPulse {
-            from { transform: translateX(-50%) scale(0.7); opacity: 0.6; }
-            to { transform: translateX(-50%) scale(1.1); opacity: 1; }
+            from { transform: translateX(-50%) scale(0.7) translateZ(0); opacity: 0.6; }
+            to { transform: translateX(-50%) scale(1.1) translateZ(0); opacity: 1; }
         }
 
-        @keyframes stitchEffect { to { width: 100%; } }
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
+        @keyframes stitchEffect { 
+            to { width: 100%; } 
         }
-        @keyframes fadeIn { to { opacity: 1; } }
-        @keyframes fillBar { to { width: 100%; } }
+        
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.96) translateZ(0); }
+            to { opacity: 1; transform: scale(1) translateZ(0); }
+        }
+        
+        @keyframes fadeIn { 
+            to { opacity: 1; } 
+        }
+        
+        @keyframes fillBar { 
+            to { width: 100%; } 
+        }
     </style>
 </head>
 <body>
@@ -245,7 +291,9 @@
     </div>
 
     <div class="container">
-        <div class="brand-name">Swiss-Bangla Trims <span>&</span> Accessories</div>
+        <div class="brand-wrapper">
+            <div class="brand-name">Swiss-Bangla Trims <span>&</span> Accessories</div>
+        </div>
         <div class="tagline">Smart Production Monitoring</div>
 
         <div class="sewing-track">
@@ -262,17 +310,35 @@
     </div>
 
     <script>
-        // Check if it's a mobile device and handle accordingly
-        if (window.innerWidth <= 600) {
-            // Add a small delay to ensure smooth rendering
-            setTimeout(() => {
+        // Force hardware acceleration and prevent any layout shifts
+        (function() {
+            // Prevent any touch events from causing reflows
+            document.body.addEventListener('touchstart', function(e) {
+                // Allow default behavior but prevent any unwanted side effects
+            }, { passive: true });
+            
+            // Ensure the text stays in one line
+            var brandName = document.querySelector('.brand-name');
+            if (brandName) {
+                // Check if text overflows and adjust if needed
+                var checkOverflow = function() {
+                    if (brandName.scrollWidth > brandName.clientWidth) {
+                        // If still overflowing, reduce font size slightly
+                        var currentSize = parseInt(window.getComputedStyle(brandName).fontSize);
+                        brandName.style.fontSize = (currentSize - 1) + 'px';
+                    }
+                };
+                
+                // Check after a short delay to ensure rendering is complete
+                setTimeout(checkOverflow, 100);
+                setTimeout(checkOverflow, 500);
+            }
+            
+            // Redirect after 5 seconds
+            setTimeout(function() {
                 window.location.href = "home.html";
             }, 5000);
-        } else {
-            setTimeout(() => {
-                window.location.href = "home.html";
-            }, 5000);
-        }
+        })();
     </script>
 </body>
 </html>
