@@ -3,96 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Entry (Fast-Sync)</title>
+    <title>Swiss-Bangla | Entry Form</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #4285f4;
             --success: #34a853;
+            --danger: #ff4b2b;
             --bg: #eef2f5;
+            --brand-dark: #1a1f36;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            margin: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px; margin: 0;
         }
 
         .form-container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
+            background: white; padding: 30px; border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 550px;
+            width: 100%; max-width: 500px;
         }
 
-        h2 { text-align: center; color: #333; margin-bottom: 25px; }
+        /* Branding Header */
+        .brand-header { text-align: center; margin-bottom: 25px; }
+        .brand-header h1 { font-size: 18px; color: var(--brand-dark); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .brand-header h2 { font-size: 22px; color: #333; margin: 5px 0 0 0; }
+
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; font-size: 14px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; font-size: 13px; }
         
         input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 15px;
-            box-sizing: border-box;
+            width: 100%; padding: 12px; border: 1px solid #ddd;
+            border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none;
         }
+        input:focus { border-color: var(--primary); }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
+            width: 100%; padding: 16px; background: var(--brand-dark);
+            color: white; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            margin-top: 20px; transition: 0.3s;
         }
+        .submit-btn:disabled { background: #ccc; }
 
-        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+        /* Inline Error Message Style */
+        .error-box {
+            display: none; color: var(--danger); font-size: 13px;
+            font-weight: 600; text-align: center; margin-top: 15px;
+            padding: 10px; background: #fff5f5; border-radius: 8px;
+        }
 
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            justify-content: center; align-items: center; z-index: 1000;
         }
-
-        .modal {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 350px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-        }
-
-        .view-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 25px;
-            background: var(--success);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-        }
+        .modal { background: white; padding: 40px; border-radius: 15px; text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
 
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
     </style>
@@ -100,7 +71,11 @@
 <body>
 
 <div class="form-container">
-    <h2>Production Entry</h2>
+    <div class="brand-header">
+        <h1>Swiss-Bangla Trims & Accessories</h1>
+        <h2>Production Entry</h2>
+    </div>
+
     <form id="productionForm">
         <div class="form-group">
             <label>Date (Mandatory)</label>
@@ -108,30 +83,31 @@
         </div>
 
         <div class="grid">
-            <div class="form-group"><label>Twill Tape (6)-1</label><input type="number" name="t61" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Twill Tape (6)-2</label><input type="number" name="t62" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Twill Tape (10)-2</label><input type="number" name="t102" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Drawstring-16H-1</label><input type="number" name="d16h1" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Drawstring-16H-2</label><input type="number" name="d16h2" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Drawstring-48H-3</label><input type="number" name="d48h3" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Crochet-1</label><input type="number" name="c1" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Crochet-2</label><input type="number" name="c2" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Crochet-3</label><input type="number" name="c3" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Tipping Machine</label><input type="number" name="tipping" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Starching</label><input type="number" name="starching" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
-            <div class="form-group"><label>Finished Goods</label><input type="number" name="fg" value="0" onfocus="handleFocus(this)" onblur="handleBlur(this)"></div>
+            <div class="form-group"><label>Twill Tape (6)-1</label><input type="number" name="t61" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Twill Tape (6)-2</label><input type="number" name="t62" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Twill Tape (10)-2</label><input type="number" name="t102" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Drawstring-16H-1</label><input type="number" name="d16h1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Drawstring-16H-2</label><input type="number" name="d16h2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Drawstring-48H-3</label><input type="number" name="d48h3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Crochet-1</label><input type="number" name="c1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Crochet-2</label><input type="number" name="c2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Crochet-3</label><input type="number" name="c3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Tipping Machine</label><input type="number" name="tipping" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Starching</label><input type="number" name="starching" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+            <div class="form-group"><label>Finished Goods</label><input type="number" name="fg" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
         </div>
 
         <button type="submit" class="submit-btn" id="submitBtn">Final Submit</button>
+        <div id="errorDisplay" class="error-box">⚠️ Please enter at least one production value.</div>
     </form>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h1 style="color:var(--success)">✅</h1>
-        <h3>Success!</h3>
-        <p>Data synced to Supabase instantly.</p>
-        <a href="home.html" class="view-btn">View Dashboard</a>
+        <h3>Data Saved!</h3>
+        <p>Production logged successfully.</p>
+        <a href="home.html" style="background:var(--success); color:white; padding:12px 25px; text-decoration:none; border-radius:8px; display:inline-block; margin-top:15px; font-weight:bold;">Dashboard</a>
     </div>
 </div>
 
@@ -141,68 +117,51 @@
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     const form = document.getElementById('productionForm');
+    const errBox = document.getElementById('errorDisplay');
     const dateInput = document.getElementById('dateField');
     
-    // Default today's date
     dateInput.value = new Date().toISOString().split('T')[0];
 
-    // UX: Omit 0 when clicking
-    function handleFocus(input) {
-        if (input.value === "0") {
-            input.value = "";
-        }
-    }
-
-    // UX: Restore 0 if left empty
-    function handleBlur(input) {
-        if (input.value === "") {
-            input.value = "0";
-        }
-    }
+    function hFocus(i) { if(i.value === "0") i.value = ""; errBox.style.display = "none"; }
+    function hBlur(i) { if(i.value === "") i.value = "0"; }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const btn = document.getElementById('submitBtn');
         const formData = new FormData(form);
-
-        // Validation: All can't be 0
-        let totalItems = 0;
-        const itemFields = ['t61', 't62', 't102', 'd16h1', 'd16h2', 'd48h3', 'c1', 'c2', 'c3', 'tipping', 'starching', 'fg'];
         
-        itemFields.forEach(field => {
-            totalItems += parseInt(formData.get(field)) || 0;
+        let total = 0;
+        ['t61','t62','t102','d16h1','d16h2','d48h3','c1','c2','c3','tipping','starching','fg'].forEach(f => {
+            total += parseInt(formData.get(f)) || 0;
         });
 
-        if (totalItems === 0) {
-            alert('Error: You cannot submit a form where all item values are 0.');
+        if (total === 0) {
+            errBox.style.display = "block";
             return;
         }
 
         btn.disabled = true;
         btn.innerText = 'Syncing...';
 
-        const { error } = await _supabase
-            .from('production_logs')
-            .insert([{ 
-                entry_date: formData.get('Date'),
-                twill_6_1: parseInt(formData.get('t61')) || 0,
-                twill_6_2: parseInt(formData.get('t62')) || 0,
-                twill_10_2: parseInt(formData.get('t102')) || 0,
-                ds_16h_1: parseInt(formData.get('d16h1')) || 0,
-                ds_16h_2: parseInt(formData.get('d16h2')) || 0,
-                ds_48h_3: parseInt(formData.get('d48h3')) || 0,
-                crochet_1: parseInt(formData.get('c1')) || 0,
-                crochet_2: parseInt(formData.get('c2')) || 0,
-                crochet_3: parseInt(formData.get('c3')) || 0,
-                tipping: parseInt(formData.get('tipping')) || 0,
-                starching: parseInt(formData.get('starching')) || 0,
-                finished_goods: parseInt(formData.get('fg')) || 0
-            }]);
+        const { error } = await _supabase.from('production_logs').insert([{ 
+            entry_date: formData.get('Date'),
+            twill_6_1: parseInt(formData.get('t61')) || 0,
+            twill_6_2: parseInt(formData.get('t62')) || 0,
+            twill_10_2: parseInt(formData.get('t102')) || 0,
+            ds_16h_1: parseInt(formData.get('d16h1')) || 0,
+            ds_16h_2: parseInt(formData.get('d16h2')) || 0,
+            ds_48h_3: parseInt(formData.get('d48h3')) || 0,
+            crochet_1: parseInt(formData.get('c1')) || 0,
+            crochet_2: parseInt(formData.get('c2')) || 0,
+            crochet_3: parseInt(formData.get('c3')) || 0,
+            tipping: parseInt(formData.get('tipping')) || 0,
+            starching: parseInt(formData.get('starching')) || 0,
+            finished_goods: parseInt(formData.get('fg')) || 0
+        }]);
 
         if (error) {
-            console.error(error);
-            alert('Error syncing to Supabase: ' + error.message);
+            errBox.innerText = "❌ Sync Failed: " + error.message;
+            errBox.style.display = "block";
             btn.disabled = false;
             btn.innerText = 'Final Submit';
         } else {
