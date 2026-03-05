@@ -153,7 +153,7 @@
             background: repeating-linear-gradient(90deg, 
                 #ff4b2b, #ff4b2b 4px, 
                 transparent 4px, transparent 8px);
-            transition: width 4s linear 1s;
+            transition: width 4s linear;
         }
 
         .stitch-progress.filled {
@@ -169,7 +169,7 @@
             background: linear-gradient(to bottom, #ff4b2b, #ffffff);
             border-radius: 1px;
             z-index: 20;
-            transition: left 4s linear 1s;
+            transition: left 4s linear;
             filter: drop-shadow(0 0 5px #ff4b2b);
             pointer-events: none;
         }
@@ -250,7 +250,7 @@
             height: 100%;
             width: 0%;
             background: #ff4b2b;
-            transition: width 4s linear 1s;
+            transition: width 4s linear;
         }
 
         .progress-simple-fill.filled {
@@ -309,7 +309,7 @@
                 document.getElementById('loaderSimple').classList.add('fade-in');
             }, 400);
             
-            // Start animations after fade in
+            // Start animations immediately after last fade in starts
             setTimeout(function() {
                 // Fill stitch progress
                 document.getElementById('stitchProgress').classList.add('filled');
@@ -319,12 +319,21 @@
                 
                 // Fill progress bar
                 document.getElementById('progressFill').classList.add('filled');
-            }, 1100); // Start after fade in completes
+            }, 400); // Start right after last fade-in begins
             
-            // Redirect
+            // Calculate total animation time:
+            // Fade in lasts 1 second (from 400ms to 1400ms)
+            // Needle animation lasts 4 seconds (from 400ms to 4400ms)
+            // So redirect at 4500ms (4.5 seconds) to ensure animations complete
+            
             setTimeout(function() {
                 window.location.href = "home.html";
-            }, 5500); // 5.5 seconds total
+            }, 4500); // 4.5 seconds total - animations finish at 4.4 seconds
+            
+            // Backup redirect in case something goes wrong
+            setTimeout(function() {
+                window.location.href = "home.html";
+            }, 5000);
         })();
     </script>
 </body>
