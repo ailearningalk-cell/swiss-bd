@@ -53,15 +53,16 @@
             align-items: center;
             position: relative;
             z-index: 10;
-            padding: 0 10px;
+            padding: 0 15px;
+            width: 100%;
         }
 
         /* --- Fixed Single Line Brand Name --- */
         .brand-wrapper {
             width: 100%;
-            overflow: hidden;
             text-align: center;
-            padding: 0 5px;
+            padding: 0;
+            overflow: visible; /* Changed from hidden to visible */
         }
 
         .brand-name {
@@ -74,13 +75,15 @@
             
             /* Force single line */
             white-space: nowrap;
-            display: inline-block;
+            display: block; /* Changed from inline-block */
             
-            /* Fixed font size for mobile - adjusted to fit one line */
-            font-size: 22px;
+            /* Ensure it fits within screen */
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0 5px;
             
-            /* Ensure it stays within bounds */
-            max-width: 100%;
+            /* Dynamic font sizing that ensures everything fits */
+            font-size: min(5vw, 48px);
             
             /* Prevent any transformation issues */
             transform: translateZ(0);
@@ -91,38 +94,50 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeSpeed;
+            
+            /* Ensure text is visible */
+            overflow: visible;
+            text-overflow: clip;
         }
 
-        /* Responsive font sizes that keep text in one line */
-        @media (min-width: 360px) {
+        /* Fine-tuned for specific screen sizes */
+        @media (max-width: 320px) {
+            .brand-name { font-size: 20px; letter-spacing: 0.5px; }
+        }
+        
+        @media (min-width: 321px) and (max-width: 360px) {
+            .brand-name { font-size: 22px; }
+        }
+        
+        @media (min-width: 361px) and (max-width: 375px) {
             .brand-name { font-size: 24px; }
         }
         
-        @media (min-width: 375px) {
+        @media (min-width: 376px) and (max-width: 390px) {
+            .brand-name { font-size: 25px; }
+        }
+        
+        @media (min-width: 391px) and (max-width: 414px) {
             .brand-name { font-size: 26px; }
         }
         
-        @media (min-width: 390px) {
+        @media (min-width: 415px) and (max-width: 430px) {
             .brand-name { font-size: 27px; }
         }
         
-        @media (min-width: 414px) {
+        @media (min-width: 431px) and (max-width: 480px) {
             .brand-name { font-size: 28px; }
         }
         
-        @media (min-width: 430px) {
-            .brand-name { font-size: 29px; }
-        }
-        
-        @media (min-width: 480px) {
+        @media (min-width: 481px) and (max-width: 600px) {
             .brand-name { font-size: 32px; }
         }
         
-        @media (min-width: 600px) {
+        @media (min-width: 601px) and (max-width: 768px) {
             .brand-name { font-size: 36px; }
         }
         
-        @media (min-width: 768px) {
+        @media (min-width: 769px) {
             .brand-name { font-size: 42px; }
         }
         
@@ -141,9 +156,9 @@
         }
 
         .tagline {
-            font-size: 10px;
+            font-size: clamp(8px, 2.5vw, 12px);
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: clamp(2px, 1vw, 6px);
             color: #ff4b2b;
             margin-top: 12px;
             opacity: 0;
@@ -151,19 +166,12 @@
             animation: fadeIn 2s ease forwards 1s;
             transform: translateZ(0);
             backface-visibility: hidden;
-        }
-
-        @media (min-width: 768px) {
-            .tagline {
-                font-size: 12px;
-                letter-spacing: 6px;
-            }
+            white-space: nowrap;
         }
 
         /* --- Flexible Sewing Track --- */
         .sewing-track {
-            width: 85%; 
-            max-width: 500px; 
+            width: min(85%, 500px); 
             height: 1px;
             background: rgba(255, 255, 255, 0.1);
             margin: 40px auto 40px auto;
@@ -214,6 +222,7 @@
             margin-top: 20px;
             text-align: center;
             transform: translateZ(0);
+            width: 100%;
         }
 
         .progress-bar {
@@ -242,6 +251,7 @@
             font-weight: 700;
             transform: translateZ(0);
             backface-visibility: hidden;
+            white-space: nowrap;
         }
 
         @media (min-width: 768px) {
@@ -310,29 +320,65 @@
     </div>
 
     <script>
-        // Force hardware acceleration and prevent any layout shifts
         (function() {
-            // Prevent any touch events from causing reflows
-            document.body.addEventListener('touchstart', function(e) {
-                // Allow default behavior but prevent any unwanted side effects
-            }, { passive: true });
-            
-            // Ensure the text stays in one line
+            // Ensure the text fits in one line
             var brandName = document.querySelector('.brand-name');
-            if (brandName) {
-                // Check if text overflows and adjust if needed
-                var checkOverflow = function() {
-                    if (brandName.scrollWidth > brandName.clientWidth) {
-                        // If still overflowing, reduce font size slightly
-                        var currentSize = parseInt(window.getComputedStyle(brandName).fontSize);
-                        brandName.style.fontSize = (currentSize - 1) + 'px';
-                    }
-                };
+            
+            function fitTextToOneLine() {
+                if (!brandName) return;
                 
-                // Check after a short delay to ensure rendering is complete
-                setTimeout(checkOverflow, 100);
-                setTimeout(checkOverflow, 500);
+                // Get the container width
+                var containerWidth = brandName.parentElement.clientWidth - 20; // Subtract padding
+                
+                // Create a temporary span to measure text width
+                var temp = document.createElement('span');
+                temp.style.visibility = 'hidden';
+                temp.style.position = 'absolute';
+                temp.style.top = '-999px';
+                temp.style.left = '-999px';
+                temp.style.whiteSpace = 'nowrap';
+                temp.style.fontFamily = window.getComputedStyle(brandName).fontFamily;
+                temp.style.fontWeight = window.getComputedStyle(brandName).fontWeight;
+                temp.style.letterSpacing = window.getComputedStyle(brandName).letterSpacing;
+                temp.innerHTML = brandName.innerHTML;
+                
+                document.body.appendChild(temp);
+                
+                // Start with a reasonable font size
+                var fontSize = 48; // Max size
+                var minFontSize = 16; // Min size
+                
+                // Binary search for the perfect font size
+                while (fontSize > minFontSize) {
+                    temp.style.fontSize = fontSize + 'px';
+                    if (temp.offsetWidth <= containerWidth) {
+                        break;
+                    }
+                    fontSize -= 1;
+                }
+                
+                // Apply the calculated font size
+                brandName.style.fontSize = fontSize + 'px';
+                
+                // Clean up
+                document.body.removeChild(temp);
             }
+            
+            // Run after fonts are loaded
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(fitTextToOneLine);
+            } else {
+                // Fallback
+                setTimeout(fitTextToOneLine, 100);
+                setTimeout(fitTextToOneLine, 500);
+            }
+            
+            // Run on resize (with debounce)
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(fitTextToOneLine, 150);
+            });
             
             // Redirect after 5 seconds
             setTimeout(function() {
