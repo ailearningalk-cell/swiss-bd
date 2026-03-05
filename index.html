@@ -46,39 +46,42 @@
             align-items: center;
             position: relative;
             z-index: 10;
-            padding: 0 5vw; /* Side padding relative to screen width */
+            padding: 0 4vw; 
             text-align: center;
+            width: 100%;
         }
 
-        /* --- Responsive Brand Name (One Line Guarantee) --- */
+        /* --- Optimized Responsive Brand Name --- */
         .brand-name {
             font-family: 'Montserrat', sans-serif;
-            /* Using vw ensures it shrinks exactly with the screen width */
-            font-size: clamp(14px, 4.8vw, 48px); 
+            /* Reduced minimum and middle scaling to ensure mobile fit */
+            font-size: clamp(12px, 4.2vw, 42px); 
             font-weight: 700;
             color: #ffffff;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.6);
             animation: fadeInScale 1.5s ease-out forwards;
             line-height: 1.2;
             width: 100%;
-            white-space: nowrap; /* Forces one line on all devices */
+            white-space: nowrap; 
+            overflow: visible; /* Ensure we can see it all */
         }
 
         /* Balanced Ampersand */
         .brand-name span {
-            font-size: 0.95em; /* Increased from 0.85em */
+            font-size: 0.95em;
             color: #ffffff;
-            margin: 0 4px;
+            margin: 0 2px;
         }
 
         .tagline {
-            font-size: clamp(10px, 2vw, 15px);
+            /* Scaled down slightly to match the smaller brand size */
+            font-size: clamp(9px, 1.8vw, 14px);
             text-transform: uppercase;
-            letter-spacing: clamp(3px, 0.8vw, 8px);
+            letter-spacing: clamp(2px, 0.6vw, 6px);
             color: #ff4b2b;
-            margin-top: clamp(10px, 3vh, 20px);
+            margin-top: clamp(8px, 2.5vh, 18px);
             opacity: 0;
             font-weight: 600;
             animation: fadeIn 2s ease forwards 0.8s;
@@ -86,11 +89,11 @@
 
         /* --- Sewing Track --- */
         .sewing-track {
-            width: 60%; 
-            max-width: 400px; 
+            width: 55%; 
+            max-width: 350px; 
             height: 1px;
             background: rgba(255, 255, 255, 0.15);
-            margin: clamp(40px, 8vh, 60px) auto;
+            margin: clamp(35px, 7vh, 55px) auto;
             position: relative;
         }
 
@@ -128,16 +131,16 @@
 
         /* --- Loader Info --- */
         .loader-info {
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .progress-bar {
-            width: clamp(120px, 20vw, 180px);
+            width: 130px;
             height: 2px;
             background: rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
-            margin: 0 auto 15px auto;
+            margin: 0 auto 12px auto;
         }
 
         .progress-fill {
@@ -148,8 +151,8 @@
         }
 
         .loading-text {
-            font-size: clamp(9px, 1.2vw, 11px);
-            color: #bbb;
+            font-size: clamp(8px, 1.1vw, 10px);
+            color: #aaa;
             letter-spacing: 3px;
             font-weight: 700;
             text-transform: uppercase;
