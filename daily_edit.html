@@ -3,43 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiss-Bangla | Multi-Row Edit</title>
+    <title>Swiss-Bangla | Category Edit</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary: #4285f4; --brand-dark: #1a1f36; --bg: #f4f7f9; --border: #e2e8f0; --success: #34a853; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
         h2 { color: var(--brand-dark); font-size: 18px; margin-bottom: 20px; text-align: center; }
-        .section-title { background: var(--brand-dark); color: white; padding: 8px 15px; font-size: 12px; border-radius: 6px; margin-top: 20px; }
+        .category-block { margin-bottom: 30px; border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+        .cat-title { font-size: 12px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; display: block; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
-        th { font-size: 10px; color: #94a3b8; text-transform: uppercase; padding: 8px; border-bottom: 2px solid var(--bg); }
-        td { padding: 4px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { font-size: 10px; color: #94a3b8; text-transform: uppercase; padding: 5px; text-align: center; }
+        td { padding: 4px; vertical-align: middle; }
         
         .inline-input {
             width: 100%; padding: 8px; border: 1px solid var(--border);
-            border-radius: 4px; font-size: 15px; font-weight: 600;
-            text-align: center; outline: none; transition: 0.2s;
+            border-radius: 6px; font-size: 15px; font-weight: 600;
+            text-align: center; outline: none;
         }
         .inline-input:focus { border-color: var(--primary); background: #f0f7ff; }
 
-        .update-btn {
-            background: var(--success); color: white; border: none; 
-            padding: 8px 12px; border-radius: 6px; font-size: 12px;
-            font-weight: bold; cursor: pointer; width: 100%;
-        }
-        .update-btn:active { transform: scale(0.95); }
+        .row-id-label { font-size: 10px; color: #94a3b8; font-weight: bold; text-align: center; }
 
-        .loading-text { text-align: center; padding: 40px; color: #64748b; }
+        .update-all-btn {
+            position: sticky; bottom: 20px; width: 100%; padding: 18px;
+            background: var(--brand-dark); color: white; border: none;
+            border-radius: 12px; font-size: 16px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Success Modal Styles */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 280px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Today's Production Entries</h2>
-    <div id="logsContainer">
-        <div class="loading-text">Searching for today's rows...</div>
+    <h2>Daily Production Logs</h2>
+    <div id="loading" style="text-align:center; padding:20px;">🔄 Loading Rows...</div>
+    
+    <div id="editorContent" style="display:none;">
+        <div class="category-block">
+            <span class="cat-title">Twill Tape Items</span>
+            <table id="twillTable">
+                <thead><tr><th width="40">Entry</th><th>(6)-1</th><th>(6)-2</th><th>(10)-2</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="category-block">
+            <span class="cat-title">Drawstring Items</span>
+            <table id="dsTable">
+                <thead><tr><th width="40">Entry</th><th>16H-1</th><th>16H-2</th><th>48H-3</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="category-block">
+            <span class="cat-title">Finishing & Output</span>
+            <table id="finishingTable">
+                <thead><tr><th width="40">Entry</th><th>Crochet</th><th>Tipping</th><th>F. Goods</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <button class="update-all-btn" onclick="saveAllChanges()">Update All Entries</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h1 style="color:var(--success); margin:0;">✅</h1>
+        <h3>Updated!</h3>
+        <p style="font-size: 13px; color: #64748b;">All individual entries have been synced.</p>
+        <button onclick="window.location.href='home.html'" style="background:var(--brand-dark); color:white; border:none; padding:12px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer;">OK</button>
     </div>
 </div>
 
@@ -48,91 +92,79 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    async function loadAllTodayRows() {
+    let todayData = [];
+
+    async function loadData() {
         const today = new Date().toISOString().split('T')[0];
-        const container = document.getElementById('logsContainer');
+        const { data } = await _supabase.from('production_logs').select('*').eq('entry_date', today).order('created_at', {ascending: true});
         
-        const { data, error } = await _supabase
-            .from('production_logs')
-            .select('*')
-            .eq('entry_date', today)
-            .order('created_at', { ascending: true });
-
-        if (error || !data || data.length === 0) {
-            container.innerHTML = `<div class="loading-text">No entries found for today.</div>`;
-            return;
+        if (data && data.length > 0) {
+            todayData = data;
+            renderTables();
+        } else {
+            document.getElementById('loading').innerText = "No data found for today.";
         }
-
-        container.innerHTML = ''; // Clear loading
-
-        // We build one combined table for all entries
-        let html = `
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">Time</th>
-                        <th>(6)-1</th><th>(6)-2</th><th>(10)-2</th>
-                        <th>16H-1</th><th>16H-2</th><th>48H-3</th>
-                        <th style="width: 80px;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        data.forEach((row, index) => {
-            const time = new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            html += `
-                <tr id="row-${row.id}">
-                    <td style="font-size: 11px; font-weight: bold; color: #64748b; text-align: center;">${time}</td>
-                    <td><input type="number" class="inline-input" data-col="twill_6_1" value="${row.twill_6_1}"></td>
-                    <td><input type="number" class="inline-input" data-col="twill_6_2" value="${row.twill_6_2}"></td>
-                    <td><input type="number" class="inline-input" data-col="twill_10_2" value="${row.twill_10_2}"></td>
-                    <td><input type="number" class="inline-input" data-col="ds_16h_1" value="${row.ds_16h_1}"></td>
-                    <td><input type="number" class="inline-input" data-col="ds_16h_2" value="${row.ds_16h_2}"></td>
-                    <td><input type="number" class="inline-input" data-col="ds_48h_3" value="${row.ds_48h_3}"></td>
-                    <td><button class="update-btn" onclick="updateSingleRow(${row.id})">Update</button></td>
-                </tr>
-            `;
-        });
-
-        html += `</tbody></table>`;
-        container.innerHTML = html;
     }
 
-    async function updateSingleRow(id) {
-        const rowElement = document.getElementById(`row-${id}`);
-        const inputs = rowElement.querySelectorAll('.inline-input');
-        const btn = rowElement.querySelector('.update-btn');
-        
-        btn.innerText = "Saving...";
+    function renderTables() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('editorContent').style.display = 'block';
+
+        const twillBody = document.querySelector('#twillTable tbody');
+        const dsBody = document.querySelector('#dsTable tbody');
+        const finBody = document.querySelector('#finishingTable tbody');
+
+        todayData.forEach((row, i) => {
+            const entryNum = i + 1;
+            
+            twillBody.innerHTML += `<tr data-id="${row.id}">
+                <td class="row-id-label">#${entryNum}</td>
+                <td><input type="number" class="inline-input" data-col="twill_6_1" value="${row.twill_6_1}"></td>
+                <td><input type="number" class="inline-input" data-col="twill_6_2" value="${row.twill_6_2}"></td>
+                <td><input type="number" class="inline-input" data-col="twill_10_2" value="${row.twill_10_2}"></td>
+            </tr>`;
+
+            dsBody.innerHTML += `<tr data-id="${row.id}">
+                <td class="row-id-label">#${entryNum}</td>
+                <td><input type="number" class="inline-input" data-col="ds_16h_1" value="${row.ds_16h_1}"></td>
+                <td><input type="number" class="inline-input" data-col="ds_16h_2" value="${row.ds_16h_2}"></td>
+                <td><input type="number" class="inline-input" data-col="ds_48h_3" value="${row.ds_48h_3}"></td>
+            </tr>`;
+
+            finBody.innerHTML += `<tr data-id="${row.id}">
+                <td class="row-id-label">#${entryNum}</td>
+                <td><input type="number" class="inline-input" data-col="crochet_1" value="${row.crochet_1}"></td>
+                <td><input type="number" class="inline-input" data-col="tipping" value="${row.tipping}"></td>
+                <td><input type="number" class="inline-input" data-col="finished_goods" value="${row.finished_goods}"></td>
+            </tr>`;
+        });
+    }
+
+    async function saveAllChanges() {
+        const btn = document.querySelector('.update-all-btn');
+        btn.innerText = "Syncing All...";
         btn.disabled = true;
 
-        const updateData = {};
-        inputs.forEach(input => {
-            updateData[input.getAttribute('data-col')] = parseInt(input.value) || 0;
+        const updates = todayData.map(row => {
+            const updateObj = { id: row.id };
+            document.querySelectorAll(`tr[data-id="${row.id}"] .inline-input`).forEach(input => {
+                updateObj[input.dataset.col] = parseInt(input.value) || 0;
+            });
+            return updateObj;
         });
 
-        const { error } = await _supabase
-            .from('production_logs')
-            .update(updateData)
-            .eq('id', id);
+        const { error } = await _supabase.from('production_logs').upsert(updates);
 
         if (!error) {
-            btn.innerText = "Updated!";
-            btn.style.background = "#1a1f36";
-            setTimeout(() => {
-                btn.innerText = "Update";
-                btn.style.background = "#34a853";
-                btn.disabled = false;
-            }, 2000);
+            document.getElementById('modalOverlay').style.display = 'flex';
         } else {
-            alert("Error: " + error.message);
-            btn.innerText = "Error";
+            alert("Update Failed: " + error.message);
             btn.disabled = false;
+            btn.innerText = "Update All Entries";
         }
     }
 
-    window.onload = loadAllTodayRows;
+    window.onload = loadData;
 </script>
 </body>
 </html>
