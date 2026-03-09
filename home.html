@@ -11,7 +11,7 @@
             --success: #34a853;
             --warning: #f1b44c;
             --danger: #ff4b2b;
-            --oxblood: #D40101; /* New red color for Live Production */
+            --oxblood: #D40101;
             --navy: #1a237e;
             --bg: #fdfdfd;
             --text-dark: #1a1f36;
@@ -29,14 +29,14 @@
             align-items: center;
         }
 
-        /* --- Header Section --- */
+        /* --- Header Section - Center Aligned --- */
         .header {
             width: 100%; max-width: 500px;
             margin-bottom: 15px;
-            text-align: left; /* Left align header content */
+            text-align: center; /* Center align everything in header */
         }
 
-        /* Company name - responsive font */
+        /* Company name - responsive font, center aligned */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -44,28 +44,41 @@
             color: var(--navy);
             white-space: nowrap;
             letter-spacing: -0.3px;
-            margin: 0;
+            margin: 0 0 8px 0;
             line-height: 1.2;
             text-align: center;
         }
 
-        /* Live Production - #D40101, bold, normal case */
+        /* Live Production and Date in single line - center aligned */
+        .live-info {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the content horizontally */
+            gap: 8px;
+            flex-wrap: wrap;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
         .live-title {
-            font-size: 14px;
+            font-size: 15px;
             color: #D40101;
             font-weight: 700;
-            margin: 5px 0 2px 0;
-            letter-spacing: 0.5px;
-            text-align: center;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .separator {
+            color: var(--text-light);
+            font-weight: 400;
+            font-size: 15px;
         }
 
         .date-sub { 
-            font-size: 14px; 
+            font-size: 15px; 
             color: var(--text-dark); 
             font-weight: 500; 
-            margin-top: 2px; 
-            display: block;
-            text-align: center;
+            white-space: nowrap;
         }
 
         /* --- Navigation Buttons --- */
@@ -226,7 +239,7 @@
             display: none;
         }
 
-        /* Last Update - Simple plain text, left aligned */
+        /* Last Update - Simple plain text, center aligned to match header */
         .last-update-simple {
             width: 100%;
             max-width: 500px;
@@ -236,7 +249,6 @@
             color: var(--text-light);
             font-weight: 500;
             letter-spacing: 0.3px;
-            padding-left: 5px;
         }
 
         .last-update-simple span {
@@ -250,8 +262,13 @@
 
     <div class="header">
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
-        <div class="live-title">Live Production</div>
-        <span class="date-sub" id="displayDate">Loading...</span>
+        
+        <!-- Live Production and Date in single line - center aligned -->
+        <div class="live-info">
+            <span class="live-title">Live Production</span>
+            <span class="separator">|</span>
+            <span class="date-sub" id="displayDate">Loading...</span>
+        </div>
     </div>
 
     <div class="nav-section">
@@ -305,11 +322,11 @@
                 <!-- Tipping and Starching Row -->
                 <div class="tipping-starching-row">
                     <div class="tipping-item">
-                        <span class="sub-label">Tipping</span>
+                        <span class="sub-label">TIPPING</span>
                         <span class="sub-number" id="v_tip">0</span>
                     </div>
                     <div class="starching-item">
-                        <span class="sub-label">Starching</span>
+                        <span class="sub-label">STARCHING</span>
                         <span class="sub-number" id="v_starch">0</span>
                     </div>
                 </div>
@@ -317,9 +334,9 @@
         </div>
     </div>
 
-    <!-- Last Update - Simple plain text, left aligned -->
+    <!-- Last Update - Simple plain text, center aligned -->
     <div class="last-update-simple">
-        Last Update on<span id="lastTime">--:-- --</span>
+        Last Update on <span id="lastTime">--:-- --</span>
     </div>
 
     <script>
