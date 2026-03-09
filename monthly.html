@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swiss-Bangla | Monthly Production</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Use CDN that works better on mobile -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         :root {
@@ -31,7 +28,7 @@
 
         .container { width: 100%; max-width: 500px; }
 
-        /* Company name - same as home.html */
+        /* Company name */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -44,7 +41,7 @@
             text-align: center;
         }
 
-        /* Monthly Data title - same color as Live Production */
+        /* Monthly Data title */
         .monthly-title {
             font-size: 15px;
             color: #D40101;
@@ -54,7 +51,7 @@
             margin-bottom: 15px;
         }
 
-        /* Dashboard link below the title */
+        /* Dashboard link */
         .dashboard-link {
             text-align: center;
             margin-bottom: 20px;
@@ -71,32 +68,108 @@
             border-radius: 20px;
         }
 
-        .uniform-card {
+        /* Month Selector Card */
+        .selector-card {
             background: #fff; border-radius: 18px;
             border: 1px solid var(--card-border);
             box-shadow: 0 10px 20px rgba(0,0,0,0.02);
             margin-bottom: 16px;
-            height: 120px; 
-            display: flex; flex-direction: column; justify-content: center;
-            padding: 25px; box-sizing: border-box;
+            padding: 20px;
         }
 
-        .month-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 8px; }
+        .selector-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .month-nav-btn {
+            background: #f0f2f5;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--brand);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .month-nav-btn:active {
+            background: var(--brand);
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .month-display {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--brand);
+            text-align: center;
+        }
+
+        .progress-container { 
+            background: #f0f2f5; 
+            height: 10px; 
+            border-radius: 5px; 
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        .progress-bar { 
+            background: var(--primary); 
+            height: 100%; 
+            width: 0%; 
+            transition: width 0.6s ease; 
+        }
+
+        #progressText {
+            font-size: 11px; 
+            color: var(--text-light); 
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .stats-container { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 16px; 
+        }
         
-        /* Styled Month Selector */
-        .month-select {
-            font-size: 18px; font-weight: 800; color: var(--brand);
-            border: none; background: transparent; cursor: pointer;
-            padding: 0; margin-bottom: 15px; outline: none;
+        .stat-card { 
+            background: #fff; 
+            padding: 18px; 
+            border-radius: 18px; 
+            border: 1px solid var(--card-border); 
         }
-
-        .progress-container { background: #f0f2f5; height: 10px; border-radius: 5px; overflow: hidden; }
-        .progress-bar { background: var(--primary); height: 100%; width: 0%; transition: width 0.6s ease; }
-
-        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .stat-card { background: #fff; padding: 18px; border-radius: 18px; border: 1px solid var(--card-border); }
-        .stat-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; }
-        .stat-val { font-size: 22px; font-weight: 800; margin-top: 5px; color: var(--brand); }
+        
+        .stat-label { 
+            font-size: 11px; 
+            font-weight: 700; 
+            color: var(--text-light); 
+            text-transform: uppercase; 
+        }
+        
+        .stat-val { 
+            font-size: 22px; 
+            font-weight: 800; 
+            margin-top: 5px; 
+            color: var(--brand); 
+        }
 
         .table-card {
             background: #fff; border-radius: 18px;
@@ -104,77 +177,71 @@
             overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.02);
             margin-bottom: 20px;
         }
+        
         .table-responsive { overflow-x: auto; width: 100%; }
-        table { width: 100%; border-collapse: collapse; min-width: 450px; }
-        th { 
-            background: #fcfdfe; padding: 12px; text-align: left; 
-            font-size: 10px; font-weight: 700; color: var(--text-light);
-            border-bottom: 1px solid var(--card-border); text-transform: uppercase;
-        }
-        td { padding: 14px 12px; font-size: 13px; border-bottom: 1px solid #f8f9fb; color: var(--text-dark); }
-        .row-total { font-weight: 800; color: var(--primary); text-align: right; }
-
-        /* Footer with left-aligned Download PDF button */
-        .footer-actions { 
+        
+        table { 
             width: 100%; 
-            display: flex; 
-            justify-content: flex-start;
-            padding-bottom: 40px; 
-            margin-top: 10px;
+            border-collapse: collapse; 
+            min-width: 450px; 
         }
         
-        .btn-pdf {
-            background: var(--brand); 
-            color: white; 
-            border: none;
-            padding: 14px 28px; 
-            border-radius: 30px; 
-            font-weight: 600;
-            cursor: pointer; 
-            font-size: 16px; 
-            width: auto;
-            min-width: 200px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            -webkit-tap-highlight-color: transparent;
-            text-align: center;
+        th { 
+            background: #fcfdfe; 
+            padding: 12px; 
+            text-align: left; 
+            font-size: 10px; 
+            font-weight: 700; 
+            color: var(--text-light);
+            border-bottom: 1px solid var(--card-border); 
+            text-transform: uppercase;
+        }
+        
+        td { 
+            padding: 14px 12px; 
+            font-size: 13px; 
+            border-bottom: 1px solid #f8f9fb; 
+            color: var(--text-dark); 
+        }
+        
+        .row-total { 
+            font-weight: 800; 
+            color: var(--primary); 
+            text-align: right; 
         }
 
-        .btn-pdf:active { 
-            transform: scale(0.98); 
-            background: #2a2f46; 
-        }
-
-        .loading { padding: 40px; text-align: center; color: var(--text-light); font-size: 13px; }
-
-        /* Progress text styling */
-        #progressText {
-            font-size: 11px; 
+        .loading { 
+            padding: 40px; 
+            text-align: center; 
             color: var(--text-light); 
-            margin-top: 8px;
+            font-size: 13px; 
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Swiss-Bangla Title - same as home.html -->
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
-        
-        <!-- Monthly Data title - same color as Live Production -->
         <div class="monthly-title">Monthly Data</div>
         
-        <!-- Dashboard link below the title -->
         <div class="dashboard-link">
             <a href="home.html" class="back-link">📊 Dashboard</a>
         </div>
 
-        <div class="uniform-card">
-            <span class="month-label">Viewing Report For</span>
-            <input type="month" id="monthPicker" class="month-select" onchange="fetchMonthlyData()">
+        <!-- Month Selector Card with Left/Right Buttons -->
+        <div class="selector-card">
+            <span class="selector-label">Viewing Report For</span>
+            
+            <div class="month-selector">
+                <button class="month-nav-btn" onclick="changeMonth(-1)">←</button>
+                <div class="month-display" id="monthDisplay"></div>
+                <button class="month-nav-btn" onclick="changeMonth(1)">→</button>
+            </div>
+            
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
-            <p id="progressText" style="font-size: 11px; color: var(--text-light); margin-top: 8px;"></p>
+            <div id="progressText"></div>
         </div>
 
         <div class="stats-container">
@@ -207,11 +274,6 @@
             </div>
             <div id="loader" class="loading">Loading monthly data...</div>
         </div>
-
-        <!-- Left-aligned Download PDF button -->
-        <div class="footer-actions">
-            <button class="btn-pdf" onclick="generatePDF()">📄 Download PDF</button>
-        </div>
     </div>
 
     <script>
@@ -219,22 +281,54 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Set default picker to current month
-        const picker = document.getElementById('monthPicker');
-        const now = new Date();
-        picker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        // Store current month offset (0 = current month, -1 = previous month, 1 = next month)
+        let monthOffset = 0;
 
-        async function fetchMonthlyData() {
+        function formatMonthYear(date) {
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            return `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+        }
+
+        function getMonthRange(offset) {
+            const now = new Date();
+            
+            // Adjust for offset (months)
+            const selectedDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+            
+            const year = selectedDate.getFullYear();
+            const month = selectedDate.getMonth();
+            
+            const firstDay = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+            const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
+            
+            return {
+                year,
+                month,
+                firstDay,
+                lastDay,
+                displayDate: selectedDate
+            };
+        }
+
+        function updateMonthDisplayAndFetch() {
+            const range = getMonthRange(monthOffset);
+            
+            // Update month display
+            document.getElementById('monthDisplay').innerText = formatMonthYear(range.displayDate);
+            
+            // Fetch data for this month
+            fetchMonthlyData(range.firstDay, range.lastDay);
+        }
+
+        function changeMonth(direction) {
+            monthOffset += direction;
+            updateMonthDisplayAndFetch();
+        }
+
+        async function fetchMonthlyData(firstDay, lastDay) {
             document.getElementById('loader').style.display = "block";
             document.getElementById('tableBody').innerHTML = "";
             
-            const selected = picker.value.split('-');
-            const year = selected[0];
-            const month = selected[1];
-            
-            const firstDay = `${year}-${month}-01`;
-            const lastDay = new Date(year, month, 0).toISOString().split('T')[0];
-
             try {
                 const { data, error } = await _supabase.from('production_logs').select('*')
                     .gte('entry_date', firstDay).lte('entry_date', lastDay)
@@ -288,64 +382,11 @@
             document.getElementById('progressText').innerText = keys.length > 0 ? `${keys.length} days recorded` : "No records for this month";
         }
 
-        function generatePDF() {
-            try {
-                const { jsPDF } = window.jspdf;
-                
-                // Create PDF
-                const doc = new jsPDF({
-                    orientation: 'p',
-                    unit: 'pt',
-                    format: 'a4'
-                });
-                
-                // Add title
-                doc.setFontSize(16);
-                doc.setTextColor(26, 31, 54);
-                doc.text('Swiss-Bangla Trims & Accessories', 40, 40);
-                
-                doc.setFontSize(12);
-                doc.setTextColor(212, 1, 1);
-                
-                // Format month for display
-                const selectedMonth = picker.value;
-                const [year, month] = selectedMonth.split('-');
-                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                const monthName = monthNames[parseInt(month) - 1];
-                
-                doc.text(`${monthName} ${year} Production Report`, 40, 60);
-                
-                // Generate table
-                doc.autoTable({ 
-                    html: '#monthlyTable', 
-                    startY: 80, 
-                    headStyles: { fillColor: [26, 31, 54] },
-                    styles: { fontSize: 9, cellPadding: 8 },
-                    margin: { left: 40, right: 40 }
-                });
-                
-                // Simple approach: Just save the PDF (works in most WebViews)
-                // This triggers a download which the WebView might handle
-                doc.save(`Monthly_Report_${selectedMonth}.pdf`);
-                
-                // Alternative approach for WebView: Create a blob and trigger download
-                // const pdfBlob = doc.output('blob');
-                // const url = URL.createObjectURL(pdfBlob);
-                // const link = document.createElement('a');
-                // link.href = url;
-                // link.download = `Monthly_Report_${selectedMonth}.pdf`;
-                // document.body.appendChild(link);
-                // link.click();
-                // document.body.removeChild(link);
-                // URL.revokeObjectURL(url);
-                
-            } catch (error) {
-                console.error('PDF generation error:', error);
-                alert('Unable to generate PDF. Please try again.');
-            }
-        }
-
-        window.onload = fetchMonthlyData;
+        // Initialize with current month
+        window.onload = () => {
+            monthOffset = 0;
+            updateMonthDisplayAndFetch();
+        };
     </script>
 </body>
 </html>
