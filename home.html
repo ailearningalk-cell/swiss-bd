@@ -11,10 +11,12 @@
             --success: #34a853;
             --warning: #f1b44c;
             --danger: #ff4b2b;
+            --oxblood: #4A0000; /* Darker oxblood */
+            --navy: #1a237e;
             --bg: #fdfdfd;
             --text-dark: #1a1f36;
             --text-light: #697386;
-            --card-border: #f0f2f5;
+            --card-border: #e0e4e8;
         }
 
         body {
@@ -30,15 +32,36 @@
         /* --- Header Section --- */
         .header {
             width: 100%; max-width: 500px;
-            margin-bottom: 25px; text-align: center;
+            margin-bottom: 15px; text-align: center;
         }
 
-        .header h1 { font-size: 28px; margin: 0; color: var(--text-dark); letter-spacing: -0.5px; }
+        /* Company name - responsive font */
+        .company-name {
+            font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+            font-size: clamp(18px, 5vw, 28px);
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        /* Live Production - #4A0000, bold, normal case */
+        .live-title {
+            font-size: 14px;
+            color: #4A0000;
+            font-weight: 700; /* Bold */
+            margin: 5px 0 2px 0;
+            /* Removed uppercase */
+            letter-spacing: 0.5px;
+        }
+
         .date-sub { 
-            font-size: 15px; 
-            color: var(--text-light); 
+            font-size: 14px; 
+            color: var(--text-dark); 
             font-weight: 500; 
-            margin-top: 4px; 
+            margin-top: 2px; 
             display: block; 
         }
 
@@ -51,7 +74,7 @@
 
         .button-group {
             display: grid;
-            grid-template-columns: 1fr 1fr 1.2fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
         }
 
@@ -67,12 +90,14 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .btn-outline { 
             background: #ffffff; 
             color: var(--text-dark); 
-            border: 1px solid #eef0f2;
+            border: 1px solid #e0e4e8;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
@@ -129,7 +154,7 @@
             display: flex; 
             justify-content: space-between;
             padding-top: 15px; 
-            border-top: 1px solid #f8f9fa;
+            border-top: 2px solid #e8eaed;
         }
 
         .sub-item { 
@@ -150,12 +175,96 @@
         .accent-card { background: #1a1f36; color: white; border: none; }
         .accent-card .label-small, .accent-card .sub-label { color: #8e99ab; }
         .accent-card .number-large, .accent-card .sub-number { color: white; }
+
+        /* 4th Card Layout - Updated */
+        .fourth-card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .factory-output {
+            width: 100%;
+        }
+
+        .factory-output .number-large {
+            margin-bottom: 0;
+        }
+
+        .tipping-starching-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 2px solid #2a2f46;
+            /* Removed bottom border */
+        }
+
+        .tipping-item, .starching-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .tipping-item .sub-label, .starching-item .sub-label {
+            color: #8e99ab;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .tipping-item .sub-number, .starching-item .sub-number {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* Hide old footer */
+        .accent-card .sub-grid,
+        .accent-card .card-footer {
+            display: none;
+        }
+
+        /* Last Update - Outside card, white background */
+        .last-update-container {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 10px;
+            padding: 12px 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            border: 1px solid var(--card-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .last-update-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .last-update-label {
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .last-update-time {
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Live Production</h1>
+        <div class="company-name">Swiss-Bangla Trims & Accessories</div>
+        <div class="live-title">Live Production</div>
         <span class="date-sub" id="displayDate">Loading...</span>
     </div>
 
@@ -200,12 +309,33 @@
 
         <div class="metric-card accent-card">
             <span class="label-small">Total Factory Output <span class="live-dot"></span></span>
-            <span class="number-large" id="v_fg">0</span>
-            <div class="sub-grid">
-                <div class="sub-item"><span class="sub-label">Tipping</span><span class="sub-number" id="v_tip">0</span></div>
-                <div class="sub-item"><span class="sub-label">Starching</span><span class="sub-number" id="v_starch">0</span></div>
-                <div class="sub-item"><span class="sub-label">Last Update</span><span class="sub-number" style="font-size:11px" id="lastTime">--:--</span></div>
+            
+            <div class="fourth-card-content">
+                <!-- Total Factory Output Number -->
+                <div class="factory-output">
+                    <span class="number-large" id="v_fg">0</span>
+                </div>
+                
+                <!-- Tipping and Starching Row (only one border at top) -->
+                <div class="tipping-starching-row">
+                    <div class="tipping-item">
+                        <span class="sub-label">Tipping</span>
+                        <span class="sub-number" id="v_tip">0</span>
+                    </div>
+                    <div class="starching-item">
+                        <span class="sub-label">Starching</span>
+                        <span class="sub-number" id="v_starch">0</span>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Last Update - Outside the card, on white background -->
+    <div class="last-update-container">
+        <div class="last-update-content">
+            <span class="last-update-label">Last Update on</span>
+            <span class="last-update-time" id="lastTime">--:-- --</span>
         </div>
     </div>
 
@@ -214,28 +344,67 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        function updateDate() {
+        // Function to get current date in Dhaka (GMT+6) timezone
+        function getDhakaDate() {
             const now = new Date();
-            const day = now.getDate();
+            // Bangladesh is GMT+6 (no daylight saving)
+            const dhakaTime = new Date(now.getTime() + (6 * 60 * 60 * 1000));
+            return dhakaTime;
+        }
+
+        // Function to format date for display in Dhaka timezone
+        function formatDhakaDate(date) {
+            const day = date.getUTCDate();
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const month = monthNames[now.getMonth()];
-            const year = now.getFullYear();
+            const month = monthNames[date.getUTCMonth()];
+            const year = date.getUTCFullYear();
             const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-            const dayName = dayNames[now.getDay()];
+            const dayName = dayNames[date.getUTCDay()];
             
-            // Format: 4 Mar 2026 (Wed)
-            document.getElementById('displayDate').innerText = `${day} ${month} ${year} (${dayName})`;
+            return `${day} ${month} ${year} (${dayName})`;
+        }
+
+        // Function to get Dhaka date in YYYY-MM-DD format for database query
+        function getDhakaDateString() {
+            const dhakaDate = getDhakaDate();
+            const year = dhakaDate.getUTCFullYear();
+            const month = String(dhakaDate.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(dhakaDate.getUTCDate()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}`;
+        }
+
+        // Function to format time in 12-hour format with AM/PM
+        function formatDhakaTime12Hour() {
+            const dhakaDate = getDhakaDate();
+            let hours = dhakaDate.getUTCHours();
+            const minutes = String(dhakaDate.getUTCMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            // Convert to 12-hour format
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be converted to 12
+            const hoursStr = String(hours).padStart(2, '0');
+            
+            return `${hoursStr}:${minutes} ${ampm}`;
+        }
+
+        function updateDate() {
+            const dhakaDate = getDhakaDate();
+            document.getElementById('displayDate').innerText = formatDhakaDate(dhakaDate);
         }
 
         async function fetchDailyTotals() {
             updateDate();
-            const today = new Date().toISOString().split('T')[0];
+            
+            const dhakaDateString = getDhakaDateString();
+            console.log('Querying for Dhaka date:', dhakaDateString);
 
             try {
                 const { data, error } = await _supabase
                     .from('production_logs')
                     .select('*')
-                    .eq('entry_date', today);
+                    .eq('entry_date', dhakaDateString);
 
                 if (error) throw error;
 
@@ -257,9 +426,13 @@
                 });
 
                 updateDisplay(totals);
-                const now = new Date();
-                document.getElementById('lastTime').innerText = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-            } catch (err) { console.error(err); }
+                
+                // Show current time in 12-hour format
+                document.getElementById('lastTime').innerText = formatDhakaTime12Hour();
+                
+            } catch (err) { 
+                console.error('Error fetching data:', err); 
+            }
         }
 
         function updateDisplay(t) {
@@ -280,7 +453,10 @@
             document.getElementById('v_fg').innerText = t.fg.toLocaleString();
         }
 
+        // Initial load
         window.onload = fetchDailyTotals;
+        
+        // Refresh every 30 seconds
         setInterval(fetchDailyTotals, 30000);
     </script>
 </body>
