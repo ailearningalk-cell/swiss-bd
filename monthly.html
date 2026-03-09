@@ -152,11 +152,6 @@
             color: var(--text-light); 
             margin-top: 8px;
         }
-
-        /* Hidden iframe for WebView download */
-        #pdfIframe {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -215,12 +210,9 @@
 
         <!-- Left-aligned Download PDF button -->
         <div class="footer-actions">
-            <button class="btn-pdf" onclick="generatePDF()"> Download PDF</button>
+            <button class="btn-pdf" onclick="generatePDF()">📄 Download PDF</button>
         </div>
     </div>
-
-    <!-- Hidden iframe for WebView download -->
-    <iframe id="pdfIframe" style="display: none;"></iframe>
 
     <script>
         const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
@@ -332,27 +324,20 @@
                     margin: { left: 40, right: 40 }
                 });
                 
-                // Convert PDF to data URL
-                const pdfData = doc.output('dataurlstring');
+                // Simple approach: Just save the PDF (works in most WebViews)
+                // This triggers a download which the WebView might handle
+                doc.save(`Monthly_Report_${selectedMonth}.pdf`);
                 
-                // Method 1: Try to open in new window (works in browser)
-                const pdfWindow = window.open();
-                if (pdfWindow) {
-                    pdfWindow.location.href = pdfData;
-                } else {
-                    // Method 2: If popup blocked, use iframe (works in WebView/APK)
-                    const iframe = document.getElementById('pdfIframe');
-                    iframe.src = pdfData;
-                    iframe.style.display = 'block';
-                    iframe.style.width = '100%';
-                    iframe.style.height = '600px';
-                    
-                    // Optional: Add a close button or message
-                    alert('PDF loaded below. You can view and save it from there.');
-                }
-                
-                // Method 3: Also try download as fallback
-                // doc.save(`Monthly_Report_${selectedMonth}.pdf`);
+                // Alternative approach for WebView: Create a blob and trigger download
+                // const pdfBlob = doc.output('blob');
+                // const url = URL.createObjectURL(pdfBlob);
+                // const link = document.createElement('a');
+                // link.href = url;
+                // link.download = `Monthly_Report_${selectedMonth}.pdf`;
+                // document.body.appendChild(link);
+                // link.click();
+                // document.body.removeChild(link);
+                // URL.revokeObjectURL(url);
                 
             } catch (error) {
                 console.error('PDF generation error:', error);
