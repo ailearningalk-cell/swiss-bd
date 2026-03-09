@@ -13,11 +13,13 @@
             --brand: #1a1f36;
             --primary: #4285f4;
             --success: #34a853;
+            --oxblood: #D40101;
+            --navy: #1a237e;
             --danger: #ff4b2b;
             --bg: #fdfdfd;
             --text-dark: #1a1f36;
             --text-light: #697386;
-            --card-border: #f0f2f5;
+            --card-border: #e0e4e8;
         }
 
         body {
@@ -29,12 +31,45 @@
 
         .container { width: 100%; max-width: 500px; }
 
-        .header-wrapper {
-            display: flex; justify-content: space-between; align-items: center;
+        /* Company name - same as home/monthly pages */
+        .company-name {
+            font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+            font-size: clamp(18px, 5vw, 28px);
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        /* Weekly Data title - same color as Live Production */
+        .weekly-title {
+            font-size: 15px;
+            color: #D40101;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* Dashboard link below the title */
+        .dashboard-link {
+            text-align: center;
             margin-bottom: 20px;
         }
-        .header-wrapper h1 { font-size: 24px; margin: 0; color: var(--text-dark); }
-        .back-link { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; }
+
+        .back-link { 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 600;
+            display: inline-block;
+            padding: 5px 12px;
+            background: #f0f2f5;
+            border-radius: 20px;
+        }
 
         /* --- Uniform Card Sizing (120px Height) --- */
         .uniform-card {
@@ -42,7 +77,7 @@
             border: 1px solid var(--card-border);
             box-shadow: 0 10px 20px rgba(0,0,0,0.02);
             margin-bottom: 16px;
-            height: 100px; /* Fixed Height for Symmetry */
+            height: 100px;
             display: flex; flex-direction: column; justify-content: center;
             padding: 20px; box-sizing: border-box;
         }
@@ -81,12 +116,28 @@
         .row-total { font-weight: 800; color: var(--primary); text-align: right; }
 
         /* --- Footer Button --- */
-        .footer-actions { width: 100%; display: flex; justify-content: flex-end; padding-bottom: 40px; }
-        .btn-pdf {
-            background: var(--brand); color: white; border: none;
-            padding: 12px 24px; border-radius: 12px; font-weight: 600;
-            cursor: pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .footer-actions { 
+            width: 100%; 
+            display: flex; 
+            justify-content: flex-start; /* Left aligned like monthly page */
+            padding-bottom: 40px; 
         }
+        .btn-pdf {
+            background: var(--brand); 
+            color: white; 
+            border: none;
+            padding: 14px 28px; 
+            border-radius: 30px; 
+            font-weight: 600;
+            cursor: pointer; 
+            font-size: 16px; 
+            width: auto;
+            min-width: 200px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .btn-pdf:active { transform: scale(0.98); background: #2a2f46; }
 
         .loading { padding: 40px; text-align: center; color: var(--text-light); font-size: 13px; }
     </style>
@@ -94,9 +145,15 @@
 <body>
 
     <div class="container">
-        <div class="header-wrapper">
-            <h1>Weekly Report</h1>
-            <a href="home.html" class="back-link">Dashboard</a>
+        <!-- Swiss-Bangla Title - same as monthly page -->
+        <div class="company-name">Swiss-Bangla Trims & Accessories</div>
+        
+        <!-- Weekly Data title - same color as Live Production -->
+        <div class="weekly-title">Weekly Data</div>
+        
+        <!-- Dashboard link below the title -->
+        <div class="dashboard-link">
+            <a href="home.html" class="back-link">📊 Dashboard</a>
         </div>
 
         <div class="uniform-card">
@@ -137,7 +194,7 @@
         </div>
 
         <div class="footer-actions">
-            <button class="btn-pdf" onclick="generatePDF()">Download PDF</button>
+            <button class="btn-pdf" onclick="generatePDF()">📄 Download PDF</button>
         </div>
     </div>
 
@@ -227,11 +284,41 @@
         }
 
         function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'pt', 'a4');
-            doc.text("Swiss-Bangla Production Report", 40, 50);
-            doc.autoTable({ html: '#reportTable', startY: 70, headStyles: { fillColor: [26, 31, 54] } });
-            doc.save(`Production_Weekly_${new Date().toLocaleDateString()}.pdf`);
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'p',
+                    unit: 'pt',
+                    format: 'a4'
+                });
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setTextColor(26, 31, 54);
+                doc.text('Swiss-Bangla Trims & Accessories', 40, 40);
+                
+                doc.setFontSize(12);
+                doc.setTextColor(212, 1, 1);
+                
+                // Format date range for display
+                const range = setupCalendar();
+                doc.text(`Weekly Production Report (${range.start} to ${range.end})`, 40, 60);
+                
+                // Generate table
+                doc.autoTable({ 
+                    html: '#reportTable', 
+                    startY: 80, 
+                    headStyles: { fillColor: [26, 31, 54] },
+                    styles: { fontSize: 9, cellPadding: 8 },
+                    margin: { left: 40, right: 40 }
+                });
+                
+                doc.save(`Weekly_Report_${new Date().toLocaleDateString()}.pdf`);
+                
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Unable to generate PDF. Please try again.');
+            }
         }
 
         window.onload = fetchWeeklyData;
