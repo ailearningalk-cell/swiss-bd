@@ -71,26 +71,103 @@
             border-radius: 20px;
         }
 
-        /* --- Uniform Card Sizing (120px Height) --- */
-        .uniform-card {
+        /* --- Week Selector Card --- */
+        .selector-card {
             background: #fff; border-radius: 18px;
             border: 1px solid var(--card-border);
             box-shadow: 0 10px 20px rgba(0,0,0,0.02);
             margin-bottom: 16px;
-            height: 100px;
-            display: flex; flex-direction: column; justify-content: center;
-            padding: 20px; box-sizing: border-box;
+            padding: 20px;
+        }
+
+        .selector-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .week-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .week-nav-btn {
+            background: #f0f2f5;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--brand);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .week-nav-btn:active {
+            background: var(--brand);
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .week-range {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--brand);
+            text-align: center;
+        }
+
+        .week-range span {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-light);
+            margin: 0 5px;
         }
 
         /* --- Calendar Strip --- */
-        .calendar-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 15px; display: block; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-box { display: flex; flex-direction: column; align-items: center; }
-        .day-name { font-size: 11px; font-weight: 700; color: var(--text-light); }
-        .day-num { font-size: 16px; font-weight: 800; margin-top: 4px; color: var(--text-dark); }
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 8px; 
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--card-border);
+        }
+        
+        .day-box { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            padding: 8px 0;
+            background: #f8f9fc;
+            border-radius: 12px;
+        }
+        
+        .day-name { 
+            font-size: 11px; 
+            font-weight: 700; 
+            color: var(--text-light); 
+            margin-bottom: 4px;
+        }
+        
+        .day-num { 
+            font-size: 16px; 
+            font-weight: 800; 
+            color: var(--text-dark); 
+        }
 
         .text-green { color: var(--success) !important; }
         .text-red { color: var(--danger) !important; }
+        .bg-today { background: rgba(52, 168, 83, 0.1); }
 
         /* --- Stats Row --- */
         .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
@@ -119,7 +196,7 @@
         .footer-actions { 
             width: 100%; 
             display: flex; 
-            justify-content: flex-start; /* Left aligned like monthly page */
+            justify-content: flex-start;
             padding-bottom: 40px; 
         }
         .btn-pdf {
@@ -145,21 +222,28 @@
 <body>
 
     <div class="container">
-        <!-- Swiss-Bangla Title - same as monthly page -->
+        <!-- Swiss-Bangla Title -->
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
         
-        <!-- Weekly Data title - same color as Live Production -->
+        <!-- Weekly Data title -->
         <div class="weekly-title">Weekly Data</div>
         
-        <!-- Dashboard link below the title -->
+        <!-- Dashboard link -->
         <div class="dashboard-link">
             <a href="home.html" class="back-link">📊 Dashboard</a>
         </div>
 
-        <div class="uniform-card">
-            <span class="calendar-label">Current Work Week</span>
-            <div class="calendar-grid" id="calendarGrid">
-                </div>
+        <!-- Week Selector Card -->
+        <div class="selector-card">
+            <span class="selector-label">Viewing Report For</span>
+            
+            <div class="week-selector">
+                <button class="week-nav-btn" onclick="changeWeek(-1)">←</button>
+                <div class="week-range" id="weekRangeDisplay"></div>
+                <button class="week-nav-btn" onclick="changeWeek(1)">→</button>
+            </div>
+            
+            <div class="calendar-grid" id="calendarGrid"></div>
         </div>
 
         <div class="stats-container">
@@ -203,45 +287,98 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        function setupCalendar() {
-            const now = new Date();
-            const dayOfWeek = now.getDay();
-            const sunDate = new Date(now);
-            sunDate.setDate(now.getDate() - dayOfWeek);
+        // Store current week offset (0 = current week, -1 = previous week, 1 = next week)
+        let weekOffset = 0;
 
+        function formatDate(date) {
+            const day = date.getDate();
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const month = monthNames[date.getMonth()];
+            return `${day} ${month}`;
+        }
+
+        function getWeekRange(offset) {
+            const now = new Date();
+            
+            // Adjust for offset (weeks)
+            now.setDate(now.getDate() + (offset * 7));
+            
+            const dayOfWeek = now.getDay();
+            
+            // Get Sunday of the current week view
+            const sundayDate = new Date(now);
+            sundayDate.setDate(now.getDate() - dayOfWeek);
+            
+            // Week starts on Sunday and ends on Saturday
+            const weekStart = new Date(sundayDate);
+            const weekEnd = new Date(sundayDate);
+            weekEnd.setDate(sundayDate.getDate() + 6);
+
+            return { 
+                weekStart, 
+                weekEnd,
+                start: weekStart.toISOString().split('T')[0], 
+                end: weekEnd.toISOString().split('T')[0] 
+            };
+        }
+
+        function updateCalendarAndFetch() {
+            const range = getWeekRange(weekOffset);
+            const { weekStart, weekEnd } = range;
+
+            // Display week range (Sunday to Saturday)
+            const weekRangeDisplay = document.getElementById('weekRangeDisplay');
+            weekRangeDisplay.innerHTML = `${formatDate(weekStart)} <span>—</span> ${formatDate(weekEnd)} ${weekEnd.getFullYear()}`;
+
+            // Generate calendar grid
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = "";
             const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
             
+            const now = new Date();
+            
             for (let i = 0; i < 7; i++) {
-                const current = new Date(sunDate);
-                current.setDate(sunDate.getDate() + i);
-                const isToday = current.toDateString() === now.toDateString();
+                const current = new Date(weekStart);
+                current.setDate(weekStart.getDate() + i);
+                
+                // Check if this is today (only for current week)
+                const isToday = (weekOffset === 0) && (current.toDateString() === now.toDateString());
                 const isFriday = current.getDay() === 5;
                 
                 let colorClass = "";
-                if (isToday) colorClass = "text-green";
+                let bgClass = "";
+                if (isToday) {
+                    colorClass = "text-green";
+                    bgClass = "bg-today";
+                }
                 else if (isFriday) colorClass = "text-red";
 
                 grid.innerHTML += `
-                    <div class="day-box">
+                    <div class="day-box ${bgClass}">
                         <span class="day-name ${colorClass}">${dayNames[i]}</span>
                         <span class="day-num ${colorClass}">${current.getDate()}</span>
                     </div>
                 `;
             }
-            // Sat-Thu Window Logic
-            const satDate = new Date(sunDate); satDate.setDate(sunDate.getDate() - 1);
-            const thursDate = new Date(sunDate); thursDate.setDate(sunDate.getDate() + 4);
-            return { start: satDate.toISOString().split('T')[0], end: thursDate.toISOString().split('T')[0] };
+            
+            // Fetch data for this week
+            fetchWeeklyData(range.start, range.end);
         }
 
-        async function fetchWeeklyData() {
-            const range = setupCalendar();
+        function changeWeek(direction) {
+            weekOffset += direction;
+            updateCalendarAndFetch();
+        }
+
+        async function fetchWeeklyData(startDate, endDate) {
+            document.getElementById('loader').style.display = "block";
+            document.getElementById('tableBody').innerHTML = "";
+            
             try {
                 const { data, error } = await _supabase.from('production_logs').select('*')
-                    .gte('entry_date', range.start).lte('entry_date', range.end)
+                    .gte('entry_date', startDate).lte('entry_date', endDate)
                     .order('entry_date', { ascending: false });
+                    
                 if (!error) processData(data);
             } catch (err) { console.error(err); }
         }
@@ -279,6 +416,7 @@
                     </tr>
                 `;
             });
+            
             document.getElementById('week_total').innerText = grandTotal.toLocaleString();
             document.getElementById('avg_total').innerText = Math.round(grandTotal / (Object.keys(grouped).length || 1)).toLocaleString();
         }
@@ -301,8 +439,11 @@
                 doc.setTextColor(212, 1, 1);
                 
                 // Format date range for display
-                const range = setupCalendar();
-                doc.text(`Weekly Production Report (${range.start} to ${range.end})`, 40, 60);
+                const range = getWeekRange(weekOffset);
+                const formattedStart = `${range.weekStart.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][range.weekStart.getMonth()]}`;
+                const formattedEnd = `${range.weekEnd.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][range.weekEnd.getMonth()]} ${range.weekEnd.getFullYear()}`;
+                
+                doc.text(`Weekly Production Report (${formattedStart} - ${formattedEnd})`, 40, 60);
                 
                 // Generate table
                 doc.autoTable({ 
@@ -321,7 +462,11 @@
             }
         }
 
-        window.onload = fetchWeeklyData;
+        // Initialize with current week
+        window.onload = () => {
+            weekOffset = 0;
+            updateCalendarAndFetch();
+        };
     </script>
 </body>
 </html>
