@@ -118,7 +118,7 @@
         .footer-actions { 
             width: 100%; 
             display: flex; 
-            justify-content: flex-start; /* Left aligned */
+            justify-content: flex-start;
             padding-bottom: 40px; 
             margin-top: 10px;
         }
@@ -132,8 +132,8 @@
             font-weight: 600;
             cursor: pointer; 
             font-size: 16px; 
-            width: auto; /* Auto width based on content */
-            min-width: 200px; /* Minimum width for better touch target */
+            width: auto;
+            min-width: 200px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             -webkit-tap-highlight-color: transparent;
             text-align: center;
@@ -151,6 +151,11 @@
             font-size: 11px; 
             color: var(--text-light); 
             margin-top: 8px;
+        }
+
+        /* Hidden iframe for WebView download */
+        #pdfIframe {
+            display: none;
         }
     </style>
 </head>
@@ -210,9 +215,12 @@
 
         <!-- Left-aligned Download PDF button -->
         <div class="footer-actions">
-            <button class="btn-pdf" onclick="generatePDF()">📄 Download PDF</button>
+            <button class="btn-pdf" onclick="generatePDF()"> Download PDF</button>
         </div>
     </div>
+
+    <!-- Hidden iframe for WebView download -->
+    <iframe id="pdfIframe" style="display: none;"></iframe>
 
     <script>
         const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
@@ -292,12 +300,11 @@
             try {
                 const { jsPDF } = window.jspdf;
                 
-                // Create PDF with better mobile compatibility
+                // Create PDF
                 const doc = new jsPDF({
                     orientation: 'p',
                     unit: 'pt',
-                    format: 'a4',
-                    hotfixes: ['px_scaling'] // Better for mobile
+                    format: 'a4'
                 });
                 
                 // Add title
@@ -325,16 +332,27 @@
                     margin: { left: 40, right: 40 }
                 });
                 
-                // Instead of saving, open in new window for mobile
-                const pdfOutput = doc.output('bloburl');
+                // Convert PDF to data URL
+                const pdfData = doc.output('dataurlstring');
                 
-                // For mobile devices, open in new tab/window
-                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                    window.open(pdfOutput, '_blank');
+                // Method 1: Try to open in new window (works in browser)
+                const pdfWindow = window.open();
+                if (pdfWindow) {
+                    pdfWindow.location.href = pdfData;
                 } else {
-                    // For desktop, download normally
-                    doc.save(`Monthly_Report_${selectedMonth}.pdf`);
+                    // Method 2: If popup blocked, use iframe (works in WebView/APK)
+                    const iframe = document.getElementById('pdfIframe');
+                    iframe.src = pdfData;
+                    iframe.style.display = 'block';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '600px';
+                    
+                    // Optional: Add a close button or message
+                    alert('PDF loaded below. You can view and save it from there.');
                 }
+                
+                // Method 3: Also try download as fallback
+                // doc.save(`Monthly_Report_${selectedMonth}.pdf`);
                 
             } catch (error) {
                 console.error('PDF generation error:', error);
