@@ -11,7 +11,7 @@
             --success: #34a853;
             --warning: #f1b44c;
             --danger: #ff4b2b;
-            --oxblood: #4A0000; /* Darker oxblood */
+            --oxblood: #D40101; /* New red color for Live Production */
             --navy: #1a237e;
             --bg: #fdfdfd;
             --text-dark: #1a1f36;
@@ -32,7 +32,8 @@
         /* --- Header Section --- */
         .header {
             width: 100%; max-width: 500px;
-            margin-bottom: 15px; text-align: center;
+            margin-bottom: 15px;
+            text-align: left; /* Left align header content */
         }
 
         /* Company name - responsive font */
@@ -45,16 +46,17 @@
             letter-spacing: -0.3px;
             margin: 0;
             line-height: 1.2;
+            text-align: left;
         }
 
-        /* Live Production - #4A0000, bold, normal case */
+        /* Live Production - #D40101, bold, normal case */
         .live-title {
             font-size: 14px;
-            color: #4A0000;
-            font-weight: 700; /* Bold */
+            color: #D40101;
+            font-weight: 700;
             margin: 5px 0 2px 0;
-            /* Removed uppercase */
             letter-spacing: 0.5px;
+            text-align: center;
         }
 
         .date-sub { 
@@ -62,7 +64,8 @@
             color: var(--text-dark); 
             font-weight: 500; 
             margin-top: 2px; 
-            display: block; 
+            display: block;
+            text-align: center;
         }
 
         /* --- Navigation Buttons --- */
@@ -176,7 +179,7 @@
         .accent-card .label-small, .accent-card .sub-label { color: #8e99ab; }
         .accent-card .number-large, .accent-card .sub-number { color: white; }
 
-        /* 4th Card Layout - Updated */
+        /* 4th Card Layout */
         .fourth-card-content {
             display: flex;
             flex-direction: column;
@@ -196,7 +199,6 @@
             justify-content: space-between;
             padding: 15px 0;
             border-top: 2px solid #2a2f46;
-            /* Removed bottom border */
         }
 
         .tipping-item, .starching-item {
@@ -224,39 +226,23 @@
             display: none;
         }
 
-        /* Last Update - Outside card, white background */
-        .last-update-container {
+        /* Last Update - Simple plain text, left aligned */
+        .last-update-simple {
             width: 100%;
             max-width: 500px;
-            margin-top: 10px;
-            padding: 12px 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-            border: 1px solid var(--card-border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .last-update-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .last-update-label {
+            margin-top: 15px;
+            text-align: left;
+            font-size: 13px;
             color: var(--text-light);
-            font-size: 12px;
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            padding-left: 5px;
         }
 
-        .last-update-time {
+        .last-update-simple span {
             color: var(--text-dark);
-            font-size: 14px;
             font-weight: 600;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -308,15 +294,15 @@
         </div>
 
         <div class="metric-card accent-card">
-            <span class="label-small">Total Factory Output <span class="live-dot"></span></span>
+            <span class="label-small">Total Finished Goods <span class="live-dot"></span></span>
             
             <div class="fourth-card-content">
-                <!-- Total Factory Output Number -->
+                <!-- Total Finished Goods Number -->
                 <div class="factory-output">
                     <span class="number-large" id="v_fg">0</span>
                 </div>
                 
-                <!-- Tipping and Starching Row (only one border at top) -->
+                <!-- Tipping and Starching Row -->
                 <div class="tipping-starching-row">
                     <div class="tipping-item">
                         <span class="sub-label">Tipping</span>
@@ -331,12 +317,9 @@
         </div>
     </div>
 
-    <!-- Last Update - Outside the card, on white background -->
-    <div class="last-update-container">
-        <div class="last-update-content">
-            <span class="last-update-label">Last Update on</span>
-            <span class="last-update-time" id="lastTime">--:-- --</span>
-        </div>
+    <!-- Last Update - Simple plain text, left aligned -->
+    <div class="last-update-simple">
+        Last Update on<span id="lastTime">--:-- --</span>
     </div>
 
     <script>
@@ -383,7 +366,7 @@
             
             // Convert to 12-hour format
             hours = hours % 12;
-            hours = hours ? hours : 12; // 0 should be converted to 12
+            hours = hours ? hours : 12;
             const hoursStr = String(hours).padStart(2, '0');
             
             return `${hoursStr}:${minutes} ${ampm}`;
