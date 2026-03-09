@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swiss-Bangla | Weekly Production</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         :root {
@@ -31,7 +29,7 @@
 
         .container { width: 100%; max-width: 500px; }
 
-        /* Company name - same as home/monthly pages */
+        /* Company name */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -44,7 +42,7 @@
             text-align: center;
         }
 
-        /* Weekly Data title - same color as Live Production */
+        /* Weekly Data title */
         .weekly-title {
             font-size: 15px;
             color: #D40101;
@@ -54,7 +52,7 @@
             margin-bottom: 15px;
         }
 
-        /* Dashboard link below the title */
+        /* Dashboard link */
         .dashboard-link {
             text-align: center;
             margin-bottom: 20px;
@@ -71,7 +69,7 @@
             border-radius: 20px;
         }
 
-        /* --- Week Selector Card --- */
+        /* Week Selector Card */
         .selector-card {
             background: #fff; border-radius: 18px;
             border: 1px solid var(--card-border);
@@ -132,7 +130,7 @@
             margin: 0 5px;
         }
 
-        /* --- Calendar Strip --- */
+        /* Calendar Strip */
         .calendar-grid { 
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
@@ -169,13 +167,13 @@
         .text-red { color: var(--danger) !important; }
         .bg-today { background: rgba(52, 168, 83, 0.1); }
 
-        /* --- Stats Row --- */
+        /* Stats Row */
         .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .stat-card { background: #fff; padding: 18px; border-radius: 18px; border: 1px solid var(--card-border); }
         .stat-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; }
         .stat-val { font-size: 22px; font-weight: 800; margin-top: 5px; color: var(--brand); }
 
-        /* --- Main Data Table (Scrollable) --- */
+        /* Main Data Table */
         .table-card {
             background: #fff; border-radius: 18px;
             border: 1px solid var(--card-border);
@@ -192,48 +190,19 @@
         td { padding: 14px 12px; font-size: 13px; border-bottom: 1px solid #f8f9fb; color: var(--text-dark); }
         .row-total { font-weight: 800; color: var(--primary); text-align: right; }
 
-        /* --- Footer Button --- */
-        .footer-actions { 
-            width: 100%; 
-            display: flex; 
-            justify-content: flex-start;
-            padding-bottom: 40px; 
-        }
-        .btn-pdf {
-            background: var(--brand); 
-            color: white; 
-            border: none;
-            padding: 14px 28px; 
-            border-radius: 30px; 
-            font-weight: 600;
-            cursor: pointer; 
-            font-size: 16px; 
-            width: auto;
-            min-width: 200px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .btn-pdf:active { transform: scale(0.98); background: #2a2f46; }
-
         .loading { padding: 40px; text-align: center; color: var(--text-light); font-size: 13px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Swiss-Bangla Title -->
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
-        
-        <!-- Weekly Data title -->
         <div class="weekly-title">Weekly Data</div>
         
-        <!-- Dashboard link -->
         <div class="dashboard-link">
             <a href="home.html" class="back-link">📊 Dashboard</a>
         </div>
 
-        <!-- Week Selector Card -->
         <div class="selector-card">
             <span class="selector-label">Viewing Report For</span>
             
@@ -276,10 +245,6 @@
             </div>
             <div id="loader" class="loading">Loading records...</div>
         </div>
-
-        <div class="footer-actions">
-            <button class="btn-pdf" onclick="generatePDF()">📄 Download PDF</button>
-        </div>
     </div>
 
     <script>
@@ -287,7 +252,6 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Store current week offset (0 = current week, -1 = previous week, 1 = next week)
         let weekOffset = 0;
 
         function formatDate(date) {
@@ -299,17 +263,13 @@
 
         function getWeekRange(offset) {
             const now = new Date();
-            
-            // Adjust for offset (weeks)
             now.setDate(now.getDate() + (offset * 7));
             
             const dayOfWeek = now.getDay();
             
-            // Get Sunday of the current week view
             const sundayDate = new Date(now);
             sundayDate.setDate(now.getDate() - dayOfWeek);
             
-            // Week starts on Sunday and ends on Saturday
             const weekStart = new Date(sundayDate);
             const weekEnd = new Date(sundayDate);
             weekEnd.setDate(sundayDate.getDate() + 6);
@@ -326,11 +286,9 @@
             const range = getWeekRange(weekOffset);
             const { weekStart, weekEnd } = range;
 
-            // Display week range (Sunday to Saturday)
-            const weekRangeDisplay = document.getElementById('weekRangeDisplay');
-            weekRangeDisplay.innerHTML = `${formatDate(weekStart)} <span>—</span> ${formatDate(weekEnd)} ${weekEnd.getFullYear()}`;
+            document.getElementById('weekRangeDisplay').innerHTML = 
+                `${formatDate(weekStart)} <span>—</span> ${formatDate(weekEnd)} ${weekEnd.getFullYear()}`;
 
-            // Generate calendar grid
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = "";
             const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -341,7 +299,6 @@
                 const current = new Date(weekStart);
                 current.setDate(weekStart.getDate() + i);
                 
-                // Check if this is today (only for current week)
                 const isToday = (weekOffset === 0) && (current.toDateString() === now.toDateString());
                 const isFriday = current.getDay() === 5;
                 
@@ -361,7 +318,6 @@
                 `;
             }
             
-            // Fetch data for this week
             fetchWeeklyData(range.start, range.end);
         }
 
@@ -421,48 +377,6 @@
             document.getElementById('avg_total').innerText = Math.round(grandTotal / (Object.keys(grouped).length || 1)).toLocaleString();
         }
 
-        function generatePDF() {
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'p',
-                    unit: 'pt',
-                    format: 'a4'
-                });
-                
-                // Add title
-                doc.setFontSize(16);
-                doc.setTextColor(26, 31, 54);
-                doc.text('Swiss-Bangla Trims & Accessories', 40, 40);
-                
-                doc.setFontSize(12);
-                doc.setTextColor(212, 1, 1);
-                
-                // Format date range for display
-                const range = getWeekRange(weekOffset);
-                const formattedStart = `${range.weekStart.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][range.weekStart.getMonth()]}`;
-                const formattedEnd = `${range.weekEnd.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][range.weekEnd.getMonth()]} ${range.weekEnd.getFullYear()}`;
-                
-                doc.text(`Weekly Production Report (${formattedStart} - ${formattedEnd})`, 40, 60);
-                
-                // Generate table
-                doc.autoTable({ 
-                    html: '#reportTable', 
-                    startY: 80, 
-                    headStyles: { fillColor: [26, 31, 54] },
-                    styles: { fontSize: 9, cellPadding: 8 },
-                    margin: { left: 40, right: 40 }
-                });
-                
-                doc.save(`Weekly_Report_${new Date().toLocaleDateString()}.pdf`);
-                
-            } catch (error) {
-                console.error('PDF generation error:', error);
-                alert('Unable to generate PDF. Please try again.');
-            }
-        }
-
-        // Initialize with current week
         window.onload = () => {
             weekOffset = 0;
             updateCalendarAndFetch();
