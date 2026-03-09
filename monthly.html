@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swiss-Bangla | Monthly Production</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Use CDN that works better on mobile -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
@@ -13,10 +14,12 @@
             --brand: #1a1f36;
             --primary: #4285f4;
             --success: #34a853;
+            --oxblood: #D40101;
+            --navy: #1a237e;
             --bg: #fdfdfd;
             --text-dark: #1a1f36;
             --text-light: #697386;
-            --card-border: #f0f2f5;
+            --card-border: #e0e4e8;
         }
 
         body {
@@ -28,12 +31,45 @@
 
         .container { width: 100%; max-width: 500px; }
 
-        .header-wrapper {
-            display: flex; justify-content: space-between; align-items: center;
+        /* Company name - same as home.html */
+        .company-name {
+            font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+            font-size: clamp(18px, 5vw, 28px);
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        /* Monthly Data title - same color and font as Live Production */
+        .monthly-title {
+            font-size: 15px;
+            color: #D40101;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* Dashboard link positioned below title */
+        .dashboard-link {
+            text-align: center;
             margin-bottom: 20px;
         }
-        .header-wrapper h1 { font-size: 24px; margin: 0; color: var(--text-dark); }
-        .back-link { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; }
+
+        .back-link { 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 600;
+            display: inline-block;
+            padding: 5px 12px;
+            background: #f0f2f5;
+            border-radius: 20px;
+        }
 
         .uniform-card {
             background: #fff; border-radius: 18px;
@@ -78,23 +114,42 @@
         td { padding: 14px 12px; font-size: 13px; border-bottom: 1px solid #f8f9fb; color: var(--text-dark); }
         .row-total { font-weight: 800; color: var(--primary); text-align: right; }
 
-        .footer-actions { width: 100%; display: flex; justify-content: flex-end; padding-bottom: 40px; }
+        .footer-actions { width: 100%; display: flex; justify-content: center; padding-bottom: 40px; }
         .btn-pdf {
             background: var(--brand); color: white; border: none;
-            padding: 12px 24px; border-radius: 12px; font-weight: 600;
-            cursor: pointer; font-size: 14px;
+            padding: 14px 28px; border-radius: 30px; font-weight: 600;
+            cursor: pointer; font-size: 16px; width: 100%; max-width: 300px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            -webkit-tap-highlight-color: transparent;
         }
 
+        .btn-pdf:active { transform: scale(0.98); background: #2a2f46; }
+
         .loading { padding: 40px; text-align: center; color: var(--text-light); font-size: 13px; }
+
+        /* Progress text styling - removed "Production Completion Status" */
+        #progressText {
+            font-size: 11px; 
+            color: var(--text-light); 
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header-wrapper">
-            <h1>Monthly</h1>
-            <a href="home.html" class="back-link">Dashboard</a>
+        <!-- Swiss-Bangla Title - same as home.html -->
+        <div class="company-name">Swiss-Bangla Trims & Accessories</div>
+        
+        <!-- Monthly Data title - same color as Live Production -->
+        <div class="monthly-title">Monthly Data</div>
+        
+        <!-- Dashboard link below the title -->
+        <div class="dashboard-link">
+            <a href="home.html" class="back-link">📊 Dashboard</a>
         </div>
+
+        <!-- Removed the old header-wrapper completely -->
 
         <div class="uniform-card">
             <span class="month-label">Viewing Report For</span>
@@ -102,7 +157,8 @@
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
-            <p id="progressText" style="font-size: 11px; color: var(--text-light); margin-top: 8px;">Month-to-Date Completion</p>
+            <!-- Removed "Production Completion Status" text, now just shows record count or empty -->
+            <p id="progressText" style="font-size: 11px; color: var(--text-light); margin-top: 8px;"></p>
         </div>
 
         <div class="stats-container">
@@ -137,7 +193,7 @@
         </div>
 
         <div class="footer-actions">
-            <button class="btn-pdf" onclick="generatePDF()">Download PDF</button>
+            <button class="btn-pdf" onclick="generatePDF()">Download PDF Report</button>
         </div>
     </div>
 
@@ -211,15 +267,38 @@
             const goal = 500000;
             const percentage = Math.min((grandTotal / goal) * 100, 100);
             document.getElementById('progressBar').style.width = percentage + "%";
-            document.getElementById('progressText').innerText = keys.length > 0 ? "Production Completion Status" : "No records for this month";
+            
+            // Simplified progress text - just shows days count
+            document.getElementById('progressText').innerText = keys.length > 0 ? `${keys.length} days recorded` : "No records for this month";
         }
 
         function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'pt', 'a4');
-            doc.text(`Monthly Production Report - ${picker.value}`, 40, 50);
-            doc.autoTable({ html: '#monthlyTable', startY: 70, headStyles: { fillColor: [26, 31, 54] } });
-            doc.save(`Monthly_Report_${picker.value}.pdf`);
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'pt', 'a4');
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setTextColor(26, 31, 54);
+                doc.text('Swiss-Bangla Trims & Accessories', 40, 40);
+                
+                doc.setFontSize(12);
+                doc.setTextColor(212, 1, 1);
+                doc.text(`Monthly Production Report - ${picker.value}`, 40, 60);
+                
+                // Generate table
+                doc.autoTable({ 
+                    html: '#monthlyTable', 
+                    startY: 80, 
+                    headStyles: { fillColor: [26, 31, 54] },
+                    styles: { fontSize: 9 }
+                });
+                
+                doc.save(`Monthly_Report_${picker.value}.pdf`);
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Unable to generate PDF. Please try again.');
+            }
         }
 
         window.onload = fetchMonthlyData;
