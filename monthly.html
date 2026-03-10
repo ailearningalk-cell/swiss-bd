@@ -1,559 +1,470 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiss-Bangla | Monthly Production</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
-    <style>
-        :root {
-            --brand: #1a1f36;
-            --primary: #4285f4;
-            --success: #34a853;
-            --oxblood: #D40101;
-            --navy: #1a237e;
-            --bg: #fdfdfd;
-            --text-dark: #1a1f36;
-            --text-light: #697386;
-            --card-border: #e0e4e8;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss-Bangla | Monthly Production</title>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg);
-            margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
-        }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
-        .container { width: 100%; max-width: 500px; }
+<style>
 
-        /* Company name */
-        .company-name {
-            font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
-            font-size: clamp(18px, 5vw, 28px);
-            font-weight: 600;
-            color: var(--navy);
-            white-space: nowrap;
-            letter-spacing: -0.3px;
-            margin: 0 0 8px 0;
-            line-height: 1.2;
-            text-align: center;
-        }
+:root{
+--brand:#1a1f36;
+--primary:#4285f4;
+--success:#34a853;
+--oxblood:#D40101;
+--navy:#1a237e;
+--bg:#fdfdfd;
+--text-dark:#1a1f36;
+--text-light:#697386;
+--card-border:#e0e4e8;
+}
 
-        /* Monthly Data title */
-        .monthly-title {
-            font-size: 15px;
-            color: #D40101;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+background:var(--bg);
+margin:0;
+padding:20px;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
 
-        /* Dashboard link */
-        .dashboard-link {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+.container{width:100%;max-width:500px;}
 
-        .back-link { 
-            color: var(--primary); 
-            text-decoration: none; 
-            font-size: 13px; 
-            font-weight: 600;
-            display: inline-block;
-            padding: 8px 16px;
-            background: #f0f2f5;
-            border-radius: 20px;
-            transition: all 0.2s ease;
-        }
+.company-name{
+font-size:clamp(18px,5vw,28px);
+font-weight:600;
+color:var(--navy);
+text-align:center;
+margin-bottom:8px;
+}
 
-        .back-link:hover {
-            background: #e2e6ea;
-            transform: translateY(-1px);
-        }
+.monthly-title{
+font-size:15px;
+color:#D40101;
+font-weight:700;
+text-align:center;
+margin-bottom:15px;
+}
 
-        /* Month Selector Card */
-        .selector-card {
-            background: #fff; border-radius: 18px;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-            margin-bottom: 16px;
-            padding: 20px;
-        }
+.dashboard-link{text-align:center;margin-bottom:20px;}
 
-        .selector-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-light);
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            display: block;
-        }
+.back-link{
+color:var(--primary);
+text-decoration:none;
+font-size:13px;
+font-weight:600;
+padding:8px 16px;
+background:#f0f2f5;
+border-radius:20px;
+}
 
-        .month-selector {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
+.selector-card{
+background:#fff;
+border-radius:18px;
+border:1px solid var(--card-border);
+padding:20px;
+margin-bottom:16px;
+}
 
-        .month-nav-btn {
-            background: #f0f2f5;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--brand);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
+.selector-label{
+font-size:11px;
+font-weight:700;
+color:var(--text-light);
+text-transform:uppercase;
+margin-bottom:10px;
+display:block;
+}
 
-        .month-nav-btn:active {
-            background: var(--brand);
-            color: white;
-            transform: scale(0.95);
-        }
+.month-selector{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:15px;
+}
 
-        .month-display {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--brand);
-            text-align: center;
-        }
+.month-nav-btn{
+background:#f0f2f5;
+border:none;
+width:40px;
+height:40px;
+border-radius:50%;
+font-size:18px;
+cursor:pointer;
+}
 
-        .progress-container { 
-            background: #f0f2f5; 
-            height: 10px; 
-            border-radius: 5px; 
-            overflow: hidden;
-            margin-top: 15px;
-        }
-        .progress-bar { 
-            background: var(--primary); 
-            height: 100%; 
-            width: 0%; 
-            transition: width 0.6s ease; 
-        }
+.month-display{
+font-size:18px;
+font-weight:700;
+color:var(--brand);
+}
 
-        #progressText {
-            font-size: 11px; 
-            color: var(--text-light); 
-            margin-top: 8px;
-            text-align: center;
-        }
+.progress-container{
+background:#f0f2f5;
+height:10px;
+border-radius:5px;
+overflow:hidden;
+margin-top:15px;
+}
 
-        .stats-container { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            margin-bottom: 16px; 
-        }
-        
-        .stat-card { 
-            background: #fff; 
-            padding: 18px; 
-            border-radius: 18px; 
-            border: 1px solid var(--card-border); 
-        }
-        
-        .stat-label { 
-            font-size: 11px; 
-            font-weight: 700; 
-            color: var(--text-light); 
-            text-transform: uppercase; 
-        }
-        
-        .stat-val { 
-            font-size: 22px; 
-            font-weight: 800; 
-            margin-top: 5px; 
-            color: var(--brand); 
-        }
+.progress-bar{
+background:var(--primary);
+height:100%;
+width:0%;
+transition:width 0.6s ease;
+}
 
-        .table-card {
-            background: #fff; border-radius: 18px;
-            border: 1px solid var(--card-border);
-            overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-            margin-bottom: 20px;
-        }
-        
-        .table-responsive { overflow-x: auto; width: 100%; }
-        
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            min-width: 450px; 
-        }
-        
-        th { 
-            background: #fcfdfe; 
-            padding: 12px; 
-            text-align: left; 
-            font-size: 10px; 
-            font-weight: 700; 
-            color: var(--text-light);
-            border-bottom: 1px solid var(--card-border); 
-            text-transform: uppercase;
-        }
-        
-        td { 
-            padding: 14px 12px; 
-            font-size: 13px; 
-            border-bottom: 1px solid #f8f9fb; 
-            color: var(--text-dark); 
-        }
-        
-        .row-total { 
-            font-weight: 800; 
-            color: var(--primary); 
-            text-align: right; 
-        }
+#progressText{
+font-size:11px;
+color:var(--text-light);
+margin-top:8px;
+text-align:center;
+}
 
-        /* Footer with left-aligned Download PDF button */
-        .footer-actions { 
-            width: 100%; 
-            display: flex; 
-            justify-content: flex-start;
-            margin-top: 10px;
-            margin-bottom: 30px;
-        }
-        
-        .btn-pdf {
-            background: var(--brand); 
-            color: white; 
-            border: none;
-            padding: 14px 28px; 
-            border-radius: 30px; 
-            font-weight: 600;
-            cursor: pointer; 
-            font-size: 16px; 
-            width: auto;
-            min-width: 200px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
+.stats-container{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-bottom:16px;
+}
 
-        .btn-pdf:hover {
-            background: #2a2f46;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-        }
+.stat-card{
+background:#fff;
+padding:18px;
+border-radius:18px;
+border:1px solid var(--card-border);
+}
 
-        .btn-pdf:active { 
-            transform: scale(0.98); 
-        }
+.stat-label{
+font-size:11px;
+font-weight:700;
+color:var(--text-light);
+text-transform:uppercase;
+}
 
-        .btn-pdf:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
+.stat-val{
+font-size:22px;
+font-weight:800;
+margin-top:5px;
+color:var(--brand);
+}
 
-        .loading { 
-            padding: 40px; 
-            text-align: center; 
-            color: var(--text-light); 
-            font-size: 13px; 
-        }
-    </style>
+.table-card{
+background:#fff;
+border-radius:18px;
+border:1px solid var(--card-border);
+overflow:hidden;
+margin-bottom:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+min-width:450px;
+}
+
+th{
+background:#fcfdfe;
+padding:12px;
+font-size:10px;
+text-transform:uppercase;
+color:var(--text-light);
+border-bottom:1px solid var(--card-border);
+}
+
+td{
+padding:14px 12px;
+font-size:13px;
+border-bottom:1px solid #f8f9fb;
+color:var(--text-dark);
+}
+
+.row-total{
+font-weight:800;
+color:var(--primary);
+text-align:right;
+}
+
+.footer-actions{
+width:100%;
+display:flex;
+justify-content:flex-start;
+margin-top:10px;
+}
+
+.btn-pdf{
+background:var(--brand);
+color:white;
+border:none;
+padding:14px 28px;
+border-radius:30px;
+font-weight:600;
+cursor:pointer;
+font-size:16px;
+}
+
+.loading{
+padding:40px;
+text-align:center;
+color:var(--text-light);
+font-size:13px;
+}
+
+</style>
 </head>
+
 <body>
 
-    <div class="container">
-        <div class="company-name">Swiss-Bangla Trims & Accessories</div>
-        <div class="monthly-title">Monthly Data</div>
-        
-        <div class="dashboard-link">
-            <a href="home.html" class="back-link">📊 Dashboard</a>
-        </div>
+<div class="container">
 
-        <!-- Month Selector Card with Left/Right Buttons -->
-        <div class="selector-card">
-            <span class="selector-label">Viewing Report For</span>
-            
-            <div class="month-selector">
-                <button class="month-nav-btn" onclick="changeMonth(-1)">←</button>
-                <div class="month-display" id="monthDisplay"></div>
-                <button class="month-nav-btn" onclick="changeMonth(1)">→</button>
-            </div>
-            
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div id="progressText"></div>
-        </div>
+<div class="company-name">Swiss-Bangla Trims & Accessories</div>
+<div class="monthly-title">Monthly Data</div>
 
-        <div class="stats-container">
-            <div class="stat-card">
-                <span class="stat-label">Month Total</span>
-                <div id="month_total" class="stat-val">0</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">Daily Avg</span>
-                <div id="month_avg" class="stat-val" style="color: var(--success)">0</div>
-            </div>
-        </div>
+<div class="dashboard-link">
+<a href="home.html" class="back-link">📊 Dashboard</a>
+</div>
 
-        <div class="table-card">
-            <div class="table-responsive">
-                <table id="monthlyTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Twill</th>
-                            <th>Draw</th>
-                            <th>Croc</th>
-                            <th>Tip</th>
-                            <th>Starch</th>
-                            <th style="text-align: right;">FG Output</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-            <div id="loader" class="loading">Loading monthly data...</div>
-        </div>
+<div class="selector-card">
 
-        <!-- Left-aligned Download PDF button -->
-        <div class="footer-actions">
-            <button class="btn-pdf" onclick="generatePDF()" id="pdfBtn">📄 Download PDF</button>
-        </div>
-    </div>
+<span class="selector-label">Viewing Report For</span>
 
-    <script>
-        const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
-        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+<div class="month-selector">
+<button class="month-nav-btn" onclick="changeMonth(-1)">←</button>
+<div class="month-display" id="monthDisplay"></div>
+<button class="month-nav-btn" onclick="changeMonth(1)">→</button>
+</div>
 
-        // Store current month offset (0 = current month, -1 = previous month, 1 = next month)
-        let monthOffset = 0;
-        let currentData = [];
+<div class="progress-container">
+<div class="progress-bar" id="progressBar"></div>
+</div>
 
-        function formatMonthYear(date) {
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            return `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-        }
+<div id="progressText"></div>
 
-        function getMonthRange(offset) {
-            const now = new Date();
-            
-            // Adjust for offset (months)
-            const selectedDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-            
-            const year = selectedDate.getFullYear();
-            const month = selectedDate.getMonth();
-            
-            const firstDay = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-            const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
-            
-            return {
-                year,
-                month,
-                firstDay,
-                lastDay,
-                displayDate: selectedDate
-            };
-        }
+</div>
 
-        function updateMonthDisplayAndFetch() {
-            const range = getMonthRange(monthOffset);
-            
-            // Update month display
-            document.getElementById('monthDisplay').innerText = formatMonthYear(range.displayDate);
-            
-            // Fetch data for this month
-            fetchMonthlyData(range.firstDay, range.lastDay);
-        }
+<div class="stats-container">
 
-        function changeMonth(direction) {
-            monthOffset += direction;
-            updateMonthDisplayAndFetch();
-        }
+<div class="stat-card">
+<span class="stat-label">Month Total</span>
+<div id="month_total" class="stat-val">0</div>
+</div>
 
-        async function fetchMonthlyData(firstDay, lastDay) {
-            document.getElementById('loader').style.display = "block";
-            document.getElementById('tableBody').innerHTML = "";
-            
-            try {
-                const { data, error } = await _supabase.from('production_logs').select('*')
-                    .gte('entry_date', firstDay).lte('entry_date', lastDay)
-                    .order('entry_date', { ascending: false });
+<div class="stat-card">
+<span class="stat-label">Daily Avg</span>
+<div id="month_avg" class="stat-val" style="color:var(--success)">0</div>
+</div>
 
-                if (!error) {
-                    currentData = data;
-                    processData(data);
-                }
-            } catch (err) { console.error(err); }
-        }
+</div>
 
-        function processData(data) {
-            const tableBody = document.getElementById('tableBody');
-            document.getElementById('loader').style.display = "none";
-            let grandTotal = 0;
-            const grouped = {};
+<div class="table-card">
 
-            data.forEach(row => {
-                const d = row.entry_date;
-                if (!grouped[d]) grouped[d] = { twill:0, ds:0, crochet:0, tip:0, starch:0, fg:0 };
-                grouped[d].twill += (Number(row.twill_6_1) || 0) + (Number(row.twill_6_2) || 0) + (Number(row.twill_10_2) || 0);
-                grouped[d].ds += (Number(row.ds_16h_1) || 0) + (Number(row.ds_16h_2) || 0) + (Number(row.ds_48h_3) || 0);
-                grouped[d].crochet += (Number(row.crochet_1) || 0) + (Number(row.crochet_2) || 0) + (Number(row.crochet_3) || 0);
-                grouped[d].tip += (Number(row.tipping) || 0);
-                grouped[d].starch += (Number(row.starching) || 0);
-                grouped[d].fg += (Number(row.finished_goods) || 0);
-                grandTotal += (Number(row.finished_goods) || 0);
-            });
+<table id="monthlyTable">
 
-            const keys = Object.keys(grouped).sort().reverse();
-            keys.forEach(date => {
-                const day = grouped[date];
-                tableBody.innerHTML += `
-                    <tr>
-                        <td><b>${new Date(date).getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][new Date(date).getMonth()]}</b></td>
-                        <td>${day.twill.toLocaleString()}</td>
-                        <td>${day.ds.toLocaleString()}</td>
-                        <td>${day.crochet.toLocaleString()}</td>
-                        <td>${day.tip.toLocaleString()}</td>
-                        <td>${day.starch.toLocaleString()}</td>
-                        <td class="row-total">${day.fg.toLocaleString()}</td>
-                    </tr>
-                `;
-            });
+<thead>
+<tr>
+<th>Date</th>
+<th>Twill</th>
+<th>Draw</th>
+<th>Croc</th>
+<th>Tip</th>
+<th>Starch</th>
+<th style="text-align:right">FG Output</th>
+</tr>
+</thead>
 
-            document.getElementById('month_total').innerText = grandTotal.toLocaleString();
-            document.getElementById('month_avg').innerText = Math.round(grandTotal / (keys.length || 1)).toLocaleString();
-            
-            const goal = 500000;
-            const percentage = Math.min((grandTotal / goal) * 100, 100);
-            document.getElementById('progressBar').style.width = percentage + "%";
-            
-            document.getElementById('progressText').innerText = keys.length > 0 ? `${keys.length} days recorded` : "No records for this month";
-        }
+<tbody id="tableBody"></tbody>
 
-        // FIXED PDF GENERATION FUNCTION FOR ANDROID WEBVIEW
-        function generatePDF() {
-            const btn = document.getElementById('pdfBtn');
-            const originalText = btn.innerText;
-            btn.innerText = "⏳ Generating PDF...";
-            btn.disabled = true;
+</table>
 
-            try {
-                const { jsPDF } = window.jspdf;
-                
-                // Create PDF
-                const doc = new jsPDF({
-                    orientation: 'p',
-                    unit: 'pt',
-                    format: 'a4'
-                });
-                
-                // Add title
-                doc.setFontSize(16);
-                doc.setTextColor(26, 31, 54);
-                doc.text('Swiss-Bangla Trims & Accessories', 40, 40);
-                
-                doc.setFontSize(12);
-                doc.setTextColor(212, 1, 1);
-                
-                // Format month for display
-                const range = getMonthRange(monthOffset);
-                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                const monthName = monthNames[range.month];
-                
-                doc.text(`${monthName} ${range.year} Production Report`, 40, 60);
-                
-                // Generate table
-                doc.autoTable({ 
-                    html: '#monthlyTable', 
-                    startY: 80, 
-                    headStyles: { fillColor: [26, 31, 54] },
-                    styles: { fontSize: 9, cellPadding: 8 },
-                    margin: { left: 40, right: 40 }
-                });
-                
-                // Generate filename
-                const filename = `Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`;
-                
-                // ----- FIX FOR ANDROID WEBVIEW -----
-                // Method 1: Try blob + anchor (works best for Android WebView)
-                try {
-                    // Generate PDF as blob
-                    const pdfBlob = doc.output('blob');
-                    
-                    // Create a blob URL
-                    const blobUrl = URL.createObjectURL(pdfBlob);
-                    
-                    // Create an anchor element and trigger download
-                    const link = document.createElement('a');
-                    link.href = blobUrl;
-                    link.download = filename;
-                    
-                    // Append to body, click, and remove
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    // Clean up the blob URL after a delay
-                    setTimeout(() => {
-                        URL.revokeObjectURL(blobUrl);
-                    }, 1000);
-                    
-                    console.log('PDF download triggered via blob method');
-                    
-                } catch (blobError) {
-                    console.warn('Blob method failed, trying data URI method', blobError);
-                    
-                    // Method 2: Try data URI (fallback)
-                    try {
-                        const pdfDataUri = doc.output('datauristring');
-                        
-                        const link = document.createElement('a');
-                        link.href = pdfDataUri;
-                        link.download = filename;
-                        
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        
-                        console.log('PDF download triggered via data URI method');
-                        
-                    } catch (dataUriError) {
-                        console.warn('Data URI method failed, trying direct save', dataUriError);
-                        
-                        // Method 3: Direct save (last resort)
-                        doc.save(filename);
-                    }
-                }
-                
-                // Reset button after a short delay
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                }, 2000);
-                
-            } catch (error) {
-                console.error('PDF generation error:', error);
-                alert('Unable to generate PDF. Please try again.');
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        }
+<div id="loader" class="loading">Loading monthly data...</div>
 
-        // Initialize with current month
-        window.onload = () => {
-            monthOffset = 0;
-            updateMonthDisplayAndFetch();
-        };
-    </script>
+</div>
+
+<div class="footer-actions">
+<button class="btn-pdf" onclick="generatePDF()" id="pdfBtn">📄 Download PDF</button>
+</div>
+
+</div>
+
+<script>
+
+const supabaseUrl='https://ejntepmlgyliufsjttut.supabase.co';
+const supabaseKey='YOUR_KEY';
+const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
+
+let monthOffset=0;
+let currentData=[];
+
+function formatMonthYear(date){
+
+const monthNames=["January","February","March","April","May","June","July","August","September","October","November","December"];
+return `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+}
+
+function getMonthRange(offset){
+
+const now=new Date();
+const selectedDate=new Date(now.getFullYear(),now.getMonth()+offset,1);
+
+const year=selectedDate.getFullYear();
+const month=selectedDate.getMonth();
+
+const firstDay=`${year}-${String(month+1).padStart(2,'0')}-01`;
+const lastDay=new Date(year,month+1,0).toISOString().split('T')[0];
+
+return{year,month,firstDay,lastDay,displayDate:selectedDate};
+
+}
+
+function updateMonthDisplayAndFetch(){
+
+const range=getMonthRange(monthOffset);
+document.getElementById('monthDisplay').innerText=formatMonthYear(range.displayDate);
+fetchMonthlyData(range.firstDay,range.lastDay);
+
+}
+
+function changeMonth(direction){
+
+monthOffset+=direction;
+updateMonthDisplayAndFetch();
+
+}
+
+async function fetchMonthlyData(firstDay,lastDay){
+
+document.getElementById('loader').style.display="block";
+document.getElementById('tableBody').innerHTML="";
+
+const{data,error}=await _supabase.from('production_logs').select('*').gte('entry_date',firstDay).lte('entry_date',lastDay).order('entry_date',{ascending:false});
+
+if(!error){
+
+currentData=data;
+processData(data);
+
+}
+
+}
+
+function processData(data){
+
+const tableBody=document.getElementById('tableBody');
+document.getElementById('loader').style.display="none";
+
+let grandTotal=0;
+const grouped={};
+
+data.forEach(row=>{
+
+const d=row.entry_date;
+
+if(!grouped[d])grouped[d]={twill:0,ds:0,crochet:0,tip:0,starch:0,fg:0};
+
+grouped[d].twill+=(Number(row.twill_6_1)||0)+(Number(row.twill_6_2)||0)+(Number(row.twill_10_2)||0);
+grouped[d].ds+=(Number(row.ds_16h_1)||0)+(Number(row.ds_16h_2)||0)+(Number(row.ds_48h_3)||0);
+grouped[d].crochet+=(Number(row.crochet_1)||0)+(Number(row.crochet_2)||0)+(Number(row.crochet_3)||0);
+grouped[d].tip+=(Number(row.tipping)||0);
+grouped[d].starch+=(Number(row.starching)||0);
+grouped[d].fg+=(Number(row.finished_goods)||0);
+
+grandTotal+=(Number(row.finished_goods)||0);
+
+});
+
+const keys=Object.keys(grouped).sort().reverse();
+
+keys.forEach(date=>{
+
+const day=grouped[date];
+
+tableBody.innerHTML+=`
+
+<tr>
+<td><b>${new Date(date).getDate()}</b></td>
+<td>${day.twill}</td>
+<td>${day.ds}</td>
+<td>${day.crochet}</td>
+<td>${day.tip}</td>
+<td>${day.starch}</td>
+<td class="row-total">${day.fg}</td>
+</tr>
+
+`;
+
+});
+
+document.getElementById('month_total').innerText=grandTotal;
+document.getElementById('month_avg').innerText=Math.round(grandTotal/(keys.length||1));
+
+}
+
+function generatePDF(){
+
+const btn=document.getElementById('pdfBtn');
+const originalText=btn.innerText;
+
+btn.innerText="⏳ Generating PDF...";
+btn.disabled=true;
+
+try{
+
+const{jsPDF}=window.jspdf;
+
+const doc=new jsPDF({orientation:'p',unit:'pt',format:'a4'});
+
+doc.setFontSize(16);
+doc.text('Swiss-Bangla Trims & Accessories',40,40);
+
+doc.autoTable({
+html:'#monthlyTable',
+startY:70
+});
+
+const range=getMonthRange(monthOffset);
+
+const filename=`Monthly_Report_${range.year}_${String(range.month+1).padStart(2,'0')}.pdf`;
+
+const base64=doc.output('datauristring').split(',')[1];
+
+if(window.Android && window.Android.saveBase64Pdf){
+
+window.Android.saveBase64Pdf(base64,filename);
+alert("PDF saved to Downloads");
+
+}else{
+
+doc.save(filename);
+
+}
+
+}catch(e){
+
+console.error(e);
+alert("PDF generation failed");
+
+}
+
+setTimeout(()=>{
+
+btn.innerText=originalText;
+btn.disabled=false;
+
+},1500);
+
+}
+
+window.onload=()=>{
+monthOffset=0;
+updateMonthDisplayAndFetch();
+}
+
+</script>
+
 </body>
 </html>
