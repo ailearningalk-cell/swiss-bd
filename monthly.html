@@ -440,8 +440,10 @@
             document.getElementById('progressText').innerText = keys.length > 0 ? `${keys.length} days recorded` : "No records for this month";
         }
 
+        // FIXED PDF GENERATION FUNCTION FOR ANDROID WEBVIEW
         function generatePDF() {
             const btn = document.getElementById('pdfBtn');
+            const originalText = btn.innerText;
             btn.innerText = "⏳ Generating PDF...";
             btn.disabled = true;
 
@@ -479,16 +481,70 @@
                     margin: { left: 40, right: 40 }
                 });
                 
-                // Save the PDF (works with Android WebView)
-                doc.save(`Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`);
+                // Generate filename
+                const filename = `Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`;
                 
-                btn.innerText = "📄 Download PDF";
-                btn.disabled = false;
+                // ----- FIX FOR ANDROID WEBVIEW -----
+                // Method 1: Try blob + anchor (works best for Android WebView)
+                try {
+                    // Generate PDF as blob
+                    const pdfBlob = doc.output('blob');
+                    
+                    // Create a blob URL
+                    const blobUrl = URL.createObjectURL(pdfBlob);
+                    
+                    // Create an anchor element and trigger download
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = filename;
+                    
+                    // Append to body, click, and remove
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Clean up the blob URL after a delay
+                    setTimeout(() => {
+                        URL.revokeObjectURL(blobUrl);
+                    }, 1000);
+                    
+                    console.log('PDF download triggered via blob method');
+                    
+                } catch (blobError) {
+                    console.warn('Blob method failed, trying data URI method', blobError);
+                    
+                    // Method 2: Try data URI (fallback)
+                    try {
+                        const pdfDataUri = doc.output('datauristring');
+                        
+                        const link = document.createElement('a');
+                        link.href = pdfDataUri;
+                        link.download = filename;
+                        
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        console.log('PDF download triggered via data URI method');
+                        
+                    } catch (dataUriError) {
+                        console.warn('Data URI method failed, trying direct save', dataUriError);
+                        
+                        // Method 3: Direct save (last resort)
+                        doc.save(filename);
+                    }
+                }
+                
+                // Reset button after a short delay
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }, 2000);
                 
             } catch (error) {
                 console.error('PDF generation error:', error);
                 alert('Unable to generate PDF. Please try again.');
-                btn.innerText = "📄 Download PDF";
+                btn.innerText = originalText;
                 btn.disabled = false;
             }
         }
