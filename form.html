@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Swiss-Bangla | Entry Form</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -16,6 +16,13 @@
             --text-dark: #1a1f36;
             --text-light: #697386;
             --card-border: #e0e4e8;
+            --black: #1a1a1a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
@@ -35,11 +42,12 @@
             max-width: 500px;
         }
 
-        /* Header Section - matching home.html */
+        /* Header Section - exactly matching home.html */
         .header {
             width: 100%;
             margin-bottom: 15px;
             text-align: center;
+            padding: 0;
         }
 
         .company-name {
@@ -59,33 +67,11 @@
             color: #D40101;
             font-weight: 700;
             letter-spacing: 0.3px;
-            margin: 0 0 15px 0;
-        }
-
-        /* Dashboard Link */
-        .dashboard-link {
+            margin: 0 0 5px 0;
             text-align: center;
-            margin-bottom: 20px;
         }
 
-        .back-link { 
-            color: var(--primary); 
-            text-decoration: none; 
-            font-size: 13px; 
-            font-weight: 600;
-            display: inline-block;
-            padding: 8px 16px;
-            background: #f0f2f5;
-            border-radius: 20px;
-            transition: all 0.2s ease;
-        }
-
-        .back-link:hover {
-            background: #e2e6ea;
-            transform: translateY(-1px);
-        }
-
-        /* Date Navigation Button */
+        /* Date Navigation Button - styled like home.html navigation */
         .nav-link-btn {
             display: inline-flex;
             align-items: center;
@@ -97,16 +83,26 @@
             font-weight: 700;
             padding: 10px 20px;
             border-radius: 25px;
-            border: none;
-            margin: 12px auto 20px auto;
+            border: 1px solid var(--card-border);
+            margin: 10px auto 15px auto;
             transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
+        
         .nav-link-btn:hover { 
             background: #e2e8f0; 
-            color: var(--brand-dark);
             transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
-        .nav-link-btn svg { margin-right: 8px; }
+
+        .nav-link-btn:active {
+            transform: scale(0.98);
+        }
+
+        .nav-link-btn svg { 
+            margin-right: 8px;
+            stroke: currentColor;
+        }
 
         /* Cards Container - matching home.css grid */
         .cards-container {
@@ -182,35 +178,41 @@
             box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
         }
 
-        /* Submit Button - matching update button style */
+        /* Submit Button - Black with white text, fully responsive */
         .submit-btn {
             width: 100%;
-            padding: 16px;
-            background: var(--navy);
+            padding: 16px 20px;
+            background: #1a1a1a; /* Black */
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
+            margin: 10px 0 0 0;
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             letter-spacing: 0.5px;
+            display: block;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .submit-btn:hover {
-            background: #0f1a2e;
+            background: #000000;
             transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
         }
 
         .submit-btn:active {
             transform: scale(0.98);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .submit-btn:disabled {
-            background: #94a3b8;
+            background: #666666;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -295,25 +297,46 @@
             transform: translateY(-2px);
         }
 
-        /* Responsive */
+        /* Responsive Breakpoints */
         @media (max-width: 480px) {
             body { padding: 16px; }
             .category-card { padding: 18px; }
             .form-grid { grid-template-columns: 1fr; }
-            .input-group input { padding: 10px; font-size: 15px; }
+            .input-group input { padding: 12px; font-size: 16px; }
+            .submit-btn { 
+                padding: 16px 16px; 
+                font-size: 16px; 
+            }
         }
 
         @media (max-width: 360px) {
             .company-name { font-size: 22px; }
             .page-title { font-size: 14px; }
-            .nav-link-btn { padding: 8px 16px; font-size: 11px; }
+            .nav-link-btn { 
+                padding: 8px 16px; 
+                font-size: 11px; 
+            }
+            .submit-btn { 
+                padding: 14px 12px; 
+                font-size: 15px; 
+            }
+        }
+
+        /* Ensure button doesn't overflow on very small screens */
+        @media (max-width: 320px) {
+            .submit-btn { 
+                padding: 14px 10px; 
+                font-size: 14px; 
+                border-radius: 10px;
+            }
+            .category-card { padding: 16px; }
         }
     </style>
 </head>
 <body>
 
 <div class="main-container">
-    <!-- Header Section - matching home.html -->
+    <!-- Header Section - exactly matching home.html -->
     <div class="header">
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
         <div class="page-title">Production Entry</div>
@@ -326,11 +349,6 @@
             </svg>
             <span id="dateText">Loading...</span>
         </a>
-    </div>
-
-    <!-- Dashboard Link -->
-    <div class="dashboard-link">
-        <a href="home.html" class="back-link">📊 Dashboard</a>
     </div>
 
     <form id="productionForm">
@@ -422,7 +440,7 @@
             </div>
         </div>
 
-        <!-- Submit Button -->
+        <!-- Submit Button - Black with white text, fully responsive -->
         <button type="submit" class="submit-btn" id="submitBtn">⚡ Final Submit</button>
         <div id="errorDisplay" class="error-box">⚠️ Please enter at least one production value.</div>
     </form>
