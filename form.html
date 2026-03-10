@@ -181,18 +181,48 @@
     const dateInput = document.getElementById('dateField');
     const dateText = document.getElementById('dateText');
     
-    dateInput.value = new Date().toISOString().split('T')[0];
-
-    function setDynamicLabel() {
+    // Function to get current date in Dhaka (GMT+6) timezone
+    function getDhakaDate() {
         const now = new Date();
-        const day = String(now.getDate()).padStart(2, '0');
-        const month = now.toLocaleString('en-GB', { month: 'short' });
-        const year = String(now.getFullYear()).slice(-2);
-        dateText.innerText = `${day} ${month} ${year}`;
+        // Bangladesh is GMT+6 (no daylight saving)
+        // Convert to Dhaka time by adding 6 hours
+        const dhakaTime = new Date(now.getTime() + (6 * 60 * 60 * 1000));
+        return dhakaTime;
     }
 
-    function hFocus(i) { if(i.value === "0") i.value = ""; errBox.style.display = "none"; }
-    function hBlur(i) { if(i.value === "") i.value = "0"; }
+    // Function to get Dhaka date in YYYY-MM-DD format
+    function getDhakaDateString() {
+        const dhakaDate = getDhakaDate();
+        const year = dhakaDate.getUTCFullYear();
+        const month = String(dhakaDate.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(dhakaDate.getUTCDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Function to format date for display (DD MMM YY)
+    function formatDhakaDateForDisplay() {
+        const dhakaDate = getDhakaDate();
+        const day = String(dhakaDate.getUTCDate()).padStart(2, '0');
+        const month = dhakaDate.toLocaleString('en-GB', { timeZone: 'UTC', month: 'short' });
+        const year = String(dhakaDate.getUTCFullYear()).slice(-2);
+        return `${day} ${month} ${year}`;
+    }
+
+    // Set default date to today in Dhaka timezone
+    dateInput.value = getDhakaDateString();
+
+    function setDynamicLabel() {
+        dateText.innerText = formatDhakaDateForDisplay();
+    }
+
+    function hFocus(i) { 
+        if(i.value === "0") i.value = ""; 
+        errBox.style.display = "none"; 
+    }
+    
+    function hBlur(i) { 
+        if(i.value === "") i.value = "0"; 
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -236,7 +266,10 @@
         } else {
             document.getElementById('modalOverlay').style.display = 'flex';
             form.reset();
-            dateInput.value = new Date().toISOString().split('T')[0];
+            
+            // Reset date to today in Dhaka timezone
+            dateInput.value = getDhakaDateString();
+            
             btn.disabled = false;
             btn.innerText = 'Final Submit';
         }
