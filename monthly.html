@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swiss-Bangla | Monthly Production</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         :root {
@@ -63,9 +65,15 @@
             font-size: 13px; 
             font-weight: 600;
             display: inline-block;
-            padding: 5px 12px;
+            padding: 8px 16px;
             background: #f0f2f5;
             border-radius: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            background: #e2e6ea;
+            transform: translateY(-1px);
         }
 
         /* Month Selector Card */
@@ -116,7 +124,7 @@
         }
 
         .month-display {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--brand);
             text-align: center;
@@ -210,6 +218,47 @@
             text-align: right; 
         }
 
+        /* Footer with left-aligned Download PDF button */
+        .footer-actions { 
+            width: 100%; 
+            display: flex; 
+            justify-content: flex-start;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .btn-pdf {
+            background: var(--brand); 
+            color: white; 
+            border: none;
+            padding: 14px 28px; 
+            border-radius: 30px; 
+            font-weight: 600;
+            cursor: pointer; 
+            font-size: 16px; 
+            width: auto;
+            min-width: 200px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-pdf:hover {
+            background: #2a2f46;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+        }
+
+        .btn-pdf:active { 
+            transform: scale(0.98); 
+        }
+
+        .btn-pdf:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .loading { 
             padding: 40px; 
             text-align: center; 
@@ -274,6 +323,11 @@
             </div>
             <div id="loader" class="loading">Loading monthly data...</div>
         </div>
+
+        <!-- Left-aligned Download PDF button -->
+        <div class="footer-actions">
+            <button class="btn-pdf" onclick="generatePDF()" id="pdfBtn">📄 Download PDF</button>
+        </div>
     </div>
 
     <script>
@@ -283,6 +337,7 @@
 
         // Store current month offset (0 = current month, -1 = previous month, 1 = next month)
         let monthOffset = 0;
+        let currentData = [];
 
         function formatMonthYear(date) {
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -334,7 +389,10 @@
                     .gte('entry_date', firstDay).lte('entry_date', lastDay)
                     .order('entry_date', { ascending: false });
 
-                if (!error) processData(data);
+                if (!error) {
+                    currentData = data;
+                    processData(data);
+                }
             } catch (err) { console.error(err); }
         }
 
@@ -380,6 +438,59 @@
             document.getElementById('progressBar').style.width = percentage + "%";
             
             document.getElementById('progressText').innerText = keys.length > 0 ? `${keys.length} days recorded` : "No records for this month";
+        }
+
+        function generatePDF() {
+            const btn = document.getElementById('pdfBtn');
+            btn.innerText = "⏳ Generating PDF...";
+            btn.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                
+                // Create PDF
+                const doc = new jsPDF({
+                    orientation: 'p',
+                    unit: 'pt',
+                    format: 'a4'
+                });
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setTextColor(26, 31, 54);
+                doc.text('Swiss-Bangla Trims & Accessories', 40, 40);
+                
+                doc.setFontSize(12);
+                doc.setTextColor(212, 1, 1);
+                
+                // Format month for display
+                const range = getMonthRange(monthOffset);
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const monthName = monthNames[range.month];
+                
+                doc.text(`${monthName} ${range.year} Production Report`, 40, 60);
+                
+                // Generate table
+                doc.autoTable({ 
+                    html: '#monthlyTable', 
+                    startY: 80, 
+                    headStyles: { fillColor: [26, 31, 54] },
+                    styles: { fontSize: 9, cellPadding: 8 },
+                    margin: { left: 40, right: 40 }
+                });
+                
+                // Save the PDF (works with Android WebView)
+                doc.save(`Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`);
+                
+                btn.innerText = "📄 Download PDF";
+                btn.disabled = false;
+                
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Unable to generate PDF. Please try again.');
+                btn.innerText = "📄 Download PDF";
+                btn.disabled = false;
+            }
         }
 
         // Initialize with current month
