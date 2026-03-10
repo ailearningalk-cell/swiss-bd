@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Swiss-Bangla | Entry Form</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -42,25 +42,22 @@
             max-width: 500px;
         }
 
-        /* Header Section - exactly matching home.html */
+        /* Updated Header Section - Stabilized for Mobile */
         .header {
-          width: 100%;
-    max-width: 500px;
-    margin-top: 20px; /* Use a fixed top margin instead of letting it float */
-    margin-bottom: 15px;
-    text-align: center;
-    z-index: 10; /* Ensures it stays above the video background */
+            width: 100%;
+            margin: 10px 0 20px 0; /* Fixed top margin keeps it anchored */
+            text-align: center;
+            padding: 0;
         }
 
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
-            font-size: clamp(18px, 5vw, 28px);
-            font-weight: 600;
+            font-size: clamp(20px, 5.5vw, 28px); /* Refined for better mobile fit */
+            font-weight: 700;
             color: var(--navy);
-            white-space: nowrap;
-            letter-spacing: -0.3px;
-            margin: 0 0 8px 0;
-            line-height: 1.2;
+            letter-spacing: -0.5px;
+            margin: 0 0 5px 0;
+            line-height: 1.1;
             text-align: center;
         }
 
@@ -338,12 +335,10 @@
 <body>
 
 <div class="main-container">
-    <!-- Header Section - exactly matching home.html -->
     <div class="header">
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
         <div class="page-title">Production Entry</div>
         
-        <!-- Date Navigation Button -->
         <a href="daily_edit.html" class="nav-link-btn" id="dynamicDateBtn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -354,10 +349,8 @@
     </div>
 
     <form id="productionForm">
-        <!-- Cards Container - matching home.css grid -->
         <div class="cards-container">
             
-            <!-- Twill Tape Card -->
             <div class="category-card">
                 <div class="card-header">
                     <span class="card-title">Twill Tape Items</span>
@@ -378,7 +371,6 @@
                 </div>
             </div>
 
-            <!-- Drawstring Card -->
             <div class="category-card">
                 <div class="card-header">
                     <span class="card-title">Drawstring Items</span>
@@ -399,7 +391,6 @@
                 </div>
             </div>
 
-            <!-- Crochet Card -->
             <div class="category-card">
                 <div class="card-header">
                     <span class="card-title">Crochet Items</span>
@@ -420,7 +411,6 @@
                 </div>
             </div>
 
-            <!-- Finishing Card -->
             <div class="category-card">
                 <div class="card-header">
                     <span class="card-title">Finishing & Output</span>
@@ -442,13 +432,11 @@
             </div>
         </div>
 
-        <!-- Submit Button - Black with white text, fully responsive -->
         <button type="submit" class="submit-btn" id="submitBtn">⚡ Final Submit</button>
         <div id="errorDisplay" class="error-box">⚠️ Please enter at least one production value.</div>
     </form>
 </div>
 
-<!-- Success Modal -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h1>✅</h1>
