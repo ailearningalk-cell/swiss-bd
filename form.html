@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Swiss-Bangla | Entry Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -29,11 +30,11 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: var(--bg);
             margin: 0;
-            padding: 20px;
+            padding: 20px; /* This is your main top-anchor */
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            /* Removed min-height: 100vh to stop vertical centering jitter */
         }
 
         /* Main Container */
@@ -42,22 +43,23 @@
             max-width: 500px;
         }
 
-        /* Updated Header Section - Stabilized for Mobile */
+        /* Fixed Header - Removed top margin to stop the "slide" */
         .header {
             width: 100%;
-            margin: 10px 0 20px 0; /* Fixed top margin keeps it anchored */
+            margin: 0 0 15px 0; /* Changed top margin to 0 */
             text-align: center;
             padding: 0;
         }
 
         .company-name {
-            font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
-            font-size: clamp(20px, 5.5vw, 28px); /* Refined for better mobile fit */
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(20px, 5.5vw, 28px);
             font-weight: 700;
             color: var(--navy);
+            white-space: nowrap;
             letter-spacing: -0.5px;
             margin: 0 0 5px 0;
-            line-height: 1.1;
+            line-height: 1.2;
             text-align: center;
         }
 
@@ -70,7 +72,7 @@
             text-align: center;
         }
 
-        /* Date Navigation Button - styled like home.html navigation */
+        /* Date Navigation Button */
         .nav-link-btn {
             display: inline-flex;
             align-items: center;
@@ -91,19 +93,11 @@
         .nav-link-btn:hover { 
             background: #e2e8f0; 
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
 
-        .nav-link-btn:active {
-            transform: scale(0.98);
-        }
+        .nav-link-btn svg { margin-right: 8px; }
 
-        .nav-link-btn svg { 
-            margin-right: 8px;
-            stroke: currentColor;
-        }
-
-        /* Cards Container - matching home.css grid */
+        /* Cards Container */
         .cards-container {
             width: 100%;
             display: grid;
@@ -111,7 +105,6 @@
             margin-bottom: 20px;
         }
 
-        /* Category Cards - matching metric-card style exactly */
         .category-card {
             background: #fff;
             border-radius: 18px;
@@ -119,7 +112,6 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.02);
             border: 1px solid var(--card-border);
             width: 100%;
-            box-sizing: border-box;
         }
 
         .card-header {
@@ -137,7 +129,6 @@
             letter-spacing: 0.8px;
         }
 
-        /* Form Grid inside cards */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -155,7 +146,6 @@
             color: var(--text-light);
             margin-bottom: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .input-group input {
@@ -167,57 +157,22 @@
             font-weight: 600;
             text-align: center;
             outline: none;
-            transition: all 0.2s ease;
             background: white;
-            box-sizing: border-box;
         }
 
-        .input-group input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
-        }
-
-        /* Submit Button - Black with white text, fully responsive */
         .submit-btn {
             width: 100%;
             padding: 16px 20px;
-            background: #1a1a1a; /* Black */
+            background: #1a1a1a;
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin: 10px 0 0 0;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            letter-spacing: 0.5px;
-            display: block;
-            box-sizing: border-box;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
         }
 
-        .submit-btn:hover {
-            background: #000000;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
-        }
-
-        .submit-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .submit-btn:disabled {
-            background: #666666;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Error Box */
         .error-box {
             display: none;
             color: var(--danger);
@@ -231,7 +186,7 @@
             border: 1px solid #fed7d7;
         }
 
-        /* Modal - matching home.html */
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -244,8 +199,6 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            padding: 16px;
-            box-sizing: border-box;
         }
 
         .modal {
@@ -253,27 +206,7 @@
             padding: 30px;
             border-radius: 20px;
             text-align: center;
-            width: 100%;
             max-width: 280px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-        }
-
-        .modal h1 {
-            color: var(--success);
-            margin: 0;
-            font-size: 50px;
-        }
-
-        .modal h3 {
-            margin: 10px 0 5px;
-            color: var(--text-dark);
-            font-size: 20px;
-        }
-
-        .modal p {
-            color: var(--text-light);
-            font-size: 14px;
-            margin-bottom: 20px;
         }
 
         .modal-btn {
@@ -284,51 +217,13 @@
             border-radius: 8px;
             width: 100%;
             font-weight: 600;
-            cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            box-sizing: border-box;
-            transition: all 0.2s ease;
         }
 
-        .modal-btn:hover {
-            background: #2d9f5a;
-            transform: translateY(-2px);
-        }
-
-        /* Responsive Breakpoints */
         @media (max-width: 480px) {
             body { padding: 16px; }
-            .category-card { padding: 18px; }
             .form-grid { grid-template-columns: 1fr; }
-            .input-group input { padding: 12px; font-size: 16px; }
-            .submit-btn { 
-                padding: 16px 16px; 
-                font-size: 16px; 
-            }
-        }
-
-        @media (max-width: 360px) {
-            .company-name { font-size: 22px; }
-            .page-title { font-size: 14px; }
-            .nav-link-btn { 
-                padding: 8px 16px; 
-                font-size: 11px; 
-            }
-            .submit-btn { 
-                padding: 14px 12px; 
-                font-size: 15px; 
-            }
-        }
-
-        /* Ensure button doesn't overflow on very small screens */
-        @media (max-width: 320px) {
-            .submit-btn { 
-                padding: 14px 10px; 
-                font-size: 14px; 
-                border-radius: 10px;
-            }
-            .category-card { padding: 16px; }
         }
     </style>
 </head>
@@ -350,84 +245,39 @@
 
     <form id="productionForm">
         <div class="cards-container">
-            
             <div class="category-card">
-                <div class="card-header">
-                    <span class="card-title">Twill Tape Items</span>
-                </div>
+                <div class="card-header"><span class="card-title">Twill Tape Items</span></div>
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>(6)-1</label>
-                        <input type="number" name="t61" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>(6)-2</label>
-                        <input type="number" name="t62" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>(10)-2</label>
-                        <input type="number" name="t102" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
+                    <div class="input-group"><label>(6)-1</label><input type="number" name="t61" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>(6)-2</label><input type="number" name="t62" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>(10)-2</label><input type="number" name="t102" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
                 </div>
             </div>
 
             <div class="category-card">
-                <div class="card-header">
-                    <span class="card-title">Drawstring Items</span>
-                </div>
+                <div class="card-header"><span class="card-title">Drawstring Items</span></div>
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>16H-1</label>
-                        <input type="number" name="d16h1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>16H-2</label>
-                        <input type="number" name="d16h2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>48H-3</label>
-                        <input type="number" name="d48h3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
+                    <div class="input-group"><label>16H-1</label><input type="number" name="d16h1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>16H-2</label><input type="number" name="d16h2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>48H-3</label><input type="number" name="d48h3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
                 </div>
             </div>
 
             <div class="category-card">
-                <div class="card-header">
-                    <span class="card-title">Crochet Items</span>
-                </div>
+                <div class="card-header"><span class="card-title">Crochet Items</span></div>
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>C-1</label>
-                        <input type="number" name="c1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>C-2</label>
-                        <input type="number" name="c2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>C-3</label>
-                        <input type="number" name="c3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
+                    <div class="input-group"><label>C-1</label><input type="number" name="c1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>C-2</label><input type="number" name="c2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>C-3</label><input type="number" name="c3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
                 </div>
             </div>
 
             <div class="category-card">
-                <div class="card-header">
-                    <span class="card-title">Finishing & Output</span>
-                </div>
+                <div class="card-header"><span class="card-title">Finishing & Output</span></div>
                 <div class="form-grid">
-                    <div class="input-group">
-                        <label>Tipping</label>
-                        <input type="number" name="tipping" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>Starching</label>
-                        <input type="number" name="starching" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
-                    <div class="input-group">
-                        <label>F. Goods</label>
-                        <input type="number" name="fg" value="0" onfocus="hFocus(this)" onblur="hBlur(this)">
-                    </div>
+                    <div class="input-group"><label>Tipping</label><input type="number" name="tipping" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>Starching</label><input type="number" name="starching" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>F. Goods</label><input type="number" name="fg" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
                 </div>
             </div>
         </div>
@@ -455,11 +305,9 @@
     const errBox = document.getElementById('errorDisplay');
     const dateText = document.getElementById('dateText');
 
-    // Function to get current date in Dhaka (GMT+6) timezone
     function getDhakaDate() {
         const now = new Date();
-        const dhakaTime = new Date(now.getTime() + (6 * 60 * 60 * 1000));
-        return dhakaTime;
+        return new Date(now.getTime() + (6 * 60 * 60 * 1000));
     }
 
     function formatDhakaDateForDisplay() {
@@ -502,10 +350,7 @@
         btn.innerText = '⏳ Syncing...';
 
         const dhakaDate = getDhakaDate();
-        const year = dhakaDate.getUTCFullYear();
-        const month = String(dhakaDate.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(dhakaDate.getUTCDate()).padStart(2, '0');
-        const today = `${year}-${month}-${day}`;
+        const today = `${dhakaDate.getUTCFullYear()}-${String(dhakaDate.getUTCMonth() + 1).padStart(2, '0')}-${String(dhakaDate.getUTCDate()).padStart(2, '0')}`;
 
         const { error } = await _supabase.from('production_logs').insert([{ 
             entry_date: today,
@@ -527,14 +372,10 @@
             errBox.innerText = "❌ Sync Failed: " + error.message;
             errBox.style.display = "block";
             btn.disabled = false;
-            btn.innerText = '⚡ Final Submit';
         } else {
             document.getElementById('modalOverlay').style.display = 'flex';
             form.reset();
-            // Reset all inputs to 0
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                if (input.name !== 'Date') input.value = '0';
-            });
+            document.querySelectorAll('input[type="number"]').forEach(input => input.value = '0');
             btn.disabled = false;
             btn.innerText = '⚡ Final Submit';
         }
