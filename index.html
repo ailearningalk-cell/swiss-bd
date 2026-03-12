@@ -1,341 +1,318 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Swiss-Bangla Trims | Welcome</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Swiss-Bangla Trims | Welcome</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
-        body, html {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            font-family: 'Poppins', sans-serif;
-            background-color: #000;
-        }
+<style>
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box;
+}
 
-        /* Simple static background */
-        body {
-            background: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 100%);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background-color: #000;
+}
 
-        /* Subtle texture overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 8px);
-            pointer-events: none;
-        }
+body {
+    background: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
 
-        .container {
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            padding: 0 20px;
-        }
+/* Subtle texture overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 8px);
+    pointer-events: none;
+}
 
-        /* Ultra-stable brand name */
-        .brand-name {
-            font-family: 'Playfair Display', serif;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            
-            /* Force single line */
-            white-space: nowrap;
-            
-            /* Fixed font size that definitely fits all phones */
-            font-size: 20px;
-            
-            /* No transitions, no animations, no transforms initially */
-            opacity: 0;
-            
-            /* Center text perfectly */
-            text-align: center;
-            width: 100%;
-            
-            /* Prevent any layout changes */
-            line-height: 1.2;
-            letter-spacing: 0.3px;
-            
-            /* Font smoothing */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+.container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 0 20px;
+}
 
-        /* Fade in only - no scaling or movement */
-        .brand-name.fade-in {
-            opacity: 1;
-            transition: opacity 1s ease;
-        }
+/* FIXED TITLE FOR ANDROID WEBVIEW */
+.brand-name {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    
+    white-space: nowrap;
+    font-size: clamp(20px, 4.5vw, 26px);
+    
+    opacity: 0;
+    
+    text-align: center;
+    width: 100%;
+    
+    line-height: 1;
+    letter-spacing: 0.2px;
+    
+    display: block;
+    
+    -webkit-font-smoothing: antialiased;
+}
 
-        /* Specific font sizes for different screens */
-        @media (min-width: 350px) {
-            .brand-name { font-size: 22px; }
-        }
-        @media (min-width: 375px) {
-            .brand-name { font-size: 23px; }
-        }
-        @media (min-width: 390px) {
-            .brand-name { font-size: 24px; }
-        }
-        @media (min-width: 414px) {
-            .brand-name { font-size: 25px; }
-        }
-        @media (min-width: 430px) {
-            .brand-name { font-size: 26px; }
-        }
+/* Fade in only - no movement */
+.brand-name.fade-in {
+    opacity: 1;
+    transition: opacity 1s ease;
+}
 
-        /* SIMPLIFIED & SYMBOL - only changed this section */
-        .brand-name span {
-            font-size: 0.8em;
-            font-style: normal; /* Changed from italic to normal */
-            color: #ffffff; /* Changed from rgba(255,255,255,0.6) to solid white */
-            margin: 0 2px;
-        }
+/* & symbol styling */
+.brand-name span {
+    font-size: 0.8em;
+    font-style: normal;
+    color: #ffffff;
+    margin: 0 2px;
+}
 
-        .tagline {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #ff4b2b;
-            margin-top: 10px;
-            font-weight: 500;
-            opacity: 0;
-            white-space: nowrap;
-        }
+.tagline {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #ff4b2b;
+    margin-top: 10px;
+    font-weight: 500;
+    opacity: 0;
+    white-space: nowrap;
+}
 
-        .tagline.fade-in {
-            opacity: 1;
-            transition: opacity 1s ease 0.5s;
-        }
+.tagline.fade-in {
+    opacity: 1;
+    transition: opacity 1s ease 0.5s;
+}
 
-        /* Sewing track with needle - OPTIMIZED */
-        .sewing-track {
-            width: 280px;
-            max-width: 85%;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 35px auto;
-            position: relative;
-            opacity: 0;
-        }
+/* Sewing track */
+.sewing-track {
+    width: 280px;
+    max-width: 85%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 35px auto;
+    position: relative;
+    opacity: 0;
+}
 
-        .sewing-track.fade-in {
-            opacity: 1;
-            transition: opacity 1s ease 0.8s;
-        }
+.sewing-track.fade-in {
+    opacity: 1;
+    transition: opacity 1s ease 0.8s;
+}
 
-        .stitch-progress {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 0%;
-            background: repeating-linear-gradient(90deg, 
-                #ff4b2b, #ff4b2b 4px, 
-                transparent 4px, transparent 8px);
-            transition: width 4s linear;
-        }
+.stitch-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: repeating-linear-gradient(90deg, 
+        #ff4b2b, #ff4b2b 4px, 
+        transparent 4px, transparent 8px);
+    transition: width 4s linear;
+}
 
-        .stitch-progress.filled {
-            width: 100%;
-        }
+.stitch-progress.filled {
+    width: 100%;
+}
 
-        .pulse-needle {
-            position: absolute;
-            top: -30px;
-            left: 0;
-            width: 2px;
-            height: 30px;
-            background: linear-gradient(to bottom, #ff4b2b, #ffffff);
-            border-radius: 1px;
-            z-index: 20;
-            transition: left 4s linear;
-            filter: drop-shadow(0 0 5px #ff4b2b);
-            pointer-events: none;
-        }
+.pulse-needle {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(to bottom, #ff4b2b, #ffffff);
+    border-radius: 1px;
+    z-index: 20;
+    transition: left 4s linear;
+    filter: drop-shadow(0 0 5px #ff4b2b);
+    pointer-events: none;
+}
 
-        .pulse-needle.moved {
-            left: calc(100% - 2px);
-        }
+.pulse-needle.moved {
+    left: calc(100% - 2px);
+}
 
-        .pulse-needle::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background: #ff4b2b;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ff4b2b;
-        }
+.pulse-needle::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: #ff4b2b;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff4b2b;
+}
 
-        /* Simple loader */
-        .loader-simple {
-            margin-top: 20px;
-            text-align: center;
-            opacity: 0;
-        }
+/* Loader */
+.loader-simple {
+    margin-top: 20px;
+    text-align: center;
+    opacity: 0;
+}
 
-        .loader-simple.fade-in {
-            opacity: 1;
-            transition: opacity 1s ease 1s;
-        }
+.loader-simple.fade-in {
+    opacity: 1;
+    transition: opacity 1s ease 1s;
+}
 
-        .loader-dot {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #ffffff;
-            margin: 0 3px;
-            opacity: 0.3;
-            animation: dotPulse 1.5s infinite;
-        }
+.loader-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffffff;
+    margin: 0 3px;
+    opacity: 0.3;
+    animation: dotPulse 1.5s infinite;
+}
 
-        .loader-dot:nth-child(2) {
-            animation-delay: 0.5s;
-        }
+.loader-dot:nth-child(2) {
+    animation-delay: 0.5s;
+}
 
-        .loader-dot:nth-child(3) {
-            animation-delay: 1s;
-        }
+.loader-dot:nth-child(3) {
+    animation-delay: 1s;
+}
 
-        @keyframes dotPulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); background: #ff4b2b; }
-        }
+@keyframes dotPulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); background: #ff4b2b; }
+}
 
-        .loading-text-simple {
-            font-size: 8px;
-            color: #888;
-            margin-top: 15px;
-            letter-spacing: 2px;
-            font-weight: 500;
-            white-space: nowrap;
-        }
+.loading-text-simple {
+    font-size: 8px;
+    color: #888;
+    margin-top: 15px;
+    letter-spacing: 2px;
+    font-weight: 500;
+    white-space: nowrap;
+}
 
-        /* Progress bar */
-        .progress-simple {
-            width: 140px;
-            height: 1px;
-            background: rgba(255,255,255,0.1);
-            margin: 10px auto;
-            position: relative;
-            overflow: hidden;
-        }
+/* Progress bar */
+.progress-simple {
+    width: 140px;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 10px auto;
+    position: relative;
+    overflow: hidden;
+}
 
-        .progress-simple-fill {
-            height: 100%;
-            width: 0%;
-            background: #ff4b2b;
-            transition: width 4s linear;
-        }
+.progress-simple-fill {
+    height: 100%;
+    width: 0%;
+    background: #ff4b2b;
+    transition: width 4s linear;
+}
 
-        .progress-simple-fill.filled {
-            width: 100%;
-        }
-    </style>
+.progress-simple-fill.filled {
+    width: 100%;
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="brand-name" id="brandName">Swiss-Bangla Trims <span>&</span> Accessories</div>
-        <div class="tagline" id="tagline">Smart Production Monitoring</div>
+<div class="container">
 
-        <div class="sewing-track" id="sewingTrack">
-            <div class="stitch-progress" id="stitchProgress"></div>
-            <div class="pulse-needle" id="pulseNeedle"></div>
-        </div>
+<div class="brand-name" id="brandName">
+Swiss-Bangla Trims <span>&</span> Accessories
+</div>
 
-        <div class="loader-simple" id="loaderSimple">
-            <div class="progress-simple">
-                <div class="progress-simple-fill" id="progressFill"></div>
-            </div>
-            <div>
-                <span class="loader-dot"></span>
-                <span class="loader-dot"></span>
-                <span class="loader-dot"></span>
-            </div>
-            <div class="loading-text-simple">LOADING</div>
-        </div>
-    </div>
+<div class="tagline" id="tagline">Smart Production Monitoring</div>
 
-    <script>
-        (function() {
-            // Ensure text fits
-            var brandName = document.getElementById('brandName');
-            if (brandName.scrollWidth > brandName.clientWidth) {
-                brandName.style.letterSpacing = '0px';
-                if (brandName.scrollWidth > brandName.clientWidth) {
-                    brandName.style.fontSize = '18px';
-                }
-            }
+<div class="sewing-track" id="sewingTrack">
+<div class="stitch-progress" id="stitchProgress"></div>
+<div class="pulse-needle" id="pulseNeedle"></div>
+</div>
 
-            // Fade in sequence
-            setTimeout(function() {
-                document.getElementById('brandName').classList.add('fade-in');
-            }, 100);
-            
-            setTimeout(function() {
-                document.getElementById('tagline').classList.add('fade-in');
-            }, 200);
-            
-            setTimeout(function() {
-                document.getElementById('sewingTrack').classList.add('fade-in');
-            }, 300);
-            
-            setTimeout(function() {
-                document.getElementById('loaderSimple').classList.add('fade-in');
-            }, 400);
-            
-            // Start animations immediately after last fade in starts
-            setTimeout(function() {
-                // Fill stitch progress
-                document.getElementById('stitchProgress').classList.add('filled');
-                
-                // Move needle
-                document.getElementById('pulseNeedle').classList.add('moved');
-                
-                // Fill progress bar
-                document.getElementById('progressFill').classList.add('filled');
-            }, 400); // Start right after last fade-in begins
-            
-            // Calculate total animation time:
-            // Fade in lasts 1 second (from 400ms to 1400ms)
-            // Needle animation lasts 4 seconds (from 400ms to 4400ms)
-            // So redirect at 4500ms (4.5 seconds) to ensure animations complete
-            
-            setTimeout(function() {
-                window.location.href = "home.html";
-            }, 4500); // 4.5 seconds total - animations finish at 4.4 seconds
-            
-            // Backup redirect in case something goes wrong
-            setTimeout(function() {
-                window.location.href = "home.html";
-            }, 5000);
-        })();
-    </script>
+<div class="loader-simple" id="loaderSimple">
+
+<div class="progress-simple">
+<div class="progress-simple-fill" id="progressFill"></div>
+</div>
+
+<div>
+<span class="loader-dot"></span>
+<span class="loader-dot"></span>
+<span class="loader-dot"></span>
+</div>
+
+<div class="loading-text-simple">LOADING</div>
+
+</div>
+
+</div>
+
+<script>
+(function() {
+
+var brandName = document.getElementById('brandName');
+
+if (brandName.scrollWidth > brandName.clientWidth) {
+    brandName.style.letterSpacing = '0px';
+    if (brandName.scrollWidth > brandName.clientWidth) {
+        brandName.style.fontSize = '18px';
+    }
+}
+
+setTimeout(function() {
+    document.getElementById('brandName').classList.add('fade-in');
+}, 100);
+
+setTimeout(function() {
+    document.getElementById('tagline').classList.add('fade-in');
+}, 200);
+
+setTimeout(function() {
+    document.getElementById('sewingTrack').classList.add('fade-in');
+}, 300);
+
+setTimeout(function() {
+    document.getElementById('loaderSimple').classList.add('fade-in');
+}, 400);
+
+setTimeout(function() {
+    document.getElementById('stitchProgress').classList.add('filled');
+    document.getElementById('pulseNeedle').classList.add('moved');
+    document.getElementById('progressFill').classList.add('filled');
+}, 400);
+
+setTimeout(function() {
+    window.location.href = "home.html";
+}, 4500);
+
+setTimeout(function() {
+    window.location.href = "home.html";
+}, 5000);
+
+})();
+</script>
+
 </body>
 </html>
