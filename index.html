@@ -5,93 +5,120 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Swiss-Bangla Trims | Welcome</title>
 
+<!-- Load font and force it before display -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body,html{height:100%;width:100%;overflow:hidden;font-family:'Poppins',sans-serif;background:#000;}
-body{background:linear-gradient(145deg,#0a0a0a 0%,#1a1a1a 100%);position:fixed;top:0;left:0;right:0;bottom:0;}
-body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(45deg,rgba(255,255,255,0.02) 0px,rgba(255,255,255,0.02) 2px,transparent 2px,transparent 8px);pointer-events:none;}
+/* RESET */
+* { margin:0; padding:0; box-sizing:border-box; }
 
-.container{height:100vh;width:100vw;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 20px;}
+/* BODY */
+body, html {
+  height:100%; width:100%;
+  font-family:'Poppins', sans-serif;
+  background: linear-gradient(145deg,#0a0a0a 0%,#1a1a1a 100%);
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  text-align:center;
+}
 
-/* TITLE - SIMPLE, NO ANIMATION */
-.brand-name{
-font-weight:700;
-color:#fff;
-white-space:nowrap;
-font-size:clamp(20px,4.5vw,26px);
-text-align:center;
-letter-spacing:.3px;
-font-family:'Poppins',sans-serif;
--webkit-font-smoothing:antialiased;
--moz-osx-font-smoothing:grayscale;
+/* PRELOAD HIDDEN TITLE */
+#brandName {
+  font-weight:700;
+  color:#fff;
+  font-size:clamp(20px,4.5vw,26px);
+  line-height:1.2;
+  letter-spacing:.3px;
+  white-space:nowrap;
+  opacity:0; /* hide until font is loaded */
 }
 
 /* TAGLINE */
-.tagline{
-font-size:10px;text-transform:uppercase;letter-spacing:3px;color:#ff4b2b;margin-top:12px;font-weight:500;
+#tagline {
+  font-size:10px;
+  color:#ff4b2b;
+  text-transform:uppercase;
+  letter-spacing:3px;
+  margin-top:12px;
+  font-weight:500;
+  opacity:0;
 }
 
 /* SEWING TRACK */
-.sewing-track{width:280px;max-width:85%;height:2px;background:rgba(255,255,255,0.1);margin:35px auto;position:relative;}
-.stitch-progress{position:absolute;left:0;top:0;height:100%;width:0%;background:repeating-linear-gradient(90deg,#ff4b2b,#ff4b2b 4px,transparent 4px,transparent 8px);transition:width 3.5s linear;}
-.stitch-progress.run{width:100%;}
-.pulse-needle{position:absolute;top:-30px;left:0;width:2px;height:30px;background:linear-gradient(to bottom,#ff4b2b,#ffffff);border-radius:1px;transition:left 3.5s linear;}
-.pulse-needle.move{left:calc(100% - 2px);}
-.pulse-needle::after{content:'';position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:6px;height:6px;background:#ff4b2b;border-radius:50%;box-shadow:0 0 10px #ff4b2b;}
+.sewing-track {
+  width:280px; max-width:85%; height:2px;
+  background:rgba(255,255,255,0.1); margin:35px auto; position:relative;
+  opacity:0;
+}
+.stitch-progress {
+  position:absolute; left:0; top:0; height:100%; width:0%;
+  background: repeating-linear-gradient(90deg,#ff4b2b,#ff4b2b 4px,transparent 4px,transparent 8px);
+  transition: width 3.5s linear;
+}
+.stitch-progress.run { width:100%; }
+.pulse-needle {
+  position:absolute; top:-30px; left:0; width:2px; height:30px;
+  background:linear-gradient(to bottom,#ff4b2b,#ffffff);
+  border-radius:1px; transition:left 3.5s linear;
+}
+.pulse-needle.move { left:calc(100% - 2px); }
+.pulse-needle::after {
+  content:''; position:absolute; bottom:-3px; left:50%;
+  transform:translateX(-50%); width:6px; height:6px; background:#ff4b2b;
+  border-radius:50%; box-shadow:0 0 10px #ff4b2b;
+}
 
 /* LOADER */
-.loader-simple{margin-top:20px;text-align:center;}
-.loader-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin:0 3px;opacity:.3;animation:dotPulse 1.5s infinite;}
+.loader-simple { margin-top:20px; text-align:center; opacity:0; }
+.loader-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:#fff; margin:0 3px; opacity:.3; animation:dotPulse 1.5s infinite; }
 .loader-dot:nth-child(2){animation-delay:.5s;}
 .loader-dot:nth-child(3){animation-delay:1s;}
-@keyframes dotPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.2);background:#ff4b2b}}
+@keyframes dotPulse{0%,100%{opacity:.3; transform:scale(1);}50%{opacity:1; transform:scale(1.2); background:#ff4b2b}}
 .loading-text-simple{font-size:8px;color:#888;margin-top:12px;letter-spacing:2px;}
-.progress-simple{width:140px;height:1px;background:rgba(255,255,255,0.1);margin:10px auto;overflow:hidden;}
-.progress-simple-fill{height:100%;width:0%;background:#ff4b2b;transition:width 3.5s linear;}
-.progress-simple-fill.run{width:100%;}
+.progress-simple { width:140px; height:1px; background:rgba(255,255,255,0.1); margin:10px auto; overflow:hidden;}
+.progress-simple-fill { height:100%; width:0%; background:#ff4b2b; transition:width 3.5s linear;}
+.progress-simple-fill.run { width:100%; }
+
 </style>
 </head>
 <body>
-<div class="container">
 
-<!-- SIMPLE TITLE -->
-<div class="brand-name" id="brandName">Swiss-Bangla Trims & Accessories</div>
-<div class="tagline" id="tagline">Smart Production Monitoring</div>
+<div id="brandName">Swiss-Bangla Trims & Accessories</div>
+<div id="tagline">Smart Production Monitoring</div>
 
-<!-- SEWING TRACK -->
 <div class="sewing-track" id="track">
-<div class="stitch-progress" id="stitch"></div>
-<div class="pulse-needle" id="needle"></div>
+  <div class="stitch-progress" id="stitch"></div>
+  <div class="pulse-needle" id="needle"></div>
 </div>
 
-<!-- LOADER -->
 <div class="loader-simple" id="loader">
-<div class="progress-simple"><div class="progress-simple-fill" id="progress"></div></div>
-<div><span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span></div>
-<div class="loading-text-simple">LOADING</div>
-</div>
-
+  <div class="progress-simple"><div class="progress-simple-fill" id="progress"></div></div>
+  <div><span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span></div>
+  <div class="loading-text-simple">LOADING</div>
 </div>
 
 <script>
-// Show tagline and track immediately
-document.getElementById("tagline").style.opacity = 1;
-document.getElementById("track").style.opacity = 1;
-document.getElementById("loader").style.opacity = 1;
+// Ensure font is fully loaded before showing title
+document.fonts.ready.then(() => {
+  document.getElementById("brandName").style.opacity = 1;
+  document.getElementById("tagline").style.opacity = 1;
+  document.getElementById("track").style.opacity = 1;
+  document.getElementById("loader").style.opacity = 1;
 
-// Start needle animation immediately
-setTimeout(()=>{
-document.getElementById("stitch").classList.add("run");
-document.getElementById("needle").classList.add("move");
-document.getElementById("progress").classList.add("run");
-},100);
+  // Start animations
+  document.getElementById("stitch").classList.add("run");
+  document.getElementById("needle").classList.add("move");
+  document.getElementById("progress").classList.add("run");
 
-// Redirect after full animation (3.5s + 1s buffer)
-setTimeout(()=>{
-window.location.href="home.html";
-},4600);
+  // Redirect after animation finishes
+  setTimeout(()=>{ window.location.href="home.html"; }, 4600);
+});
 </script>
+
 </body>
 </html>
