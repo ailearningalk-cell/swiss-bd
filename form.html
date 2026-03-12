@@ -50,6 +50,7 @@
             padding: 0;
         }
 
+        /* FIXED: Changed to match universal title structure from weekly/monthly */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -62,7 +63,8 @@
             text-align: center;
         }
 
-        .page-title {
+        /* FIXED: Changed from .page-title to .form-title to match universal structure */
+        .form-title {
             font-size: 15px;
             color: #D40101;
             font-weight: 700;
@@ -311,7 +313,7 @@
 
         @media (max-width: 360px) {
             .company-name { font-size: 22px; }
-            .page-title { font-size: 14px; }
+            .form-title { font-size: 14px; }
             .nav-link-btn { 
                 padding: 8px 16px; 
                 font-size: 11px; 
@@ -336,10 +338,10 @@
 <body>
 
 <div class="main-container">
-    <!-- Header Section - exactly matching home.html -->
+    <!-- Header Section - exactly matching home.html with FIXED title classes -->
     <div class="header">
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
-        <div class="page-title">Production Entry</div>
+        <div class="form-title">Production Entry</div>  <!-- Changed from page-title to form-title -->
         
         <!-- Date Navigation Button -->
         <a href="daily_edit.html" class="nav-link-btn" id="dynamicDateBtn">
