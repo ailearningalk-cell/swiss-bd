@@ -328,7 +328,6 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Store current month offset (0 = current month, -1 = previous month, 1 = next month)
         let monthOffset = 0;
         let currentData = [];
 
@@ -343,12 +342,9 @@
 
         function getMonthRange(offset) {
             const now = new Date();
-            
             const selectedDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-            
             const year = selectedDate.getFullYear();
             const month = selectedDate.getMonth();
-            
             const firstDay = `${year}-${String(month + 1).padStart(2, '0')}-01`;
             const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
             
@@ -363,9 +359,7 @@
 
         function updateMonthDisplayAndFetch() {
             const range = getMonthRange(monthOffset);
-            
             document.getElementById('monthDisplay').innerText = formatMonthYear(range.displayDate);
-            
             fetchMonthlyData(range.firstDay, range.lastDay);
         }
 
@@ -477,53 +471,29 @@
                 // Generate filename
                 const filename = `Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`;
                 
-                // Generate PDF as blob
-                const pdfBlob = doc.output('blob');
+                // Get PDF as base64 string
+                const pdfBase64 = doc.output('datauristring');
                 
-                // Create a blob URL
-                const blobUrl = URL.createObjectURL(pdfBlob);
-                
-                // Check if running in Android
-                if (isAndroid()) {
-                    // For Android, try multiple methods
-                    
-                    // Method 1: Custom scheme for our app
-                    try {
-                        window.location.href = `pdf-viewer://open?url=${encodeURIComponent(blobUrl)}&filename=${encodeURIComponent(filename)}`;
-                    } catch (e) {
-                        console.log('Custom scheme failed, trying fallback');
-                    }
-                    
-                    // Method 2: Create download link
+                // Send to Android via JavaScript interface
+                if (window.AndroidPDF) {
+                    window.AndroidPDF.openPDF(pdfBase64, filename);
+                    btn.innerText = "✓ PDF Generated";
                     setTimeout(() => {
-                        const link = document.createElement('a');
-                        link.href = blobUrl;
-                        link.download = filename;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        
-                        // Clean up
-                        setTimeout(() => {
-                            URL.revokeObjectURL(blobUrl);
-                        }, 100);
-                    }, 500);
-                    
+                        btn.innerText = originalText;
+                    }, 2000);
                 } else {
-                    // For desktop browsers
+                    // Fallback for browser
+                    const pdfBlob = doc.output('blob');
+                    const blobUrl = URL.createObjectURL(pdfBlob);
                     const link = document.createElement('a');
                     link.href = blobUrl;
                     link.download = filename;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    
-                    setTimeout(() => {
-                        URL.revokeObjectURL(blobUrl);
-                    }, 100);
+                    btn.innerText = originalText;
                 }
                 
-                btn.innerText = originalText;
                 btn.disabled = false;
                 
             } catch (error) {
