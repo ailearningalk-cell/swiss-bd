@@ -19,6 +19,8 @@
             --text-dark: #1a1f36;
             --text-light: #697386;
             --card-border: #e0e4e8;
+            --whatsapp: #25D366;
+            --email: #EA4335;
         }
 
         body {
@@ -214,12 +216,13 @@
             text-align: right; 
         }
 
-        .footer-actions { 
-            width: 100%; 
-            display: flex; 
-            justify-content: flex-start;
+        .action-buttons {
+            width: 100%;
+            display: flex;
+            gap: 12px;
             margin-top: 10px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
         
         .btn-pdf {
@@ -231,7 +234,7 @@
             font-weight: 600;
             cursor: pointer; 
             font-size: 16px; 
-            width: auto;
+            flex: 1;
             min-width: 200px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             text-align: center;
@@ -254,11 +257,111 @@
             transform: none;
         }
 
+        .btn-share {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .btn-share.active {
+            background: var(--success);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .btn-share.active:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+        }
+
+        .btn-share.active:active {
+            transform: scale(0.98);
+        }
+
+        .share-menu {
+            display: none;
+            width: 100%;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .share-menu.active {
+            display: flex;
+        }
+
+        .share-option {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .share-option.whatsapp {
+            background: var(--whatsapp);
+        }
+
+        .share-option.email {
+            background: var(--email);
+        }
+
+        .share-option.other {
+            background: var(--brand);
+        }
+
+        .share-option:hover {
+            transform: translateY(-2px);
+            filter: brightness(110%);
+        }
+
+        .share-option:active {
+            transform: translateY(0);
+        }
+
         .loading { 
             padding: 40px; 
             text-align: center; 
             color: var(--text-light); 
             font-size: 13px; 
+        }
+
+        .pdf-status {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .pdf-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .pdf-status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
@@ -318,8 +421,20 @@
             <div id="loader" class="loading">Loading monthly data...</div>
         </div>
 
-        <div class="footer-actions">
+        <!-- PDF Generation Status -->
+        <div id="pdfStatus" class="pdf-status" style="display: none;"></div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
             <button class="btn-pdf" onclick="generatePDF()" id="pdfBtn">📄 Download PDF</button>
+            <button class="btn-share" id="shareBtn" onclick="toggleShareMenu()">📤 Share PDF</button>
+        </div>
+
+        <!-- Share Options Menu -->
+        <div class="share-menu" id="shareMenu">
+            <button class="share-option whatsapp" onclick="shareViaWhatsApp()">📱 WhatsApp</button>
+            <button class="share-option email" onclick="shareViaEmail()">📧 Email</button>
+            <button class="share-option other" onclick="shareViaOther()">🔄 More Apps</button>
         </div>
     </div>
 
@@ -338,6 +453,8 @@
             starch: 0,
             fg: 0
         };
+        let lastGeneratedPdfBlob = null;
+        let lastGeneratedFileName = '';
 
         function isAndroid() {
             return navigator.userAgent.toLowerCase().indexOf('android') > -1;
@@ -379,6 +496,13 @@
         async function fetchMonthlyData(firstDay, lastDay) {
             document.getElementById('loader').style.display = "block";
             document.getElementById('tableBody').innerHTML = "";
+            document.getElementById('pdfStatus').style.display = "none";
+            
+            // Reset share button state
+            const shareBtn = document.getElementById('shareBtn');
+            shareBtn.classList.remove('active');
+            shareBtn.style.opacity = '0.5';
+            shareBtn.style.pointerEvents = 'none';
             
             // Reset totals
             columnTotals = {
@@ -481,8 +605,11 @@
         function generatePDF() {
             const btn = document.getElementById('pdfBtn');
             const originalText = btn.innerText;
+            const statusDiv = document.getElementById('pdfStatus');
+            
             btn.innerText = "⏳ Generating PDF...";
             btn.disabled = true;
+            statusDiv.style.display = "none";
 
             try {
                 const { jsPDF } = window.jspdf;
@@ -527,39 +654,184 @@
                 });
                 
                 // Generate filename
-                const filename = `Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`;
+                lastGeneratedFileName = `Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`;
                 
-                // Get PDF as base64 string
+                // Get PDF as blob for sharing
+                const pdfBlob = doc.output('blob');
+                lastGeneratedPdfBlob = pdfBlob;
+                
+                // Get PDF as base64 for Android
                 const pdfBase64 = doc.output('datauristring');
                 
                 // Send to Android via JavaScript interface
                 if (window.AndroidPDF) {
-                    window.AndroidPDF.savePDF(pdfBase64, filename);
-                    btn.innerText = "✓ PDF Saved";
-                    setTimeout(() => {
-                        btn.innerText = originalText;
-                    }, 2000);
+                    window.AndroidPDF.savePDF(pdfBase64, lastGeneratedFileName);
+                    
+                    // Show success message
+                    statusDiv.className = 'pdf-status success';
+                    statusDiv.innerHTML = '✓ PDF saved successfully! You can now share it.';
+                    statusDiv.style.display = 'block';
+                    
+                    // Enable share button
+                    const shareBtn = document.getElementById('shareBtn');
+                    shareBtn.classList.add('active');
+                    shareBtn.style.opacity = '1';
+                    shareBtn.style.pointerEvents = 'auto';
+                    
                 } else {
                     // Fallback for browser
-                    const pdfBlob = doc.output('blob');
                     const blobUrl = URL.createObjectURL(pdfBlob);
                     const link = document.createElement('a');
                     link.href = blobUrl;
-                    link.download = filename;
+                    link.download = lastGeneratedFileName;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    btn.innerText = originalText;
+                    
+                    // For browser, we can use Web Share API
+                    if (navigator.share) {
+                        statusDiv.className = 'pdf-status success';
+                        statusDiv.innerHTML = '✓ PDF generated! Click Share to send it.';
+                        statusDiv.style.display = 'block';
+                        
+                        const shareBtn = document.getElementById('shareBtn');
+                        shareBtn.classList.add('active');
+                        shareBtn.style.opacity = '1';
+                        shareBtn.style.pointerEvents = 'auto';
+                    }
                 }
+                
+                btn.innerText = "✓ PDF Generated";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                }, 2000);
                 
                 btn.disabled = false;
                 
             } catch (error) {
                 console.error('PDF generation error:', error);
-                alert('Unable to generate PDF. Please try again.');
+                statusDiv.className = 'pdf-status error';
+                statusDiv.innerHTML = '❌ PDF generation failed. Please try again.';
+                statusDiv.style.display = 'block';
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
+        }
+
+        function toggleShareMenu() {
+            const menu = document.getElementById('shareMenu');
+            menu.classList.toggle('active');
+        }
+
+        async function shareViaWhatsApp() {
+            if (!lastGeneratedPdfBlob) {
+                alert('Please generate PDF first');
+                return;
+            }
+
+            try {
+                // Create a File object from the blob
+                const pdfFile = new File([lastGeneratedPdfBlob], lastGeneratedFileName, { type: 'application/pdf' });
+                
+                // Check if Web Share API supports files [citation:1]
+                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                    await navigator.share({
+                        title: 'Monthly Production Report',
+                        text: `Monthly Production Report - ${formatMonthYear(getMonthRange(monthOffset).displayDate)}`,
+                        files: [pdfFile]
+                    });
+                } else {
+                    // Fallback for browsers that don't support file sharing
+                    const url = URL.createObjectURL(lastGeneratedPdfBlob);
+                    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent('Please check the attached monthly production report.')}`;
+                    window.open(whatsappUrl, '_blank');
+                    
+                    // Also provide download link
+                    alert('Please download and attach the PDF manually.\nThe file will download now.');
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = lastGeneratedFileName;
+                    link.click();
+                }
+            } catch (error) {
+                console.error('Share error:', error);
+                alert('Could not share via WhatsApp. Please try downloading and sharing manually.');
+            }
+            
+            document.getElementById('shareMenu').classList.remove('active');
+        }
+
+        async function shareViaEmail() {
+            if (!lastGeneratedPdfBlob) {
+                alert('Please generate PDF first');
+                return;
+            }
+
+            try {
+                const range = getMonthRange(monthOffset);
+                const monthName = formatMonthYear(range.displayDate);
+                
+                // Create email body
+                const subject = `Monthly Production Report - ${monthName}`;
+                const body = `Dear Team,\n\nPlease find attached the monthly production report for ${monthName}.\n\nSummary:\n- Month Total: ${columnTotals.fg.toLocaleString()}\n- Total Days: ${Object.keys(currentData).length}\n\nBest regards,\nSBTA System`;
+                
+                // For email, we need to use mailto with attachment (not directly supported)
+                // Instead, we'll open email client and provide download link
+                const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n[Please download and attach the PDF from your Downloads/SBTA_Reports folder]')}`;
+                window.location.href = mailtoUrl;
+                
+                // Also provide download link
+                alert('Email draft created. Please download and attach the PDF manually.');
+                const url = URL.createObjectURL(lastGeneratedPdfBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = lastGeneratedFileName;
+                link.click();
+                
+            } catch (error) {
+                console.error('Email error:', error);
+                alert('Could not open email client. Please try again.');
+            }
+            
+            document.getElementById('shareMenu').classList.remove('active');
+        }
+
+        async function shareViaOther() {
+            if (!lastGeneratedPdfBlob) {
+                alert('Please generate PDF first');
+                return;
+            }
+
+            try {
+                const pdfFile = new File([lastGeneratedPdfBlob], lastGeneratedFileName, { type: 'application/pdf' });
+                
+                // Use Web Share API for other apps [citation:5]
+                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                    await navigator.share({
+                        title: 'Monthly Production Report',
+                        text: `Monthly Production Report - ${formatMonthYear(getMonthRange(monthOffset).displayDate)}`,
+                        files: [pdfFile]
+                    });
+                } else {
+                    // Fallback: download the file
+                    const url = URL.createObjectURL(lastGeneratedPdfBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = lastGeneratedFileName;
+                    link.click();
+                    alert('PDF downloaded. You can now share it from your Downloads folder.');
+                }
+            } catch (error) {
+                console.error('Share error:', error);
+                alert('Could not share. PDF has been downloaded to your device.');
+                const url = URL.createObjectURL(lastGeneratedPdfBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = lastGeneratedFileName;
+                link.click();
+            }
+            
+            document.getElementById('shareMenu').classList.remove('active');
         }
 
         // Initialize with current month
