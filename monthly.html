@@ -730,32 +730,56 @@
             }
 
             try {
-                // Create a File object from the blob
-                const pdfFile = new File([lastGeneratedPdfBlob], lastGeneratedFileName, { type: 'application/pdf' });
+                const range = getMonthRange(monthOffset);
+                const monthName = formatMonthYear(range.displayDate);
                 
-                // Check if Web Share API supports files [citation:1]
-                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-                    await navigator.share({
-                        title: 'Monthly Production Report',
-                        text: `Monthly Production Report - ${formatMonthYear(getMonthRange(monthOffset).displayDate)}`,
-                        files: [pdfFile]
-                    });
-                } else {
-                    // Fallback for browsers that don't support file sharing
-                    const url = URL.createObjectURL(lastGeneratedPdfBlob);
-                    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent('Please check the attached monthly production report.')}`;
-                    window.open(whatsappUrl, '_blank');
+                // For Android, we'll use the JavaScript interface
+                if (window.AndroidPDF) {
+                    // Create a download URL and message for the user
+                    const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
                     
-                    // Also provide download link
-                    alert('Please download and attach the PDF manually.\nThe file will download now.');
+                    // Show instructions
+                    alert('Please follow these steps:\n1. Download the PDF\n2. Open WhatsApp\n3. Attach the PDF from Downloads/SBTA_Reports folder');
+                    
+                    // Download the file
                     const link = document.createElement('a');
-                    link.href = url;
+                    link.href = blobUrl;
                     link.download = lastGeneratedFileName;
                     link.click();
+                    
+                    // Open WhatsApp (this might work on some devices)
+                    setTimeout(() => {
+                        window.location.href = 'https://wa.me/?text=' + encodeURIComponent(`Monthly Production Report - ${monthName}`);
+                    }, 1000);
+                    
+                } else {
+                    // For browser, use Web Share API
+                    const pdfFile = new File([lastGeneratedPdfBlob], lastGeneratedFileName, { type: 'application/pdf' });
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                        await navigator.share({
+                            title: 'Monthly Production Report',
+                            text: `Monthly Production Report - ${monthName}`,
+                            files: [pdfFile]
+                        });
+                    } else {
+                        // Fallback
+                        const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = lastGeneratedFileName;
+                        link.click();
+                        alert('PDF downloaded. Please share it manually via WhatsApp.');
+                    }
                 }
             } catch (error) {
-                console.error('Share error:', error);
-                alert('Could not share via WhatsApp. Please try downloading and sharing manually.');
+                console.error('WhatsApp share error:', error);
+                alert('Could not share via WhatsApp. PDF has been downloaded.');
+                const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = lastGeneratedFileName;
+                link.click();
             }
             
             document.getElementById('shareMenu').classList.remove('active');
@@ -771,26 +795,48 @@
                 const range = getMonthRange(monthOffset);
                 const monthName = formatMonthYear(range.displayDate);
                 
-                // Create email body
                 const subject = `Monthly Production Report - ${monthName}`;
                 const body = `Dear Team,\n\nPlease find attached the monthly production report for ${monthName}.\n\nSummary:\n- Month Total: ${columnTotals.fg.toLocaleString()}\n- Total Days: ${Object.keys(currentData).length}\n\nBest regards,\nSBTA System`;
                 
-                // For email, we need to use mailto with attachment (not directly supported)
-                // Instead, we'll open email client and provide download link
-                const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n[Please download and attach the PDF from your Downloads/SBTA_Reports folder]')}`;
-                window.location.href = mailtoUrl;
-                
-                // Also provide download link
-                alert('Email draft created. Please download and attach the PDF manually.');
-                const url = URL.createObjectURL(lastGeneratedPdfBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = lastGeneratedFileName;
-                link.click();
+                if (window.AndroidPDF) {
+                    // Download first, then open email
+                    const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
+                    
+                    alert('Please follow these steps:\n1. Download the PDF\n2. Open your email app\n3. Attach the PDF from Downloads/SBTA_Reports folder');
+                    
+                    // Download the file
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = lastGeneratedFileName;
+                    link.click();
+                    
+                    // Open email client
+                    setTimeout(() => {
+                        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    }, 1000);
+                    
+                } else {
+                    // For browser
+                    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    
+                    // Also trigger download
+                    setTimeout(() => {
+                        const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = lastGeneratedFileName;
+                        link.click();
+                    }, 500);
+                }
                 
             } catch (error) {
                 console.error('Email error:', error);
-                alert('Could not open email client. Please try again.');
+                alert('Could not open email. PDF has been downloaded.');
+                const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = lastGeneratedFileName;
+                link.click();
             }
             
             document.getElementById('shareMenu').classList.remove('active');
@@ -803,30 +849,42 @@
             }
 
             try {
-                const pdfFile = new File([lastGeneratedPdfBlob], lastGeneratedFileName, { type: 'application/pdf' });
-                
-                // Use Web Share API for other apps [citation:5]
-                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-                    await navigator.share({
-                        title: 'Monthly Production Report',
-                        text: `Monthly Production Report - ${formatMonthYear(getMonthRange(monthOffset).displayDate)}`,
-                        files: [pdfFile]
-                    });
-                } else {
-                    // Fallback: download the file
-                    const url = URL.createObjectURL(lastGeneratedPdfBlob);
+                if (window.AndroidPDF) {
+                    // Download the file for manual sharing
+                    const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
+                    
+                    alert('PDF downloaded to Downloads/SBTA_Reports folder. You can now share it using any app.');
+                    
                     const link = document.createElement('a');
-                    link.href = url;
+                    link.href = blobUrl;
                     link.download = lastGeneratedFileName;
                     link.click();
-                    alert('PDF downloaded. You can now share it from your Downloads folder.');
+                    
+                } else {
+                    // For browser, use Web Share API
+                    const pdfFile = new File([lastGeneratedPdfBlob], lastGeneratedFileName, { type: 'application/pdf' });
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                        await navigator.share({
+                            title: 'Monthly Production Report',
+                            files: [pdfFile]
+                        });
+                    } else {
+                        // Fallback
+                        const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = lastGeneratedFileName;
+                        link.click();
+                        alert('PDF downloaded. You can now share it from your Downloads folder.');
+                    }
                 }
             } catch (error) {
                 console.error('Share error:', error);
-                alert('Could not share. PDF has been downloaded to your device.');
-                const url = URL.createObjectURL(lastGeneratedPdfBlob);
+                alert('Could not share. PDF has been downloaded.');
+                const blobUrl = URL.createObjectURL(lastGeneratedPdfBlob);
                 const link = document.createElement('a');
-                link.href = url;
+                link.href = blobUrl;
                 link.download = lastGeneratedFileName;
                 link.click();
             }
