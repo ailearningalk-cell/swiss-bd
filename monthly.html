@@ -313,6 +313,7 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
+                    <!-- Summary row will be added here by JavaScript -->
                 </table>
             </div>
             <div id="loader" class="loading">Loading monthly data...</div>
@@ -388,21 +389,47 @@
             const tableBody = document.getElementById('tableBody');
             document.getElementById('loader').style.display = "none";
             let grandTotal = 0;
+            
+            // Totals for each column
+            let totalTwill = 0;
+            let totalDraw = 0;
+            let totalCrochet = 0;
+            let totalTip = 0;
+            let totalStarch = 0;
+            let totalFg = 0;
+            
             const grouped = {};
 
             data.forEach(row => {
                 const d = row.entry_date;
                 if (!grouped[d]) grouped[d] = { twill:0, ds:0, crochet:0, tip:0, starch:0, fg:0 };
-                grouped[d].twill += (Number(row.twill_6_1) || 0) + (Number(row.twill_6_2) || 0) + (Number(row.twill_10_2) || 0);
-                grouped[d].ds += (Number(row.ds_16h_1) || 0) + (Number(row.ds_16h_2) || 0) + (Number(row.ds_48h_3) || 0);
-                grouped[d].crochet += (Number(row.crochet_1) || 0) + (Number(row.crochet_2) || 0) + (Number(row.crochet_3) || 0);
-                grouped[d].tip += (Number(row.tipping) || 0);
-                grouped[d].starch += (Number(row.starching) || 0);
-                grouped[d].fg += (Number(row.finished_goods) || 0);
-                grandTotal += (Number(row.finished_goods) || 0);
+                
+                const twill = (Number(row.twill_6_1) || 0) + (Number(row.twill_6_2) || 0) + (Number(row.twill_10_2) || 0);
+                const draw = (Number(row.ds_16h_1) || 0) + (Number(row.ds_16h_2) || 0) + (Number(row.ds_48h_3) || 0);
+                const crochet = (Number(row.crochet_1) || 0) + (Number(row.crochet_2) || 0) + (Number(row.crochet_3) || 0);
+                const tip = (Number(row.tipping) || 0);
+                const starch = (Number(row.starching) || 0);
+                const fg = (Number(row.finished_goods) || 0);
+                
+                grouped[d].twill += twill;
+                grouped[d].ds += draw;
+                grouped[d].crochet += crochet;
+                grouped[d].tip += tip;
+                grouped[d].starch += starch;
+                grouped[d].fg += fg;
+                
+                totalTwill += twill;
+                totalDraw += draw;
+                totalCrochet += crochet;
+                totalTip += tip;
+                totalStarch += starch;
+                totalFg += fg;
+                grandTotal += fg;
             });
 
             const keys = Object.keys(grouped).sort().reverse();
+            
+            // Add data rows
             keys.forEach(date => {
                 const day = grouped[date];
                 tableBody.innerHTML += `
@@ -417,6 +444,19 @@
                     </tr>
                 `;
             });
+            
+            // Add summary row with totals
+            tableBody.innerHTML += `
+                <tr style="background-color: #f0f2f5; font-weight: 800; border-top: 2px solid #1a1f36;">
+                    <td><b>TOTAL</b></td>
+                    <td><b>${totalTwill.toLocaleString()}</b></td>
+                    <td><b>${totalDraw.toLocaleString()}</b></td>
+                    <td><b>${totalCrochet.toLocaleString()}</b></td>
+                    <td><b>${totalTip.toLocaleString()}</b></td>
+                    <td><b>${totalStarch.toLocaleString()}</b></td>
+                    <td class="row-total" style="color: var(--primary);"><b>${totalFg.toLocaleString()}</b></td>
+                </tr>
+            `;
 
             document.getElementById('month_total').innerText = grandTotal.toLocaleString();
             document.getElementById('month_avg').innerText = Math.round(grandTotal / (keys.length || 1)).toLocaleString();
@@ -444,28 +484,57 @@
                     format: 'a4'
                 });
                 
-                // Add title
+                // Add title - CENTERED
                 doc.setFontSize(16);
                 doc.setTextColor(26, 31, 54);
-                doc.text('Swiss-Bangla Trims & Accessories', 40, 40);
+                doc.setFont(undefined, 'bold');
                 
-                doc.setFontSize(12);
+                // Center align the title
+                const title = 'Swiss-Bangla Trims & Accessories';
+                const titleWidth = doc.getTextWidth(title);
+                const pageWidth = doc.internal.pageSize.getWidth();
+                doc.text(title, (pageWidth - titleWidth) / 2, 40);
+                
+                // Add subtitle - CENTERED
+                doc.setFontSize(14);
                 doc.setTextColor(212, 1, 1);
+                doc.setFont(undefined, 'bold');
                 
-                // Format month for display
                 const range = getMonthRange(monthOffset);
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 const monthName = monthNames[range.month];
+                const subtitle = `${monthName} ${range.year} Production Report`;
+                const subtitleWidth = doc.getTextWidth(subtitle);
+                doc.text(subtitle, (pageWidth - subtitleWidth) / 2, 60);
                 
-                doc.text(`${monthName} ${range.year} Production Report`, 40, 60);
+                // Reset font for table
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
                 
-                // Generate table
+                // Generate table with totals included
                 doc.autoTable({ 
                     html: '#monthlyTable', 
                     startY: 80, 
                     headStyles: { fillColor: [26, 31, 54] },
                     styles: { fontSize: 9, cellPadding: 8 },
-                    margin: { left: 40, right: 40 }
+                    margin: { left: 40, right: 40 },
+                    didDrawPage: function(data) {
+                        // Add summary text after table
+                        if (data.pageCount === data.pageNumber) {
+                            const finalY = data.cursor.y + 20;
+                            doc.setFontSize(10);
+                            doc.setTextColor(26, 31, 54);
+                            doc.setFont(undefined, 'bold');
+                            
+                            const summary = `Total Days: ${Object.keys(grouped).length}`;
+                            doc.text(summary, 40, finalY);
+                            
+                            const goal = 500000;
+                            const achievement = Math.round((grandTotal / goal) * 100);
+                            const goalText = `Achievement: ${achievement}% of monthly goal (${goal.toLocaleString()})`;
+                            doc.text(goalText, 40, finalY + 15);
+                        }
+                    }
                 });
                 
                 // Generate filename
