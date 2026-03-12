@@ -260,62 +260,6 @@
             color: var(--text-light); 
             font-size: 13px; 
         }
-
-        .pdf-status {
-            text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-        .pdf-status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .pdf-status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .share-instructions {
-            background: #e8f4fd;
-            border-left: 4px solid #4285f4;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .share-instructions.active {
-            display: block;
-        }
-
-        .share-instructions p {
-            margin: 5px 0;
-        }
-
-        .share-instructions .app-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-            justify-content: center;
-        }
-
-        .share-instructions .app-icon {
-            text-align: center;
-            font-size: 20px;
-        }
-
-        .share-instructions .app-icon span {
-            display: block;
-            font-size: 12px;
-            margin-top: 4px;
-        }
     </style>
 </head>
 <body>
@@ -369,42 +313,14 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
+                    <!-- Summary row will be added here by JavaScript -->
                 </table>
             </div>
             <div id="loader" class="loading">Loading monthly data...</div>
         </div>
 
-        <!-- PDF Generation Status -->
-        <div id="pdfStatus" class="pdf-status" style="display: none;"></div>
-
-        <!-- Share Instructions (shows after PDF is generated) -->
-        <div class="share-instructions" id="shareInstructions">
-            <p><strong>✅ PDF Saved Successfully!</strong></p>
-            <p>Your PDF is saved in: <strong>Downloads/SBTA_Reports/</strong></p>
-            <p>To share via WhatsApp, Email, or other apps:</p>
-            
-            <div class="app-icons">
-                <div class="app-icon">
-                    📱<br><span>WhatsApp</span>
-                </div>
-                <div class="app-icon">
-                    📧<br><span>Email</span>
-                </div>
-                <div class="app-icon">
-                    🔄<br><span>Other Apps</span>
-                </div>
-            </div>
-            
-            <p style="margin-top: 15px; font-size: 13px;">
-                1. Open WhatsApp/Email app<br>
-                2. Attach file from Downloads/SBTA_Reports folder<br>
-                3. Send to your contact
-            </p>
-        </div>
-
-        <!-- Single Download Button -->
         <div class="footer-actions">
-            <button class="btn-pdf" onclick="generatePDF()" id="pdfBtn">📄 Download PDF Report</button>
+            <button class="btn-pdf" onclick="generatePDF()" id="pdfBtn">📄 Download PDF</button>
         </div>
     </div>
 
@@ -415,14 +331,10 @@
 
         let monthOffset = 0;
         let currentData = [];
-        let columnTotals = {
-            twill: 0,
-            draw: 0,
-            crochet: 0,
-            tip: 0,
-            starch: 0,
-            fg: 0
-        };
+
+        function isAndroid() {
+            return navigator.userAgent.toLowerCase().indexOf('android') > -1;
+        }
 
         function formatMonthYear(date) {
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -460,18 +372,6 @@
         async function fetchMonthlyData(firstDay, lastDay) {
             document.getElementById('loader').style.display = "block";
             document.getElementById('tableBody').innerHTML = "";
-            document.getElementById('pdfStatus').style.display = "none";
-            document.getElementById('shareInstructions').classList.remove('active');
-            
-            // Reset totals
-            columnTotals = {
-                twill: 0,
-                draw: 0,
-                crochet: 0,
-                tip: 0,
-                starch: 0,
-                fg: 0
-            };
             
             try {
                 const { data, error } = await _supabase.from('production_logs').select('*')
@@ -489,6 +389,15 @@
             const tableBody = document.getElementById('tableBody');
             document.getElementById('loader').style.display = "none";
             let grandTotal = 0;
+            
+            // Totals for each column
+            let totalTwill = 0;
+            let totalDraw = 0;
+            let totalCrochet = 0;
+            let totalTip = 0;
+            let totalStarch = 0;
+            let totalFg = 0;
+            
             const grouped = {};
 
             data.forEach(row => {
@@ -509,14 +418,12 @@
                 grouped[d].starch += starch;
                 grouped[d].fg += fg;
                 
-                // Add to totals
-                columnTotals.twill += twill;
-                columnTotals.draw += draw;
-                columnTotals.crochet += crochet;
-                columnTotals.tip += tip;
-                columnTotals.starch += starch;
-                columnTotals.fg += fg;
-                
+                totalTwill += twill;
+                totalDraw += draw;
+                totalCrochet += crochet;
+                totalTip += tip;
+                totalStarch += starch;
+                totalFg += fg;
                 grandTotal += fg;
             });
 
@@ -542,12 +449,12 @@
             tableBody.innerHTML += `
                 <tr style="background-color: #f0f2f5; font-weight: 800; border-top: 2px solid #1a1f36;">
                     <td><b>TOTAL</b></td>
-                    <td><b>${columnTotals.twill.toLocaleString()}</b></td>
-                    <td><b>${columnTotals.draw.toLocaleString()}</b></td>
-                    <td><b>${columnTotals.crochet.toLocaleString()}</b></td>
-                    <td><b>${columnTotals.tip.toLocaleString()}</b></td>
-                    <td><b>${columnTotals.starch.toLocaleString()}</b></td>
-                    <td class="row-total" style="color: var(--primary);"><b>${columnTotals.fg.toLocaleString()}</b></td>
+                    <td><b>${totalTwill.toLocaleString()}</b></td>
+                    <td><b>${totalDraw.toLocaleString()}</b></td>
+                    <td><b>${totalCrochet.toLocaleString()}</b></td>
+                    <td><b>${totalTip.toLocaleString()}</b></td>
+                    <td><b>${totalStarch.toLocaleString()}</b></td>
+                    <td class="row-total" style="color: var(--primary);"><b>${totalFg.toLocaleString()}</b></td>
                 </tr>
             `;
 
@@ -564,13 +471,8 @@
         function generatePDF() {
             const btn = document.getElementById('pdfBtn');
             const originalText = btn.innerText;
-            const statusDiv = document.getElementById('pdfStatus');
-            const instructionsDiv = document.getElementById('shareInstructions');
-            
             btn.innerText = "⏳ Generating PDF...";
             btn.disabled = true;
-            statusDiv.style.display = "none";
-            instructionsDiv.classList.remove('active');
 
             try {
                 const { jsPDF } = window.jspdf;
@@ -605,33 +507,49 @@
                 const subtitleWidth = doc.getTextWidth(subtitle);
                 doc.text(subtitle, (pageWidth - subtitleWidth) / 2, 60);
                 
-                // Generate table
+                // Reset font for table
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                
+                // Generate table with totals included
                 doc.autoTable({ 
                     html: '#monthlyTable', 
                     startY: 80, 
                     headStyles: { fillColor: [26, 31, 54] },
                     styles: { fontSize: 9, cellPadding: 8 },
-                    margin: { left: 40, right: 40 }
+                    margin: { left: 40, right: 40 },
+                    didDrawPage: function(data) {
+                        // Add summary text after table
+                        if (data.pageCount === data.pageNumber) {
+                            const finalY = data.cursor.y + 20;
+                            doc.setFontSize(10);
+                            doc.setTextColor(26, 31, 54);
+                            doc.setFont(undefined, 'bold');
+                            
+                            const summary = `Total Days: ${Object.keys(grouped).length}`;
+                            doc.text(summary, 40, finalY);
+                            
+                            const goal = 500000;
+                            const achievement = Math.round((grandTotal / goal) * 100);
+                            const goalText = `Achievement: ${achievement}% of monthly goal (${goal.toLocaleString()})`;
+                            doc.text(goalText, 40, finalY + 15);
+                        }
+                    }
                 });
                 
                 // Generate filename
                 const filename = `Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`;
                 
-                // Get PDF as base64 for Android
+                // Get PDF as base64 string
                 const pdfBase64 = doc.output('datauristring');
                 
                 // Send to Android via JavaScript interface
                 if (window.AndroidPDF) {
                     window.AndroidPDF.savePDF(pdfBase64, filename);
-                    
-                    // Show success message
-                    statusDiv.className = 'pdf-status success';
-                    statusDiv.innerHTML = '✓ PDF saved successfully!';
-                    statusDiv.style.display = 'block';
-                    
-                    // Show sharing instructions
-                    instructionsDiv.classList.add('active');
-                    
+                    btn.innerText = "✓ PDF Saved";
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                    }, 2000);
                 } else {
                     // Fallback for browser
                     const pdfBlob = doc.output('blob');
@@ -642,27 +560,14 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    
-                    statusDiv.className = 'pdf-status success';
-                    statusDiv.innerHTML = '✓ PDF downloaded!';
-                    statusDiv.style.display = 'block';
-                    
-                    // Show sharing instructions for browser
-                    instructionsDiv.classList.add('active');
-                }
-                
-                btn.innerText = "✓ PDF Generated";
-                setTimeout(() => {
                     btn.innerText = originalText;
-                }, 2000);
+                }
                 
                 btn.disabled = false;
                 
             } catch (error) {
                 console.error('PDF generation error:', error);
-                statusDiv.className = 'pdf-status error';
-                statusDiv.innerHTML = '❌ PDF generation failed. Please try again.';
-                statusDiv.style.display = 'block';
+                alert('Unable to generate PDF. Please try again.');
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
