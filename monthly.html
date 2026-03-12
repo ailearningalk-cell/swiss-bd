@@ -476,8 +476,8 @@
                 
                 // Send to Android via JavaScript interface
                 if (window.AndroidPDF) {
-                    window.AndroidPDF.openPDF(pdfBase64, filename);
-                    btn.innerText = "✓ PDF Generated";
+                    window.AndroidPDF.savePDF(pdfBase64, filename);
+                    btn.innerText = "✓ PDF Saved";
                     setTimeout(() => {
                         btn.innerText = originalText;
                     }, 2000);
