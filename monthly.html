@@ -313,7 +313,6 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
-                    <!-- Summary row will be added here by JavaScript -->
                 </table>
             </div>
             <div id="loader" class="loading">Loading monthly data...</div>
@@ -331,6 +330,14 @@
 
         let monthOffset = 0;
         let currentData = [];
+        let columnTotals = {
+            twill: 0,
+            draw: 0,
+            crochet: 0,
+            tip: 0,
+            starch: 0,
+            fg: 0
+        };
 
         function isAndroid() {
             return navigator.userAgent.toLowerCase().indexOf('android') > -1;
@@ -373,6 +380,16 @@
             document.getElementById('loader').style.display = "block";
             document.getElementById('tableBody').innerHTML = "";
             
+            // Reset totals
+            columnTotals = {
+                twill: 0,
+                draw: 0,
+                crochet: 0,
+                tip: 0,
+                starch: 0,
+                fg: 0
+            };
+            
             try {
                 const { data, error } = await _supabase.from('production_logs').select('*')
                     .gte('entry_date', firstDay).lte('entry_date', lastDay)
@@ -389,15 +406,6 @@
             const tableBody = document.getElementById('tableBody');
             document.getElementById('loader').style.display = "none";
             let grandTotal = 0;
-            
-            // Totals for each column
-            let totalTwill = 0;
-            let totalDraw = 0;
-            let totalCrochet = 0;
-            let totalTip = 0;
-            let totalStarch = 0;
-            let totalFg = 0;
-            
             const grouped = {};
 
             data.forEach(row => {
@@ -418,12 +426,14 @@
                 grouped[d].starch += starch;
                 grouped[d].fg += fg;
                 
-                totalTwill += twill;
-                totalDraw += draw;
-                totalCrochet += crochet;
-                totalTip += tip;
-                totalStarch += starch;
-                totalFg += fg;
+                // Add to totals
+                columnTotals.twill += twill;
+                columnTotals.draw += draw;
+                columnTotals.crochet += crochet;
+                columnTotals.tip += tip;
+                columnTotals.starch += starch;
+                columnTotals.fg += fg;
+                
                 grandTotal += fg;
             });
 
@@ -449,12 +459,12 @@
             tableBody.innerHTML += `
                 <tr style="background-color: #f0f2f5; font-weight: 800; border-top: 2px solid #1a1f36;">
                     <td><b>TOTAL</b></td>
-                    <td><b>${totalTwill.toLocaleString()}</b></td>
-                    <td><b>${totalDraw.toLocaleString()}</b></td>
-                    <td><b>${totalCrochet.toLocaleString()}</b></td>
-                    <td><b>${totalTip.toLocaleString()}</b></td>
-                    <td><b>${totalStarch.toLocaleString()}</b></td>
-                    <td class="row-total" style="color: var(--primary);"><b>${totalFg.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.twill.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.draw.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.crochet.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.tip.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.starch.toLocaleString()}</b></td>
+                    <td class="row-total" style="color: var(--primary);"><b>${columnTotals.fg.toLocaleString()}</b></td>
                 </tr>
             `;
 
@@ -507,34 +517,13 @@
                 const subtitleWidth = doc.getTextWidth(subtitle);
                 doc.text(subtitle, (pageWidth - subtitleWidth) / 2, 60);
                 
-                // Reset font for table
-                doc.setFont(undefined, 'normal');
-                doc.setTextColor(0, 0, 0);
-                
-                // Generate table with totals included
+                // Generate table - the HTML now includes the summary row
                 doc.autoTable({ 
                     html: '#monthlyTable', 
                     startY: 80, 
                     headStyles: { fillColor: [26, 31, 54] },
                     styles: { fontSize: 9, cellPadding: 8 },
-                    margin: { left: 40, right: 40 },
-                    didDrawPage: function(data) {
-                        // Add summary text after table
-                        if (data.pageCount === data.pageNumber) {
-                            const finalY = data.cursor.y + 20;
-                            doc.setFontSize(10);
-                            doc.setTextColor(26, 31, 54);
-                            doc.setFont(undefined, 'bold');
-                            
-                            const summary = `Total Days: ${Object.keys(grouped).length}`;
-                            doc.text(summary, 40, finalY);
-                            
-                            const goal = 500000;
-                            const achievement = Math.round((grandTotal / goal) * 100);
-                            const goalText = `Achievement: ${achievement}% of monthly goal (${goal.toLocaleString()})`;
-                            doc.text(goalText, 40, finalY + 15);
-                        }
-                    }
+                    margin: { left: 40, right: 40 }
                 });
                 
                 // Generate filename
