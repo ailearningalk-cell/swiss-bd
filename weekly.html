@@ -253,6 +253,14 @@
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         let weekOffset = 0;
+        let columnTotals = {
+            twill: 0,
+            draw: 0,
+            crochet: 0,
+            tip: 0,
+            starch: 0,
+            fg: 0
+        };
 
         function formatDate(date) {
             const day = date.getDate();
@@ -330,6 +338,16 @@
             document.getElementById('loader').style.display = "block";
             document.getElementById('tableBody').innerHTML = "";
             
+            // Reset column totals
+            columnTotals = {
+                twill: 0,
+                draw: 0,
+                crochet: 0,
+                tip: 0,
+                starch: 0,
+                fg: 0
+            };
+            
             try {
                 const { data, error } = await _supabase.from('production_logs').select('*')
                     .gte('entry_date', startDate).lte('entry_date', endDate)
@@ -349,13 +367,30 @@
             data.forEach(row => {
                 const d = row.entry_date;
                 if (!grouped[d]) grouped[d] = { twill:0, ds:0, crochet:0, tip:0, starch:0, fg:0 };
-                grouped[d].twill += (Number(row.twill_6_1) || 0) + (Number(row.twill_6_2) || 0) + (Number(row.twill_10_2) || 0);
-                grouped[d].ds += (Number(row.ds_16h_1) || 0) + (Number(row.ds_16h_2) || 0) + (Number(row.ds_48h_3) || 0);
-                grouped[d].crochet += (Number(row.crochet_1) || 0) + (Number(row.crochet_2) || 0) + (Number(row.crochet_3) || 0);
-                grouped[d].tip += (Number(row.tipping) || 0);
-                grouped[d].starch += (Number(row.starching) || 0);
-                grouped[d].fg += (Number(row.finished_goods) || 0);
-                grandTotal += (Number(row.finished_goods) || 0);
+                
+                const twill = (Number(row.twill_6_1) || 0) + (Number(row.twill_6_2) || 0) + (Number(row.twill_10_2) || 0);
+                const draw = (Number(row.ds_16h_1) || 0) + (Number(row.ds_16h_2) || 0) + (Number(row.ds_48h_3) || 0);
+                const crochet = (Number(row.crochet_1) || 0) + (Number(row.crochet_2) || 0) + (Number(row.crochet_3) || 0);
+                const tip = (Number(row.tipping) || 0);
+                const starch = (Number(row.starching) || 0);
+                const fg = (Number(row.finished_goods) || 0);
+                
+                grouped[d].twill += twill;
+                grouped[d].ds += draw;
+                grouped[d].crochet += crochet;
+                grouped[d].tip += tip;
+                grouped[d].starch += starch;
+                grouped[d].fg += fg;
+                
+                // Add to column totals
+                columnTotals.twill += twill;
+                columnTotals.draw += draw;
+                columnTotals.crochet += crochet;
+                columnTotals.tip += tip;
+                columnTotals.starch += starch;
+                columnTotals.fg += fg;
+                
+                grandTotal += fg;
             });
 
             Object.keys(grouped).sort().reverse().forEach(date => {
@@ -372,6 +407,19 @@
                     </tr>
                 `;
             });
+            
+            // Add summation row at the bottom
+            tableBody.innerHTML += `
+                <tr style="background-color: #f0f2f5; font-weight: 800; border-top: 2px solid #1a1f36;">
+                    <td><b>TOTAL</b></td>
+                    <td><b>${columnTotals.twill.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.draw.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.crochet.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.tip.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.starch.toLocaleString()}</b></td>
+                    <td class="row-total" style="color: var(--primary);"><b>${columnTotals.fg.toLocaleString()}</b></td>
+                </tr>
+            `;
             
             document.getElementById('week_total').innerText = grandTotal.toLocaleString();
             document.getElementById('avg_total').innerText = Math.round(grandTotal / (Object.keys(grouped).length || 1)).toLocaleString();
