@@ -30,7 +30,6 @@
 
         .container { width: 100%; max-width: 500px; }
 
-        /* Company name */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -43,7 +42,6 @@
             text-align: center;
         }
 
-        /* Monthly Data title */
         .monthly-title {
             font-size: 15px;
             color: #D40101;
@@ -53,7 +51,6 @@
             margin-bottom: 15px;
         }
 
-        /* Dashboard link */
         .dashboard-link {
             text-align: center;
             margin-bottom: 20px;
@@ -76,7 +73,6 @@
             transform: translateY(-1px);
         }
 
-        /* Month Selector Card */
         .selector-card {
             background: #fff; border-radius: 18px;
             border: 1px solid var(--card-border);
@@ -218,7 +214,6 @@
             text-align: right; 
         }
 
-        /* Footer with left-aligned Download PDF button */
         .footer-actions { 
             width: 100%; 
             display: flex; 
@@ -277,7 +272,6 @@
             <a href="home.html" class="back-link">📊 Dashboard</a>
         </div>
 
-        <!-- Month Selector Card with Left/Right Buttons -->
         <div class="selector-card">
             <span class="selector-label">Viewing Report For</span>
             
@@ -324,7 +318,6 @@
             <div id="loader" class="loading">Loading monthly data...</div>
         </div>
 
-        <!-- Left-aligned Download PDF button -->
         <div class="footer-actions">
             <button class="btn-pdf" onclick="generatePDF()" id="pdfBtn">📄 Download PDF</button>
         </div>
@@ -339,6 +332,10 @@
         let monthOffset = 0;
         let currentData = [];
 
+        function isAndroid() {
+            return navigator.userAgent.toLowerCase().indexOf('android') > -1;
+        }
+
         function formatMonthYear(date) {
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             return `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
@@ -347,7 +344,6 @@
         function getMonthRange(offset) {
             const now = new Date();
             
-            // Adjust for offset (months)
             const selectedDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
             
             const year = selectedDate.getFullYear();
@@ -368,10 +364,8 @@
         function updateMonthDisplayAndFetch() {
             const range = getMonthRange(monthOffset);
             
-            // Update month display
             document.getElementById('monthDisplay').innerText = formatMonthYear(range.displayDate);
             
-            // Fetch data for this month
             fetchMonthlyData(range.firstDay, range.lastDay);
         }
 
@@ -442,6 +436,7 @@
 
         function generatePDF() {
             const btn = document.getElementById('pdfBtn');
+            const originalText = btn.innerText;
             btn.innerText = "⏳ Generating PDF...";
             btn.disabled = true;
 
@@ -479,16 +474,62 @@
                     margin: { left: 40, right: 40 }
                 });
                 
-                // Save the PDF (works with Android WebView)
-                doc.save(`Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`);
+                // Generate filename
+                const filename = `Monthly_Report_${range.year}_${String(range.month + 1).padStart(2, '0')}.pdf`;
                 
-                btn.innerText = "📄 Download PDF";
+                // Generate PDF as blob
+                const pdfBlob = doc.output('blob');
+                
+                // Create a blob URL
+                const blobUrl = URL.createObjectURL(pdfBlob);
+                
+                // Check if running in Android
+                if (isAndroid()) {
+                    // For Android, try multiple methods
+                    
+                    // Method 1: Custom scheme for our app
+                    try {
+                        window.location.href = `pdf-viewer://open?url=${encodeURIComponent(blobUrl)}&filename=${encodeURIComponent(filename)}`;
+                    } catch (e) {
+                        console.log('Custom scheme failed, trying fallback');
+                    }
+                    
+                    // Method 2: Create download link
+                    setTimeout(() => {
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = filename;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Clean up
+                        setTimeout(() => {
+                            URL.revokeObjectURL(blobUrl);
+                        }, 100);
+                    }, 500);
+                    
+                } else {
+                    // For desktop browsers
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    setTimeout(() => {
+                        URL.revokeObjectURL(blobUrl);
+                    }, 100);
+                }
+                
+                btn.innerText = originalText;
                 btn.disabled = false;
                 
             } catch (error) {
                 console.error('PDF generation error:', error);
                 alert('Unable to generate PDF. Please try again.');
-                btn.innerText = "📄 Download PDF";
+                btn.innerText = originalText;
                 btn.disabled = false;
             }
         }
