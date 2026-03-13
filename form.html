@@ -37,15 +37,15 @@
         }
 
         .main-container {
-            width: 100%; 
+            width: 100%;
             max-width: 500px;
         }
 
-        /* Header – universal spacing */
+        /* ---------- Universal header (exactly like weekly/monthly) ---------- */
         .header {
             width: 100%;
             text-align: center;
-            padding: 0;
+            margin-bottom: 15px;      /* same as weekly/monthly */
         }
 
         .company-name {
@@ -60,7 +60,7 @@
             text-align: center;
         }
 
-        .form-title {
+        .page-title {
             font-size: 15px;
             color: #D40101;
             font-weight: 700;
@@ -70,58 +70,35 @@
             text-align: center;
         }
 
-        /* Dashboard link container – exactly like weekly/monthly */
+        /* ---------- Dashboard link (static, identical to weekly/monthly) ---------- */
         .dashboard-link {
             text-align: center;
-            margin: 0 0 20px 0; /* no top margin, only bottom */
+            margin: 0 0 20px 0;        /* only bottom margin */
         }
 
-        /* Button – fixed dimensions, no surprises */
-        .date-nav-link {
+        .back-link {
             color: var(--primary);
             text-decoration: none;
             font-size: 13px;
             font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 36px;              /* fixed height */
-            line-height: 36px;          /* vertical center text */
-            padding: 0 16px;
+            display: inline-block;
+            padding: 8px 20px;
             background: #f0f2f5;
             border-radius: 20px;
             transition: all 0.2s ease;
             border: 1px solid transparent;
-            gap: 4px;
         }
 
-        .date-nav-link:hover {
+        .back-link:hover {
             background: #e2e6ea;
             transform: translateY(-1px);
         }
 
-        .date-nav-link:active {
+        .back-link:active {
             transform: scale(0.95);
         }
 
-        .date-nav-link svg {
-            width: 14px;
-            height: 14px;
-            stroke: currentColor;
-            flex-shrink: 0;
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        /* Date text – fixed width, constant line-height */
-        #dateText {
-            display: inline-block;
-            min-width: 90px;            /* wide enough for any date */
-            text-align: center;
-            line-height: 36px;           /* match button height */
-        }
-
-        /* Cards – unchanged */
+        /* ---------- Cards (your existing design) ---------- */
         .cards-container {
             width: 100%;
             display: grid;
@@ -190,6 +167,7 @@
             box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
         }
 
+        /* ---------- Submit button ---------- */
         .submit-btn {
             width: 100%;
             padding: 16px 20px;
@@ -224,6 +202,7 @@
             box-shadow: none;
         }
 
+        /* ---------- Error box ---------- */
         .error-box {
             display: none;
             color: var(--danger);
@@ -237,6 +216,7 @@
             border: 1px solid #fed7d7;
         }
 
+        /* ---------- Modal ---------- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -299,7 +279,53 @@
             transform: translateY(-2px);
         }
 
-        /* Responsive */
+        /* ---------- New edit button (with date) placed after the form ---------- */
+        .edit-button-container {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .edit-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            line-height: 36px;
+            padding: 0 16px;
+            background: #f0f2f5;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            gap: 4px;
+        }
+
+        .edit-link:hover {
+            background: #e2e6ea;
+            transform: translateY(-1px);
+        }
+
+        .edit-link:active {
+            transform: scale(0.95);
+        }
+
+        .edit-link svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            flex-shrink: 0;
+        }
+
+        #editDateText {
+            min-width: 90px;
+            text-align: center;
+        }
+
+        /* ---------- Responsive ---------- */
         @media (max-width: 480px) {
             body { padding: 16px; }
             .category-card { padding: 18px; }
@@ -310,178 +336,176 @@
 
         @media (max-width: 360px) {
             .company-name { font-size: 22px; }
-            .form-title { font-size: 14px; }
-            .date-nav-link { padding: 0 12px; }
-            #dateText { min-width: 70px; }
+            .page-title { font-size: 14px; }
+            .back-link, .edit-link { font-size: 12px; }
+            #editDateText { min-width: 70px; }
             .submit-btn { padding: 14px 12px; font-size: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <div class="header">
-            <div class="company-name">Swiss-Bangla Trims & Accessories</div>
-            <div class="form-title">Production Entry</div>
-        </div>
+<div class="main-container">
+    <!-- Universal header: company name + page title -->
+    <div class="header">
+        <div class="company-name">Swiss-Bangla Trims & Accessories</div>
+        <div class="page-title">Production Entry</div>
+    </div>
 
-        <div class="dashboard-link">
-            <a href="daily_edit.html" class="date-nav-link" id="dynamicDateLink">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                <span id="dateText">Loading...</span>
-            </a>
-        </div>
+    <!-- Static Dashboard link (exactly like weekly/monthly) -->
+    <div class="dashboard-link">
+        <a href="home.html" class="back-link">📊 Dashboard</a>
+    </div>
 
-        <form id="productionForm">
-            <div class="cards-container">
-                <!-- Twill Tape Card -->
-                <div class="category-card">
-                    <div class="card-header">
-                        <span class="card-title">Twill Tape Items</span>
-                    </div>
-                    <div class="form-grid">
-                        <div class="input-group"><label>(6)-1</label><input type="number" name="t61" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                        <div class="input-group"><label>(6)-2</label><input type="number" name="t62" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                        <div class="input-group"><label>(10)-2</label><input type="number" name="t102" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                    </div>
-                </div>
-
-                <!-- Drawstring Card -->
-                <div class="category-card">
-                    <div class="card-header">
-                        <span class="card-title">Drawstring Items</span>
-                    </div>
-                    <div class="form-grid">
-                        <div class="input-group"><label>16H-1</label><input type="number" name="d16h1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                        <div class="input-group"><label>16H-2</label><input type="number" name="d16h2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                        <div class="input-group"><label>48H-3</label><input type="number" name="d48h3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                    </div>
-                </div>
-
-                <!-- Crochet Card -->
-                <div class="category-card">
-                    <div class="card-header">
-                        <span class="card-title">Crochet Items</span>
-                    </div>
-                    <div class="form-grid">
-                        <div class="input-group"><label>C-1</label><input type="number" name="c1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                        <div class="input-group"><label>C-2</label><input type="number" name="c2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                        <div class="input-group"><label>C-3</label><input type="number" name="c3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                    </div>
-                </div>
-
-                <!-- Finishing Card -->
-                <div class="category-card">
-                    <div class="card-header">
-                        <span class="card-title">Finishing & Output</span>
-                    </div>
-                    <div class="form-grid">
-                        <div class="input-group"><label>Tipping</label><input type="number" name="tipping" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                        <div class="input-group"><label>Starching</label><input type="number" name="starching" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                        <div class="input-group"><label>F. Goods</label><input type="number" name="fg" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-                    </div>
+    <!-- Production form (unchanged) -->
+    <form id="productionForm">
+        <div class="cards-container">
+            <!-- Twill Tape Card -->
+            <div class="category-card">
+                <div class="card-header"><span class="card-title">Twill Tape Items</span></div>
+                <div class="form-grid">
+                    <div class="input-group"><label>(6)-1</label><input type="number" name="t61" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>(6)-2</label><input type="number" name="t62" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>(10)-2</label><input type="number" name="t102" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
                 </div>
             </div>
-
-            <button type="submit" class="submit-btn" id="submitBtn">⚡ Final Submit</button>
-            <div id="errorDisplay" class="error-box">⚠️ Please enter at least one production value.</div>
-        </form>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h1>✅</h1>
-            <h3>Data Saved!</h3>
-            <p>Production logged successfully.</p>
-            <a href="home.html" class="modal-btn">Go to Dashboard</a>
+            <!-- Drawstring Card -->
+            <div class="category-card">
+                <div class="card-header"><span class="card-title">Drawstring Items</span></div>
+                <div class="form-grid">
+                    <div class="input-group"><label>16H-1</label><input type="number" name="d16h1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>16H-2</label><input type="number" name="d16h2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>48H-3</label><input type="number" name="d48h3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                </div>
+            </div>
+            <!-- Crochet Card -->
+            <div class="category-card">
+                <div class="card-header"><span class="card-title">Crochet Items</span></div>
+                <div class="form-grid">
+                    <div class="input-group"><label>C-1</label><input type="number" name="c1" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>C-2</label><input type="number" name="c2" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>C-3</label><input type="number" name="c3" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                </div>
+            </div>
+            <!-- Finishing Card -->
+            <div class="category-card">
+                <div class="card-header"><span class="card-title">Finishing & Output</span></div>
+                <div class="form-grid">
+                    <div class="input-group"><label>Tipping</label><input type="number" name="tipping" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>Starching</label><input type="number" name="starching" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                    <div class="input-group"><label>F. Goods</label><input type="number" name="fg" value="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+                </div>
+            </div>
         </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">⚡ Final Submit</button>
+        <div id="errorDisplay" class="error-box">⚠️ Please enter at least one production value.</div>
+    </form>
+
+    <!-- Edit button (with live date) placed separately, links to daily_edit.html -->
+    <div class="edit-button-container">
+        <a href="daily_edit.html" class="edit-link" id="editLink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span id="editDateText">Loading...</span>
+        </a>
     </div>
+</div>
 
-    <script>
-        const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
-        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+<!-- Success Modal (unchanged) -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h1>✅</h1>
+        <h3>Data Saved!</h3>
+        <p>Production logged successfully.</p>
+        <a href="home.html" class="modal-btn">Go to Dashboard</a>
+    </div>
+</div>
 
-        const form = document.getElementById('productionForm');
-        const errBox = document.getElementById('errorDisplay');
-        const dateText = document.getElementById('dateText');
+<script>
+    const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        function getDhakaDate() {
-            const now = new Date();
-            return new Date(now.getTime() + (6 * 60 * 60 * 1000));
-        }
+    const form = document.getElementById('productionForm');
+    const errBox = document.getElementById('errorDisplay');
+    const editDateSpan = document.getElementById('editDateText');
 
-        function formatDhakaDateForDisplay() {
-            const d = getDhakaDate();
-            const day = String(d.getUTCDate()).padStart(2, '0');
-            const month = d.toLocaleString('en-GB', { timeZone: 'UTC', month: 'short' });
-            const year = String(d.getUTCFullYear()).slice(-2);
-            return `${day} ${month} ${year}`;
-        }
+    // Dhaka time helpers (unchanged)
+    function getDhakaDate() {
+        const now = new Date();
+        return new Date(now.getTime() + (6 * 60 * 60 * 1000));
+    }
 
-        function setDynamicLabel() {
-            dateText.innerText = formatDhakaDateForDisplay();
-        }
+    function formatDhakaDateForDisplay() {
+        const d = getDhakaDate();
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        const month = d.toLocaleString('en-GB', { timeZone: 'UTC', month: 'short' });
+        const year = String(d.getUTCFullYear()).slice(-2);
+        return `${day} ${month} ${year}`;
+    }
 
-        function hFocus(i) { if(i.value === "0") i.value = ""; errBox.style.display = "none"; }
-        function hBlur(i) { if(i.value === "") i.value = "0"; }
+    function setEditDate() {
+        editDateSpan.innerText = formatDhakaDateForDisplay();
+    }
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            const formData = new FormData(form);
-            
-            let total = 0;
-            ['t61','t62','t102','d16h1','d16h2','d48h3','c1','c2','c3','tipping','starching','fg'].forEach(f => {
-                total += parseInt(formData.get(f)) || 0;
-            });
+    function hFocus(i) { if(i.value === "0") i.value = ""; errBox.style.display = "none"; }
+    function hBlur(i) { if(i.value === "") i.value = "0"; }
 
-            if (total === 0) {
-                errBox.style.display = "block";
-                return;
-            }
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const formData = new FormData(form);
 
-            btn.disabled = true;
-            btn.innerText = '⏳ Syncing...';
-
-            const d = getDhakaDate();
-            const today = `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
-
-            const { error } = await _supabase.from('production_logs').insert([{ 
-                entry_date: today,
-                twill_6_1: parseInt(formData.get('t61')) || 0,
-                twill_6_2: parseInt(formData.get('t62')) || 0,
-                twill_10_2: parseInt(formData.get('t102')) || 0,
-                ds_16h_1: parseInt(formData.get('d16h1')) || 0,
-                ds_16h_2: parseInt(formData.get('d16h2')) || 0,
-                ds_48h_3: parseInt(formData.get('d48h3')) || 0,
-                crochet_1: parseInt(formData.get('c1')) || 0,
-                crochet_2: parseInt(formData.get('c2')) || 0,
-                crochet_3: parseInt(formData.get('c3')) || 0,
-                tipping: parseInt(formData.get('tipping')) || 0,
-                starching: parseInt(formData.get('starching')) || 0,
-                finished_goods: parseInt(formData.get('fg')) || 0
-            }]);
-
-            if (error) {
-                errBox.innerText = "❌ Sync Failed: " + error.message;
-                errBox.style.display = "block";
-                btn.disabled = false;
-                btn.innerText = '⚡ Final Submit';
-            } else {
-                document.getElementById('modalOverlay').style.display = 'flex';
-                form.reset();
-                document.querySelectorAll('input[type="number"]').forEach(i => i.value = '0');
-                btn.disabled = false;
-                btn.innerText = '⚡ Final Submit';
-            }
+        let total = 0;
+        ['t61','t62','t102','d16h1','d16h2','d48h3','c1','c2','c3','tipping','starching','fg'].forEach(f => {
+            total += parseInt(formData.get(f)) || 0;
         });
 
-        window.onload = setDynamicLabel;
-    </script>
+        if (total === 0) {
+            errBox.style.display = "block";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = '⏳ Syncing...';
+
+        const d = getDhakaDate();
+        const today = `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+
+        const { error } = await _supabase.from('production_logs').insert([{
+            entry_date: today,
+            twill_6_1: parseInt(formData.get('t61')) || 0,
+            twill_6_2: parseInt(formData.get('t62')) || 0,
+            twill_10_2: parseInt(formData.get('t102')) || 0,
+            ds_16h_1: parseInt(formData.get('d16h1')) || 0,
+            ds_16h_2: parseInt(formData.get('d16h2')) || 0,
+            ds_48h_3: parseInt(formData.get('d48h3')) || 0,
+            crochet_1: parseInt(formData.get('c1')) || 0,
+            crochet_2: parseInt(formData.get('c2')) || 0,
+            crochet_3: parseInt(formData.get('c3')) || 0,
+            tipping: parseInt(formData.get('tipping')) || 0,
+            starching: parseInt(formData.get('starching')) || 0,
+            finished_goods: parseInt(formData.get('fg')) || 0
+        }]);
+
+        if (error) {
+            errBox.innerText = "❌ Sync Failed: " + error.message;
+            errBox.style.display = "block";
+            btn.disabled = false;
+            btn.innerText = '⚡ Final Submit';
+        } else {
+            document.getElementById('modalOverlay').style.display = 'flex';
+            form.reset();
+            document.querySelectorAll('input[type="number"]').forEach(i => i.value = '0');
+            btn.disabled = false;
+            btn.innerText = '⚡ Final Submit';
+        }
+    });
+
+    window.onload = setEditDate;
+</script>
 </body>
 </html>
