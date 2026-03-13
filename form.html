@@ -36,13 +36,12 @@
             min-height: 100vh;
         }
 
-        /* Main container – same width as monthly */
         .container {
             width: 100%;
             max-width: 500px;
         }
 
-        /* ----- Company name – identical to monthly ----- */
+        /* ----- Company name – identical to weekly/monthly ----- */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -55,21 +54,21 @@
             text-align: center;
         }
 
-        /* ----- Page title – exactly like .monthly-title ----- */
+        /* ----- Page title – exactly like .weekly-title / .monthly-title ----- */
         .page-title {
             font-size: 15px;
             color: #D40101;
             font-weight: 700;
             letter-spacing: 0.3px;
             line-height: 1.2;
-            margin: 0 0 15px 0;        /* ← matches monthly’s bottom margin */
+            margin: 0 0 5px 0;          /* ← matches weekly/monthly bottom margin */
             text-align: center;
         }
 
-        /* ----- Dashboard link container – same as monthly ----- */
+        /* ----- Dashboard link container – same as weekly/monthly ----- */
         .dashboard-link {
             text-align: center;
-            margin-bottom: 20px;        /* identical to monthly */
+            margin-bottom: 20px;          /* bottom margin only */
         }
 
         .back-link {
@@ -78,7 +77,7 @@
             font-size: 13px;
             font-weight: 600;
             display: inline-block;
-            padding: 8px 16px;          /* ← exact padding from monthly */
+            padding: 8px 16px;            /* exact padding from weekly/monthly */
             background: #f0f2f5;
             border-radius: 20px;
             transition: all 0.2s ease;
@@ -295,11 +294,11 @@
 <body>
 
 <div class="container">
-    <!-- Header: company name + page title (identical to monthly) -->
+    <!-- Header: company name + page title (identical to weekly/monthly) -->
     <div class="company-name">Swiss-Bangla Trims & Accessories</div>
     <div class="page-title">Production Entry</div>
 
-    <!-- Dashboard link (same as monthly) -->
+    <!-- Dashboard link (same as weekly/monthly) -->
     <div class="dashboard-link">
         <a href="home.html" class="back-link">📊 Dashboard</a>
     </div>
