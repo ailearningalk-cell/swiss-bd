@@ -31,12 +31,13 @@
 
         /* --- Header Section - Center Aligned --- */
         .header {
-            width: 100%; max-width: 500px;
+            width: 100%; 
+            max-width: 500px;
             margin-bottom: 15px;
-            text-align: center; /* Center align everything in header */
+            text-align: center;
         }
 
-        /* Company name - responsive font, center aligned */
+        /* Company name - consistent across all pages */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -49,17 +50,18 @@
             text-align: center;
         }
 
-        /* Live Production and Date in single line - center aligned */
+        /* Title row with live production and date */
         .live-info {
             display: flex;
             align-items: center;
-            justify-content: center; /* Center the content horizontally */
+            justify-content: center;
             gap: 8px;
             flex-wrap: wrap;
             text-align: center;
             margin-bottom: 5px;
         }
 
+        /* Live Production styled as universal page title */
         .live-title {
             font-size: 15px;
             color: #D40101;
@@ -74,6 +76,7 @@
             font-size: 15px;
         }
 
+        /* Date part styled as before */
         .date-sub { 
             font-size: 15px; 
             color: var(--text-dark); 
@@ -239,7 +242,7 @@
             display: none;
         }
 
-        /* Last Update - Simple plain text, center aligned to match header */
+        /* Last Update - now only time */
         .last-update-simple {
             width: 100%;
             max-width: 500px;
@@ -263,7 +266,7 @@
     <div class="header">
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
         
-        <!-- Live Production and Date in single line - center aligned -->
+        <!-- Title with Live Production and date -->
         <div class="live-info">
             <span class="live-title">Live Production</span>
             <span class="separator">|</span>
@@ -334,7 +337,7 @@
         </div>
     </div>
 
-    <!-- Last Update - Simple plain text, center aligned -->
+    <!-- Last Update - now only time -->
     <div class="last-update-simple">
         Last Update on<span id="lastTime">--:-- --</span>
     </div>
@@ -427,7 +430,7 @@
 
                 updateDisplay(totals);
                 
-                // Show current time in 12-hour format
+                // Show only time in last update
                 document.getElementById('lastTime').innerText = formatDhakaTime12Hour();
                 
             } catch (err) { 
