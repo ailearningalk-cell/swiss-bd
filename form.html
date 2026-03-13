@@ -36,18 +36,13 @@
             min-height: 100vh;
         }
 
-        .main-container {
+        /* Main container – same width as monthly */
+        .container {
             width: 100%;
             max-width: 500px;
         }
 
-        /* ---------- Universal header (identical to monthly/weekly) ---------- */
-        .header {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 15px;      /* same as monthly/weekly */
-        }
-
+        /* ----- Company name – identical to monthly ----- */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -60,20 +55,21 @@
             text-align: center;
         }
 
+        /* ----- Page title – exactly like .monthly-title ----- */
         .page-title {
             font-size: 15px;
             color: #D40101;
             font-weight: 700;
             letter-spacing: 0.3px;
             line-height: 1.2;
-            margin: 0 0 5px 0;        /* exactly like monthly/weekly */
+            margin: 0 0 15px 0;        /* ← matches monthly’s bottom margin */
             text-align: center;
         }
 
-        /* ---------- Static Dashboard link (exact copy from monthly/weekly) ---------- */
+        /* ----- Dashboard link container – same as monthly ----- */
         .dashboard-link {
             text-align: center;
-            margin: 0 0 20px 0;        /* same bottom margin as monthly/weekly */
+            margin-bottom: 20px;        /* identical to monthly */
         }
 
         .back-link {
@@ -82,7 +78,7 @@
             font-size: 13px;
             font-weight: 600;
             display: inline-block;
-            padding: 8px 20px;
+            padding: 8px 16px;          /* ← exact padding from monthly */
             background: #f0f2f5;
             border-radius: 20px;
             transition: all 0.2s ease;
@@ -98,7 +94,7 @@
             transform: scale(0.95);
         }
 
-        /* ---------- Cards (your existing design, unchanged) ---------- */
+        /* ----- Cards (your original design, untouched) ----- */
         .cards-container {
             width: 100%;
             display: grid;
@@ -167,7 +163,7 @@
             box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
         }
 
-        /* ---------- Submit button ---------- */
+        /* ----- Submit button ----- */
         .submit-btn {
             width: 100%;
             padding: 16px 20px;
@@ -202,7 +198,7 @@
             box-shadow: none;
         }
 
-        /* ---------- Error box ---------- */
+        /* ----- Error box ----- */
         .error-box {
             display: none;
             color: var(--danger);
@@ -216,7 +212,7 @@
             border: 1px solid #fed7d7;
         }
 
-        /* ---------- Modal ---------- */
+        /* ----- Modal (unchanged) ----- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -279,7 +275,7 @@
             transform: translateY(-2px);
         }
 
-        /* ---------- Responsive ---------- */
+        /* Responsive adjustments */
         @media (max-width: 480px) {
             body { padding: 16px; }
             .category-card { padding: 18px; }
@@ -291,26 +287,24 @@
         @media (max-width: 360px) {
             .company-name { font-size: 22px; }
             .page-title { font-size: 14px; }
-            .back-link { font-size: 12px; padding: 6px 16px; }
+            .back-link { font-size: 12px; padding: 6px 14px; }
             .submit-btn { padding: 14px 12px; font-size: 15px; }
         }
     </style>
 </head>
 <body>
 
-<div class="main-container">
-    <!-- Universal header: company name + page title (no dynamic content) -->
-    <div class="header">
-        <div class="company-name">Swiss-Bangla Trims & Accessories</div>
-        <div class="page-title">Production Entry</div>
-    </div>
+<div class="container">
+    <!-- Header: company name + page title (identical to monthly) -->
+    <div class="company-name">Swiss-Bangla Trims & Accessories</div>
+    <div class="page-title">Production Entry</div>
 
-    <!-- Static Dashboard link (identical to monthly/weekly) -->
+    <!-- Dashboard link (same as monthly) -->
     <div class="dashboard-link">
         <a href="home.html" class="back-link">📊 Dashboard</a>
     </div>
 
-    <!-- Production form (unchanged) -->
+    <!-- Production form (your original design) -->
     <form id="productionForm">
         <div class="cards-container">
             <!-- Twill Tape Card -->
@@ -374,7 +368,6 @@
     const form = document.getElementById('productionForm');
     const errBox = document.getElementById('errorDisplay');
 
-    // Dhaka time helpers
     function getDhakaDate() {
         const now = new Date();
         return new Date(now.getTime() + (6 * 60 * 60 * 1000));
