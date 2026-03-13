@@ -79,7 +79,7 @@
             margin: 0 0 20px 0; /* no top margin, only bottom margin */
         }
 
-        /* Date navigation link styled like the back-link, now an <a> to daily_edit.html */
+        /* Date navigation link styled exactly like .back-link */
         .date-nav-link {
             color: var(--primary);
             text-decoration: none;
@@ -88,12 +88,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 8px 20px;
+            padding: 8px 16px; /* match .back-link padding */
             background: #f0f2f5;
             border-radius: 20px;
             transition: all 0.2s ease;
             border: 1px solid transparent;
-            gap: 6px;
+            gap: 4px; /* minimal gap */
         }
 
         .date-nav-link:hover {
@@ -109,6 +109,14 @@
             width: 14px;
             height: 14px;
             stroke: currentColor;
+            flex-shrink: 0;
+        }
+
+        /* Fixed width for the date text to prevent layout shift */
+        #dateText {
+            display: inline-block;
+            min-width: 70px; /* accommodates "99 XXX 99" */
+            text-align: center;
         }
 
         /* Cards Container - matching home.css grid */
@@ -320,8 +328,11 @@
             .company-name { font-size: 22px; }
             .form-title { font-size: 14px; }
             .date-nav-link { 
-                padding: 8px 16px; 
+                padding: 8px 12px; 
                 font-size: 11px; 
+            }
+            #dateText {
+                min-width: 60px;
             }
             .submit-btn { 
                 padding: 14px 12px; 
@@ -342,13 +353,13 @@
 <body>
 
     <div class="main-container">
-        <!-- Header with universal title (no extra margins) -->
+        <!-- Header with universal title -->
         <div class="header">
             <div class="company-name">Swiss-Bangla Trims & Accessories</div>
             <div class="form-title">Production Entry</div>
         </div>
 
-        <!-- Dashboard link container with anchor to daily_edit.html (margin matches weekly/monthly) -->
+        <!-- Dashboard link container with anchor to daily_edit.html (matches weekly/monthly exactly) -->
         <div class="dashboard-link">
             <a href="daily_edit.html" class="date-nav-link" id="dynamicDateLink">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
