@@ -98,6 +98,73 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
 
 .error-box{display:none; color:var(--danger); font-size:13px; font-weight:600; text-align:center; margin-top:15px; padding:12px; background:#fff5f5; border-radius:12px; border:1px solid #fed7d7;}
 
+/* --- Modal (restored) --- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(5px);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.modal {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  width: 100%;
+  max-width: 280px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+}
+
+.modal h1 {
+  color: var(--success);
+  margin: 0;
+  font-size: 50px;
+}
+
+.modal h3 {
+  margin: 10px 0 5px;
+  color: var(--text-dark);
+  font-size: 20px;
+}
+
+.modal p {
+  color: var(--text-light);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.modal-btn {
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.modal-btn:hover {
+  background: #2d9f5a;
+  transform: translateY(-2px);
+}
+
+.modal-btn:active {
+  transform: scale(0.98);
+}
+
 @media(max-width:360px){ .company-name{ font-size:20px; } }
 </style>
 </head>
@@ -156,18 +223,27 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
   </div>
 </div>
 
-<!-- Button inside container to match card width -->
 <div class="container">
   <button class="submit-btn" id="submitBtn">⚡ Final Submit</button>
 </div>
 <div class="error-box" id="errorBox"></div>
+
+<!-- Success Modal (restored) -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h1>✅</h1>
+    <h3>Data Saved!</h3>
+    <p>Production logged successfully.</p>
+    <a href="home.html" class="modal-btn">Go to Dashboard</a>
+  </div>
+</div>
 
 <script>
 const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Dhaka time helper (GMT+6)
+// Dhaka time helper
 function getDhakaDate() {
   const now = new Date();
   return new Date(now.getTime() + (6 * 60 * 60 * 1000));
@@ -188,7 +264,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const errorBox = document.getElementById('errorBox');
   errorBox.style.display = 'none';
 
-  // Collect all values
+  // Collect values
   const t61 = Number(document.getElementById('t61').value) || 0;
   const t62 = Number(document.getElementById('t62').value) || 0;
   const t102 = Number(document.getElementById('t102').value) || 0;
@@ -202,7 +278,6 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const starch = Number(document.getElementById('starch').value) || 0;
   const fg = Number(document.getElementById('fg').value) || 0;
 
-  // Check if at least one value > 0
   const total = t61 + t62 + t102 + ds1 + ds2 + ds3 + c1 + c2 + c3 + tip + starch + fg;
   if (total === 0) {
     errorBox.innerText = '⚠️ Please enter at least one production value.';
@@ -210,7 +285,6 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     return;
   }
 
-  // Prepare data object (field names match database columns)
   const data = {
     entry_date: getDhakaDate().toISOString().split('T')[0],
     twill_6_1: t61,
@@ -234,9 +308,23 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     const { error } = await _supabase.from('production_logs').insert([data]);
     if (error) throw error;
 
-    // Success: show alert and redirect to home.html
-    alert('✅ Entry added successfully!');
-    window.location.href = 'home.html'; // redirect after OK
+    // Show success modal instead of alert
+    document.getElementById('modalOverlay').style.display = 'flex';
+    // Reset form fields
+    document.getElementById('t61').value = 0;
+    document.getElementById('t62').value = 0;
+    document.getElementById('t102').value = 0;
+    document.getElementById('ds1').value = 0;
+    document.getElementById('ds2').value = 0;
+    document.getElementById('ds3').value = 0;
+    document.getElementById('c1').value = 0;
+    document.getElementById('c2').value = 0;
+    document.getElementById('c3').value = 0;
+    document.getElementById('tip').value = 0;
+    document.getElementById('starch').value = 0;
+    document.getElementById('fg').value = 0;
+    btn.disabled = false;
+    btn.innerText = '⚡ Final Submit';
 
   } catch (e) {
     errorBox.innerText = e.message;
