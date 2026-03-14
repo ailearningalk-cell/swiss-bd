@@ -72,7 +72,8 @@ border:1px solid transparent;
 .back-link:active{ transform:scale(.95);}
 
 /* Cards */
-.cards-container { width: 100%; display: grid; gap: 16px; margin-bottom: 20px; }
+.cards-container { width: 100%; display: grid; gap: 16px; margin-bottom: 20px; transition: opacity 0.2s ease; opacity:0; pointer-events:none; }
+.cards-container.visible { opacity:1; pointer-events:auto; }
 .edit-card { background: #fff; border-radius: 18px; padding: 18px 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.02); border: 1px solid var(--card-border); width: 100%; overflow: hidden; }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
 .card-title { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px; display: block; }
@@ -88,13 +89,11 @@ td { padding: 8px 4px; text-align: center; border-bottom: 1px solid #f0f2f5; }
 .inline-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1); }
 
 /* Update Button */
-.update-btn { width: 100%; padding: 16px 20px; background: var(--navy); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); letter-spacing: 0.5px; display:block; }
-.update-btn:hover { background: #0f1a2e; transform: translateY(-2px); }
-.update-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+.update-btn { width: 100%; padding: 16px 20px; background: var(--navy); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); letter-spacing: 0.5px; display:block; opacity:0; pointer-events:none; transition: opacity 0.2s ease; }
+.update-btn.visible { opacity:1; pointer-events:auto; }
 
-/* Loading fix */
-.loading-container { width: 100%; max-width: 500px; text-align: center; padding: 40px 20px; color: var(--text-light); font-size: 15px; font-weight: 500; margin: 0 auto; visibility: hidden; opacity: 0; transition: opacity 0.2s ease, visibility 0.2s ease; }
-body.loading .loading-container { visibility: visible; opacity: 1; }
+/* Loading */
+.loading-container { width: 100%; max-width: 500px; text-align: center; padding: 40px 20px; color: var(--text-light); font-size: 15px; font-weight: 500; transition: opacity 0.2s ease; }
 
 /* No Data Message */
 .no-data-message { width: 100%; max-width: 500px; text-align: center; padding: 50px 20px; color: var(--text-light); font-size: 16px; font-weight: 500; display:none; }
@@ -112,9 +111,8 @@ body.loading .loading-container { visibility: visible; opacity: 1; }
 @media(max-width:360px){ .company-name{ font-size:20px; } }
 </style>
 </head>
-<body class="loading">
+<body>
 
-<!-- Header -->
 <div class="container">
 <div class="company-name">Swiss-Bangla Trims & Accessories</div>
 <div class="page-title">Daily Edit</div>
@@ -133,12 +131,12 @@ No entries found for today
 </div>
 
 <!-- Editor Content -->
-<div id="editorContent" class="cards-container" style="display:none;">
-<!-- Cards will be rendered here -->
+<div id="editorContent" class="cards-container">
+<!-- Cards will be inserted by JS -->
 </div>
 
 <!-- Update Button -->
-<div class="container" id="buttonContainer" style="display:none;">
+<div class="container" id="buttonContainer">
 <button class="update-btn" onclick="saveAllChanges()">⚡ Update All Entries</button>
 </div>
 
@@ -180,29 +178,25 @@ async function loadData() {
 
     if(data && data.length > 0){
         todayData = data;
-        document.getElementById('loading').style.visibility = 'hidden';
-        document.getElementById('editorContent').style.display = 'grid';
-        document.getElementById('buttonContainer').style.display = 'block';
+        document.getElementById('editorContent').classList.add('visible');
+        document.querySelector('.update-btn').classList.add('visible');
+        document.getElementById('loading').style.display='none';
         renderTables();
     } else {
-        document.getElementById('loading').style.visibility = 'hidden';
         document.getElementById('noDataMessage').style.display = 'block';
+        document.getElementById('loading').style.display='none';
     }
 }
 
 function renderTables() {
-    // Keep your full renderTables() logic exactly as it was
+    // Insert your full renderTables() logic here exactly as it was
 }
 
 async function saveAllChanges() {
-    // Keep your full saveAllChanges() logic exactly as it was
+    // Insert your full saveAllChanges() logic here exactly as it was
 }
 
-// Remove flicker by showing loading via body class
-window.onload = () => {
-    document.body.classList.add('loading'); // keeps loader visible
-    loadData().then(()=>document.body.classList.remove('loading'));
-};
+window.onload = loadData;
 </script>
 </body>
 </html>
