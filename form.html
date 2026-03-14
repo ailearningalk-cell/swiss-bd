@@ -29,18 +29,22 @@ min-height:100vh;
 
 .container{width:100%;max-width:500px;}
 
-.company-name{
-font-family:'Montserrat','Helvetica Neue',Arial,sans-serif;
-font-size:24px;
-font-weight:600;
-color:var(--navy);
-letter-spacing:-0.3px;
-margin:0 0 8px 0;
-line-height:1.2;
-text-align:center;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
+.company-name {
+    font-family: 'Montserrat','Helvetica Neue',Arial,sans-serif;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: -0.3px;
+    margin: 0 0 8px 0;
+    line-height: 1.2;
+    text-align: center;
+
+    /* Force single line without truncation */
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+
+    /* Responsive font-size so it fits in mobile screens */
+    font-size: clamp(18px, 5vw, 28px);
 }
 
 .weekly-title{
