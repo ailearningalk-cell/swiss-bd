@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Swiss-Bangla | Daily Edit</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 html { -webkit-text-size-adjust: 100%; }
 body { -webkit-font-smoothing: antialiased; }
@@ -30,7 +29,7 @@ min-height:100vh;
 
 .container{width:100%;max-width:500px;margin:0 auto;}
 
-/* Header – exactly like form.html */
+/* Header */
 .company-name {
     font-family: 'Montserrat','Helvetica Neue',Arial,sans-serif;
     font-weight: 600;
@@ -72,215 +71,50 @@ border:1px solid transparent;
 .back-link:hover{ background:#e2e6ea; transform:translateY(-1px);}
 .back-link:active{ transform:scale(.95);}
 
-/* --- Edit Cards Container --- */
-.cards-container {
-    width: 100%;
-    display: grid;
-    gap: 16px;
-    margin-bottom: 20px;
-}
+/* Cards */
+.cards-container { width: 100%; display: grid; gap: 16px; margin-bottom: 20px; }
+.edit-card { background: #fff; border-radius: 18px; padding: 18px 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.02); border: 1px solid var(--card-border); width: 100%; overflow: hidden; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.card-title { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px; display: block; }
+.entry-count { font-size: 11px; font-weight: 600; color: var(--primary); background: #f0f7ff; padding: 4px 10px; border-radius: 30px; white-space: nowrap; }
 
-.edit-card {
-    background: #fff;
-    border-radius: 18px;
-    padding: 18px 16px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-    border: 1px solid var(--card-border);
-    width: 100%;
-    overflow: hidden;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.card-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    display: block;
-}
-
-.entry-count {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--primary);
-    background: #f0f7ff;
-    padding: 4px 10px;
-    border-radius: 30px;
-    white-space: nowrap;
-}
-
-/* Table Styles */
-.table-responsive {
-    overflow-x: auto;
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 4px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 350px;
-}
-
-th {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-light);
-    text-transform: uppercase;
-    padding: 10px 6px;
-    text-align: center;
-    border-bottom: 1px solid var(--card-border);
-    white-space: nowrap;
-}
-
-td {
-    padding: 8px 4px;
-    text-align: center;
-    border-bottom: 1px solid #f0f2f5;
-}
-
-.time-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-dark);
-    white-space: nowrap;
-    padding: 0 4px;
-}
-
-.inline-input {
-    width: 100%;
-    min-width: 60px;
-    max-width: 80px;
-    padding: 8px 4px;
-    border: 2px solid var(--card-border);
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    outline: none;
-    transition: all 0.2s ease;
-    margin: 0 auto;
-    display: block;
-    background: white;
-}
-
-.inline-input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
-}
+/* Table */
+.table-responsive { overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; margin-bottom: 4px; }
+table { width: 100%; border-collapse: collapse; min-width: 350px; }
+th { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; padding: 10px 6px; text-align: center; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
+td { padding: 8px 4px; text-align: center; border-bottom: 1px solid #f0f2f5; }
+.time-label { font-size: 12px; font-weight: 600; color: var(--text-dark); white-space: nowrap; padding: 0 4px; }
+.inline-input { width: 100%; min-width: 60px; max-width: 80px; padding: 8px 4px; border: 2px solid var(--card-border); border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center; outline: none; transition: all 0.2s ease; margin: 0 auto; display: block; background: white; }
+.inline-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1); }
 
 /* Update Button */
-.update-btn {
-    width: 100%;
-    padding: 16px 20px;
-    background: var(--navy);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    letter-spacing: 0.5px;
-}
+.update-btn { width: 100%; padding: 16px 20px; background: var(--navy); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); letter-spacing: 0.5px; display:block; }
+.update-btn:hover { background: #0f1a2e; transform: translateY(-2px); }
+.update-btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
-.update-btn:hover {
-    background: #0f1a2e;
-    transform: translateY(-2px);
-}
-
-.update-btn:disabled {
-    background: #94a3b8;
-    cursor: not-allowed;
-}
-
-/* Loading State */
-.loading-container {
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-light);
-    font-size: 15px;
-    font-weight: 500;
-    margin: 0 auto;
-    opacity:0;
-    transition:opacity .15s ease;
-}
-
-body.ready .loading-container{
-opacity:1;
-}
+/* Loading fix */
+.loading-container { width: 100%; max-width: 500px; text-align: center; padding: 40px 20px; color: var(--text-light); font-size: 15px; font-weight: 500; margin: 0 auto; visibility: hidden; opacity: 0; transition: opacity 0.2s ease, visibility 0.2s ease; }
+body.loading .loading-container { visibility: visible; opacity: 1; }
 
 /* No Data Message */
-.no-data-message {
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-    padding: 50px 20px;
-    color: var(--text-light);
-    font-size: 16px;
-    font-weight: 500;
-}
+.no-data-message { width: 100%; max-width: 500px; text-align: center; padding: 50px 20px; color: var(--text-light); font-size: 16px; font-weight: 500; display:none; }
 
 /* Modal */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(5px);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 16px;
-}
-
-.modal {
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  text-align: center;
-  width: 100%;
-  max-width: 280px;
-}
-
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; padding: 16px; box-sizing: border-box; }
+.modal { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 100%; max-width: 280px; }
 .modal h1 { color: var(--success); margin:0; font-size:50px; }
 .modal h3 { margin:10px 0 5px; color:var(--text-dark); font-size:20px; }
 .modal p { color:var(--text-light); font-size:14px; margin-bottom:20px; }
-
-.modal-btn {
-  background: var(--success);
-  color:white;
-  border:none;
-  padding:14px;
-  border-radius:8px;
-  width:100%;
-  font-weight:600;
-  cursor:pointer;
-  text-decoration:none;
-}
+.modal-btn { background: var(--success); color:white; border:none; padding:14px; border-radius:8px; width:100%; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; box-sizing:border-box; transition: all 0.2s ease; }
+.modal-btn:hover { background: #2d9f5a; transform: translateY(-2px); }
+.modal-btn:active { transform: scale(0.98); }
 
 @media(max-width:360px){ .company-name{ font-size:20px; } }
-
 </style>
 </head>
+<body class="loading">
 
-<body>
-
+<!-- Header -->
 <div class="container">
 <div class="company-name">Swiss-Bangla Trims & Accessories</div>
 <div class="page-title">Daily Edit</div>
@@ -290,18 +124,25 @@ opacity:1;
 <a href="home.html" class="back-link">📊 Dashboard</a>
 </div>
 
+<!-- Loading -->
 <div id="loading" class="loading-container">Loading today's entries...</div>
 
-<div id="noDataMessage" class="no-data-message" style="display: none;">
+<!-- No Data -->
+<div id="noDataMessage" class="no-data-message">
 No entries found for today
 </div>
 
-<div id="editorContent" class="cards-container" style="display:none;"></div>
+<!-- Editor Content -->
+<div id="editorContent" class="cards-container" style="display:none;">
+<!-- Cards will be rendered here -->
+</div>
 
+<!-- Update Button -->
 <div class="container" id="buttonContainer" style="display:none;">
 <button class="update-btn" onclick="saveAllChanges()">⚡ Update All Entries</button>
 </div>
 
+<!-- Modal -->
 <div class="modal-overlay" id="modalOverlay">
 <div class="modal">
 <h1>✅</h1>
@@ -312,56 +153,56 @@ No entries found for today
 </div>
 
 <script>
+const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
+const supabaseKey = 'YOUR_KEY';
+const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-const supabaseUrl='https://ejntepmlgyliufsjttut.supabase.co';
-const supabaseKey='YOUR_KEY';
-const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
+let todayData = [];
 
-let todayData=[];
-
-function getDhakaDate(){
-const now=new Date();
-return new Date(now.getTime()+6*60*60*1000);
+function getDhakaDate() {
+    const now = new Date();
+    return new Date(now.getTime() + 6*60*60*1000);
 }
 
-function getDhakaDateString(){
-const d=getDhakaDate();
-return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+function getDhakaDateString() {
+    const d = getDhakaDate();
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
 }
 
-async function loadData(){
+async function loadData() {
+    const dhakaDateString = getDhakaDateString();
 
-const dhakaDateString=getDhakaDateString();
+    const { data } = await _supabase
+        .from('production_logs')
+        .select('*')
+        .eq('entry_date', dhakaDateString)
+        .order('created_at', { ascending: true });
 
-const {data}=await _supabase
-.from('production_logs')
-.select('*')
-.eq('entry_date',dhakaDateString)
-.order('created_at',{ascending:true});
-
-if(data && data.length>0){
-
-todayData=data;
-
-document.getElementById('loading').style.display='none';
-document.getElementById('editorContent').style.display='grid';
-document.getElementById('buttonContainer').style.display='block';
-
-}else{
-
-document.getElementById('loading').style.display='none';
-document.getElementById('noDataMessage').style.display='block';
-
+    if(data && data.length > 0){
+        todayData = data;
+        document.getElementById('loading').style.visibility = 'hidden';
+        document.getElementById('editorContent').style.display = 'grid';
+        document.getElementById('buttonContainer').style.display = 'block';
+        renderTables();
+    } else {
+        document.getElementById('loading').style.visibility = 'hidden';
+        document.getElementById('noDataMessage').style.display = 'block';
+    }
 }
 
+function renderTables() {
+    // Keep your full renderTables() logic exactly as it was
 }
 
+async function saveAllChanges() {
+    // Keep your full saveAllChanges() logic exactly as it was
+}
+
+// Remove flicker by showing loading via body class
 window.onload = () => {
-document.body.classList.add('ready');
-loadData();
+    document.body.classList.add('loading'); // keeps loader visible
+    loadData().then(()=>document.body.classList.remove('loading'));
 };
-
 </script>
-
 </body>
 </html>
