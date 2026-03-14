@@ -107,7 +107,7 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
 </head>
 <body>
 
-<div class="header">
+<div class="container">
   <div class="company-name">Swiss-Bangla Trims & Accessories</div>
   <div class="weekly-title">Add Production Entry</div>
 </div>
@@ -117,75 +117,110 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
 </div>
 
 <div class="container cards-container">
+  <!-- Twill Tape Card -->
   <div class="category-card">
     <div class="card-header">
-      <span class="card-title">Twill Tape</span>
+      <span class="card-title">Twill Tape Items</span>
     </div>
     <div class="form-grid">
-      <div class="input-group"><label>6-1</label><input type="number" id="t61" min="0"></div>
-      <div class="input-group"><label>6-2</label><input type="number" id="t62" min="0"></div>
-      <div class="input-group"><label>10-2</label><input type="number" id="t102" min="0"></div>
-    </div>
-  </div>
-
-  <div class="category-card">
-    <div class="card-header"><span class="card-title">Drawstring</span></div>
-    <div class="form-grid">
-      <div class="input-group"><label>16H-1</label><input type="number" id="ds1" min="0"></div>
-      <div class="input-group"><label>16H-2</label><input type="number" id="ds2" min="0"></div>
-      <div class="input-group"><label>48H-3</label><input type="number" id="ds3" min="0"></div>
+      <div class="input-group"><label>(6)-1</label><input type="number" id="t61" value="0" min="0"></div>
+      <div class="input-group"><label>(6)-2</label><input type="number" id="t62" value="0" min="0"></div>
+      <div class="input-group"><label>(10)-2</label><input type="number" id="t102" value="0" min="0"></div>
     </div>
   </div>
 
+  <!-- Drawstring Card -->
   <div class="category-card">
-    <div class="card-header"><span class="card-title">Crochet</span></div>
+    <div class="card-header"><span class="card-title">Drawstring Items</span></div>
     <div class="form-grid">
-      <div class="input-group"><label>C-1</label><input type="number" id="c1" min="0"></div>
-      <div class="input-group"><label>C-2</label><input type="number" id="c2" min="0"></div>
-      <div class="input-group"><label>C-3</label><input type="number" id="c3" min="0"></div>
+      <div class="input-group"><label>16H-1</label><input type="number" id="ds1" value="0" min="0"></div>
+      <div class="input-group"><label>16H-2</label><input type="number" id="ds2" value="0" min="0"></div>
+      <div class="input-group"><label>48H-3</label><input type="number" id="ds3" value="0" min="0"></div>
     </div>
   </div>
 
+  <!-- Crochet Card -->
   <div class="category-card">
-    <div class="card-header"><span class="card-title">Total Finished Goods</span></div>
+    <div class="card-header"><span class="card-title">Crochet Items</span></div>
     <div class="form-grid">
-      <div class="input-group"><label>Tipping</label><input type="number" id="tip" min="0"></div>
-      <div class="input-group"><label>Starching</label><input type="number" id="starch" min="0"></div>
+      <div class="input-group"><label>C-1</label><input type="number" id="c1" value="0" min="0"></div>
+      <div class="input-group"><label>C-2</label><input type="number" id="c2" value="0" min="0"></div>
+      <div class="input-group"><label>C-3</label><input type="number" id="c3" value="0" min="0"></div>
+    </div>
+  </div>
+
+  <!-- Finishing Card (now includes F. Goods) -->
+  <div class="category-card">
+    <div class="card-header"><span class="card-title">Finishing & Output</span></div>
+    <div class="form-grid">
+      <div class="input-group"><label>Tipping</label><input type="number" id="tip" value="0" min="0"></div>
+      <div class="input-group"><label>Starching</label><input type="number" id="starch" value="0" min="0"></div>
+      <div class="input-group"><label>F. Goods</label><input type="number" id="fg" value="0" min="0"></div>
     </div>
   </div>
 </div>
 
-<button class="submit-btn" id="submitBtn">Submit Entry</button>
+<button class="submit-btn" id="submitBtn">⚡ Final Submit</button>
 <div class="error-box" id="errorBox"></div>
 
 <script>
 const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
-const supabaseKey = 'YOUR_KEY';
-const _supabase = supabase.createClient(supabaseUrl,supabaseKey);
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
+const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-document.getElementById('submitBtn').addEventListener('click', async()=>{
-  const data={
-    entry_date: new Date().toISOString().split('T')[0],
-    twill_6_1:Number(document.getElementById('t61').value)||0,
-    twill_6_2:Number(document.getElementById('t62').value)||0,
-    twill_10_2:Number(document.getElementById('t102').value)||0,
-    ds_16h_1:Number(document.getElementById('ds1').value)||0,
-    ds_16h_2:Number(document.getElementById('ds2').value)||0,
-    ds_48h_3:Number(document.getElementById('ds3').value)||0,
-    crochet_1:Number(document.getElementById('c1').value)||0,
-    crochet_2:Number(document.getElementById('c2').value)||0,
-    crochet_3:Number(document.getElementById('c3').value)||0,
-    tipping:Number(document.getElementById('tip').value)||0,
-    starching:Number(document.getElementById('starch').value)||0
+// Dhaka time helper (same as in home.html)
+function getDhakaDate() {
+  const now = new Date();
+  return new Date(now.getTime() + (6 * 60 * 60 * 1000));
+}
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('submitBtn');
+  const errorBox = document.getElementById('errorBox');
+  errorBox.style.display = 'none';
+
+  // Gather values
+  const data = {
+    entry_date: getDhakaDate().toISOString().split('T')[0],
+    twill_6_1: Number(document.getElementById('t61').value) || 0,
+    twill_6_2: Number(document.getElementById('t62').value) || 0,
+    twill_10_2: Number(document.getElementById('t102').value) || 0,
+    ds_16h_1: Number(document.getElementById('ds1').value) || 0,
+    ds_16h_2: Number(document.getElementById('ds2').value) || 0,
+    ds_48h_3: Number(document.getElementById('ds3').value) || 0,
+    crochet_1: Number(document.getElementById('c1').value) || 0,
+    crochet_2: Number(document.getElementById('c2').value) || 0,
+    crochet_3: Number(document.getElementById('c3').value) || 0,
+    tipping: Number(document.getElementById('tip').value) || 0,
+    starching: Number(document.getElementById('starch').value) || 0,
+    finished_goods: Number(document.getElementById('fg').value) || 0
   };
-  try{
-    const {error}=await _supabase.from('production_logs').insert([data]);
-    if(error) throw error;
-    alert('Entry added successfully!');
-    location.reload();
-  }catch(e){
-    document.getElementById('errorBox').innerText=e.message;
-    document.getElementById('errorBox').style.display='block';
+
+  // Optional: check if total > 0
+  const total = Object.values(data).reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0) - data.entry_date; // subtract entry_date string
+  if (total === 0) {
+    errorBox.innerText = '⚠️ Please enter at least one production value.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = '⏳ Syncing...';
+
+  try {
+    const { error } = await _supabase.from('production_logs').insert([data]);
+    if (error) throw error;
+    alert('✅ Entry added successfully!');
+    // Reset all fields to 0
+    ['t61','t62','t102','ds1','ds2','ds3','c1','c2','c3','tip','starch','fg'].forEach(id => {
+      document.getElementById(id).value = 0;
+    });
+  } catch (e) {
+    errorBox.innerText = e.message;
+    errorBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerText = '⚡ Final Submit';
   }
 });
 </script>
