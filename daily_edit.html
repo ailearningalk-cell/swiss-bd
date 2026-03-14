@@ -29,17 +29,7 @@ min-height:100vh;
 
 .container{width:100%;max-width:500px;margin:0 auto;}
 
-/* Header – stable with fixed margins and GPU layer */
-.header {
-    width:100%;
-    max-width:500px;
-    margin:0 auto 15px auto;
-    text-align:center;
-    transform: translateZ(0); /* prevent flicker */
-    will-change: transform;
-    min-height: 70px; /* enough for two lines */
-}
-
+/* Header – exactly like form.html */
 .company-name {
     font-family: 'Montserrat','Helvetica Neue',Arial,sans-serif;
     font-weight: 600;
@@ -54,17 +44,17 @@ min-height:100vh;
     font-size: clamp(18px, 5vw, 28px);
 }
 
-.page-title{
-font-size:15px;
-color:#D40101;
-font-weight:700;
-letter-spacing:0.3px;
-line-height:1.2;
-margin:0 0 5px 0;          /* matches form.html */
-text-align:center;
+.page-title {  /* same as .weekly-title in form.html */
+    font-size:15px;
+    color:#D40101;
+    font-weight:700;
+    letter-spacing:0.3px;
+    line-height:1.2;
+    margin:0 0 5px 0;
+    text-align:center;
 }
 
-/* Dashboard link – margin-bottom matches form.html */
+/* Dashboard link – margin matches form.html */
 .dashboard-link{ text-align:center; margin-bottom:20px; }
 .back-link{
 color:var(--primary);
@@ -225,7 +215,7 @@ td {
     box-shadow: none;
 }
 
-/* Loading State – separate container, does not affect header */
+/* Loading State */
 .loading-container {
     width: 100%;
     max-width: 500px;
@@ -330,21 +320,21 @@ td {
 </head>
 <body>
 
-<!-- Header with fixed spacing -->
-<div class="header">
+<!-- Header exactly like form.html -->
+<div class="container">
     <div class="company-name">Swiss-Bangla Trims & Accessories</div>
     <div class="page-title">Daily Edit</div>
 </div>
 
-<!-- Dashboard link (margin-bottom 20px, same as form.html) -->
+<!-- Dashboard link -->
 <div class="dashboard-link">
     <a href="home.html" class="back-link">📊 Dashboard</a>
 </div>
 
-<!-- Loading State (separate container) -->
+<!-- Loading State -->
 <div id="loading" class="loading-container">Loading today's entries...</div>
 
-<!-- No Data Message (hidden by default) -->
+<!-- No Data Message -->
 <div id="noDataMessage" class="no-data-message" style="display: none;">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <circle cx="12" cy="12" r="10"/>
@@ -354,9 +344,8 @@ td {
     <div>No entries found for today</div>
 </div>
 
-<!-- Editor Content (cards) -->
+<!-- Editor Content -->
 <div id="editorContent" class="cards-container" style="display:none;">
-
     <!-- Twill Tape Card -->
     <div class="edit-card">
         <div class="card-header">
@@ -442,7 +431,7 @@ td {
     </div>
 </div>
 
-<!-- Update Button – in its own container, shown only when data exists -->
+<!-- Update Button -->
 <div class="container" id="buttonContainer" style="display:none;">
     <button class="update-btn" onclick="saveAllChanges()">
         ⚡ Update All Entries
@@ -466,7 +455,6 @@ const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let todayData = [];
 
-// Dhaka time helpers
 function getDhakaDate() {
     const now = new Date();
     return new Date(now.getTime() + (6 * 60 * 60 * 1000));
@@ -583,7 +571,6 @@ async function saveAllChanges() {
     }
 }
 
-// Initial load
 window.onload = loadData;
 </script>
 </body>
