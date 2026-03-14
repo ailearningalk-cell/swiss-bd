@@ -29,14 +29,15 @@ min-height:100vh;
 
 .container{width:100%;max-width:500px;margin:0 auto;}
 
-/* Header – stable */
+/* Header – stable with fixed margins and GPU layer */
 .header {
     width:100%;
     max-width:500px;
     margin:0 auto 15px auto;
     text-align:center;
-    transform: translateZ(0); /* GPU layer, prevent flicker */
+    transform: translateZ(0); /* prevent flicker */
     will-change: transform;
+    min-height: 70px; /* enough for two lines */
 }
 
 .company-name {
@@ -59,11 +60,11 @@ color:#D40101;
 font-weight:700;
 letter-spacing:0.3px;
 line-height:1.2;
-margin:0 0 5px 0;
+margin:0 0 5px 0;          /* matches form.html */
 text-align:center;
 }
 
-/* Dashboard link */
+/* Dashboard link – margin-bottom matches form.html */
 .dashboard-link{ text-align:center; margin-bottom:20px; }
 .back-link{
 color:var(--primary);
@@ -187,10 +188,10 @@ td {
     box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
 }
 
-/* Update Button – exactly like form.html submit button */
+/* Update Button – exactly like form.html */
 .update-btn {
     width: 100%;
-    padding: 16px 20px;           /* match form.html */
+    padding: 16px 20px;
     background: var(--navy);
     color: white;
     border: none;
@@ -224,7 +225,7 @@ td {
     box-shadow: none;
 }
 
-/* Loading State */
+/* Loading State – separate container, does not affect header */
 .loading-container {
     width: 100%;
     max-width: 500px;
@@ -257,7 +258,7 @@ td {
     opacity: 0.5;
 }
 
-/* Modal (same as form.html) */
+/* Modal */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -329,18 +330,18 @@ td {
 </head>
 <body>
 
-<!-- Header wrapped in a stable container -->
+<!-- Header with fixed spacing -->
 <div class="header">
     <div class="company-name">Swiss-Bangla Trims & Accessories</div>
     <div class="page-title">Daily Edit</div>
 </div>
 
-<!-- Dashboard link -->
+<!-- Dashboard link (margin-bottom 20px, same as form.html) -->
 <div class="dashboard-link">
     <a href="home.html" class="back-link">📊 Dashboard</a>
 </div>
 
-<!-- Loading State -->
+<!-- Loading State (separate container) -->
 <div id="loading" class="loading-container">Loading today's entries...</div>
 
 <!-- No Data Message (hidden by default) -->
@@ -441,7 +442,7 @@ td {
     </div>
 </div>
 
-<!-- Update Button – placed in its own container like form.html -->
+<!-- Update Button – in its own container, shown only when data exists -->
 <div class="container" id="buttonContainer" style="display:none;">
     <button class="update-btn" onclick="saveAllChanges()">
         ⚡ Update All Entries
@@ -493,7 +494,7 @@ async function loadData() {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('noDataMessage').style.display = 'none';
         document.getElementById('editorContent').style.display = 'grid';
-        document.getElementById('buttonContainer').style.display = 'block'; // show button container
+        document.getElementById('buttonContainer').style.display = 'block';
         renderTables();
     } else {
         document.getElementById('loading').style.display = 'none';
