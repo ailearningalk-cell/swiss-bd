@@ -34,7 +34,7 @@
             min-height: 100vh;
         }
 
-        /* --- Header Section - Center Aligned (exactly like home.html) --- */
+        /* --- Header Section - Universal styling (like form.html) --- */
         .header {
             width: 100%; 
             max-width: 500px;
@@ -43,7 +43,7 @@
             padding: 0 5px;
         }
 
-        /* Company name - responsive font, center aligned, single line */
+        /* Company name - universal */
         .company-name {
             font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
             font-size: clamp(18px, 5vw, 28px);
@@ -58,40 +58,33 @@
             text-overflow: ellipsis;
         }
 
-        /* Daily Production Logs and Date in single line - center aligned */
-        .daily-info {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            flex-wrap: wrap;
-            text-align: center;
-            margin-bottom: 5px;
-            padding: 0 5px;
-        }
-
+        /* Daily title - now matches universal page title style */
         .daily-title {
-            font-size: clamp(13px, 3.5vw, 15px);
+            font-size: 15px;
             color: #D40101;
             font-weight: 700;
             letter-spacing: 0.3px;
+            line-height: 1.2;
+            margin: 0 0 5px 0;
+            text-align: center;
             white-space: nowrap;
         }
 
+        /* Separator and date - keep existing, but adjust for consistency */
         .separator {
             color: var(--text-light);
             font-weight: 400;
-            font-size: clamp(13px, 3.5vw, 15px);
+            font-size: 15px;
         }
 
         .date-sub { 
-            font-size: clamp(13px, 3.5vw, 15px); 
+            font-size: 15px; 
             color: var(--text-dark); 
             font-weight: 500; 
             white-space: nowrap;
         }
 
-        /* --- Dashboard Link (like weekly/monthly pages) --- */
+        /* --- Dashboard Link (styled exactly like form.html) --- */
         .dashboard-link {
             text-align: center;
             margin-bottom: 20px;
@@ -105,7 +98,7 @@
             font-size: 13px; 
             font-weight: 600;
             display: inline-block;
-            padding: 8px 20px;
+            padding: 8px 16px;           /* matches form.html */
             background: #f0f2f5;
             border-radius: 20px;
             transition: all 0.2s ease;
@@ -121,7 +114,7 @@
             transform: scale(0.95);
         }
 
-        /* --- Edit Cards Container --- */
+        /* --- Edit Cards Container (unchanged) --- */
         .container {
             width: 100%; 
             max-width: 500px;
@@ -411,12 +404,14 @@
             
             .company-name { font-size: 20px; }
             
-            .daily-title, .separator, .date-sub { 
-                font-size: 12px; 
+            .daily-title { 
+                font-size: 14px; 
+            }
+            .separator, .date-sub {
+                font-size: 14px;
             }
         }
 
-        /* Ensure button doesn't overflow on very small screens */
         @media (max-width: 320px) {
             .update-btn { 
                 padding: 12px; 
@@ -444,7 +439,7 @@
         </div>
     </div>
 
-    <!-- Dashboard Link -->
+    <!-- Dashboard Link (now with universal padding) -->
     <div class="dashboard-link">
         <a href="home.html" class="back-link">📊 Dashboard</a>
     </div>
