@@ -1,473 +1,430 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss-Bangla | Live Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swiss-Bangla | Live Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* --- Permanent mobile font fix --- */
+        html { -webkit-text-size-adjust: 100%; }
+        body { -webkit-font-smoothing: antialiased; }
 
-<style>
-html { font-size: 16px; -webkit-text-size-adjust: 100%; }
-body { -webkit-font-smoothing: antialiased; }
-:root {
---primary:#4285f4;
---success:#34a853;
---warning:#f1b44c;
---danger:#ff4b2b;
---oxblood:#D40101;
---navy:#1a237e;
---bg:#fdfdfd;
---text-dark:#1a1f36;
---text-light:#697386;
---card-border:#e0e4e8;
-}
+        :root {
+            --primary: #4285f4;
+            --success: #34a853;
+            --warning: #f1b44c;
+            --danger: #ff4b2b;
+            --oxblood: #D40101;
+            --navy: #1a237e;
+            --bg: #fdfdfd;
+            --text-dark: #1a1f36;
+            --text-light: #697386;
+            --card-border: #e0e4e8;
+        }
 
-body{
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-background:var(--bg);
-margin:0;
-padding:20px;
-display:flex;
-flex-direction:column;
-align-items:center;
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* --- Shared Header Layout --- */
-.header{
-width:100%;
-max-width:500px;
-margin-bottom:15px;
-text-align:center;
-}
+        /* --- Header Section - Center Aligned --- */
+        .header {
+            width: 100%; 
+            max-width: 500px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
 
-.company-name{
-font-family:'Montserrat','Helvetica Neue',Arial,sans-serif;
-font-size:24px !important;  /* fixed size to match home.html */
-font-weight:600;
-color:var(--navy);
-white-space:nowrap;
-letter-spacing:-0.3px;
-margin:0 0 8px 0;
-line-height:1.2;
-text-align:center;
--webkit-text-size-adjust:100%;
-text-size-adjust:100%;
-}
+        /* Company name - consistent across all pages */
+        .company-name {
+            font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+            font-size: clamp(18px, 5vw, 28px);
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+            text-align: center;
+        }
 
-.page-subtitle{
-font-size:15px;
-color:#D40101;
-font-weight:700;
-letter-spacing:0.3px;
-white-space:nowrap;
-}
+        /* Title row with Live Production and date */
+        .live-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            text-align: center;
+            margin-bottom: 5px;
+        }
 
-.live-info{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:8px;
-flex-wrap:wrap;
-text-align:center;
-margin-top:4px;
-}
+        /* Live Production styled as universal page title */
+        .live-title {
+            font-size: 15px;
+            color: #D40101;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
 
-.separator{
-color:var(--text-light);
-font-weight:400;
-font-size:15px;
-}
+        .separator {
+            color: var(--text-light);
+            font-weight: 400;
+            font-size: 15px;
+        }
 
-.date-sub{
-font-size:15px;
-color:var(--text-dark);
-font-weight:500;
-white-space:nowrap;
-}
+        .date-sub { 
+            font-size: 15px; 
+            color: var(--text-dark); 
+            font-weight: 500; 
+            white-space: nowrap;
+        }
 
-/* --- Navigation Buttons --- */
-.nav-section{
-width:100%;
-max-width:500px;
-margin-bottom:25px;
-}
+        /* --- Navigation Buttons --- */
+        .nav-section {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 25px;
+        }
 
-.button-group{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:10px;
-}
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
 
-.nav-btn{
-padding:12px 5px;
-border:none;
-border-radius:12px;
-font-size:13px;
-font-weight:600;
-cursor:pointer;
-transition:all 0.2s ease;
-display:flex;
-align-items:center;
-justify-content:center;
-text-decoration:none;
-width:100%;
-box-sizing:border-box;
-}
+        .nav-btn {
+            padding: 12px 5px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-.btn-outline{
-background:#ffffff;
-color:var(--text-dark);
-border:1px solid #e0e4e8;
-box-shadow:0 2px 4px rgba(0,0,0,0.02);
-}
+        .btn-outline { 
+            background: #ffffff; 
+            color: var(--text-dark); 
+            border: 1px solid #e0e4e8;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
 
-.btn-action{
-background:#fff0ee;
-color:var(--danger);
-border:1px solid rgba(255,75,43,0.1);
-}
+        .btn-action { 
+            background: #fff0ee; 
+            color: var(--danger); 
+            border: 1px solid rgba(255, 75, 43, 0.1);
+        }
 
-.nav-btn:active{transform:scale(0.98);}
+        .nav-btn:active { transform: scale(0.98); }
 
-/* --- Metric Cards --- */
-.container{
-width:100%;
-max-width:500px;
-display:grid;
-gap:16px;
-}
+        /* --- Metric Cards --- */
+        .container {
+            width: 100%; max-width: 500px;
+            display: grid; gap: 16px;
+        }
 
-.metric-card{
-background:#fff;
-border-radius:18px;
-padding:22px;
-box-shadow:0 10px 20px rgba(0,0,0,0.02);
-border:1px solid var(--card-border);
-}
+        .metric-card {
+            background: #fff; border-radius: 18px;
+            padding: 22px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            border: 1px solid var(--card-border);
+        }
 
-.label-small{
-font-size:11px;
-font-weight:700;
-color:var(--text-light);
-text-transform:uppercase;
-letter-spacing:0.8px;
-margin-bottom:8px;
-display:block;
-}
+        .label-small { 
+            font-size: 11px; font-weight: 700; color: var(--text-light); 
+            text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: block; 
+        }
 
-.number-large{
-font-size:36px;
-font-weight:800;
-color:var(--text-dark);
-line-height:1;
-display:block;
-margin-bottom:20px;
-}
+        .number-large { 
+            font-size: 36px; font-weight: 800; color: var(--text-dark); 
+            line-height: 1; display: block; margin-bottom: 20px; 
+        }
 
-.live-dot{
-height:8px;
-width:8px;
-background-color:var(--success);
-border-radius:50%;
-display:inline-block;
-margin-left:6px;
-box-shadow:0 0 8px var(--success);
-animation:pulse 2s infinite;
-}
+        /* Live Indicator Dot */
+        .live-dot {
+            height: 8px; width: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 6px;
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s infinite;
+        }
 
-@keyframes pulse{
-0%{opacity:1;transform:scale(1);}
-50%{opacity:0.4;transform:scale(1.1);}
-100%{opacity:1;transform:scale(1);}
-}
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
 
-.sub-grid{
-display:flex;
-justify-content:space-between;
-padding-top:15px;
-border-top:2px solid #e8eaed;
-}
+        .sub-grid { 
+            display: flex; 
+            justify-content: space-between;
+            padding-top: 15px; 
+            border-top: 2px solid #e8eaed;
+        }
 
-.sub-item{
-display:flex;
-flex-direction:column;
-align-items:center;
-flex:1;
-}
+        .sub-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            flex: 1;
+        }
 
-.sub-label{
-font-size:10px;
-color:var(--text-light);
-margin-bottom:4px;
-font-weight:700;
-}
+        .sub-label { 
+            font-size: 10px; color: var(--text-light); 
+            margin-bottom: 4px; font-weight: 700;
+        }
 
-.sub-number{
-font-size:16px;
-font-weight:700;
-color:var(--text-dark);
-}
+        .sub-number { font-size: 16px; font-weight: 700; color: var(--text-dark); }
 
-.accent-card{background:#1a1f36;color:white;border:none;}
-.accent-card .label-small,.accent-card .sub-label{color:#8e99ab;}
-.accent-card .number-large,.accent-card .sub-number{color:white;}
+        .accent-card { background: #1a1f36; color: white; border: none; }
+        .accent-card .label-small, .accent-card .sub-label { color: #8e99ab; }
+        .accent-card .number-large, .accent-card .sub-number { color: white; }
 
-.fourth-card-content{
-display:flex;
-flex-direction:column;
-gap:15px;
-}
+        .fourth-card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-.factory-output{
-width:100%;
-}
+        .factory-output {
+            width: 100%;
+        }
 
-.factory-output .number-large{
-margin-bottom:0;
-}
+        .factory-output .number-large {
+            margin-bottom: 0;
+        }
 
-.tipping-starching-row{
-display:flex;
-justify-content:space-between;
-padding:15px 0;
-border-top:2px solid #2a2f46;
-}
+        .tipping-starching-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 2px solid #2a2f46;
+        }
 
-.tipping-item,.starching-item{
-display:flex;
-flex-direction:column;
-align-items:center;
-flex:1;
-}
+        .tipping-item, .starching-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
 
-.tipping-item .sub-label,.starching-item .sub-label{
-color:#8e99ab;
-font-size:10px;
-margin-bottom:4px;
-}
+        .tipping-item .sub-label, .starching-item .sub-label {
+            color: #8e99ab;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
 
-.tipping-item .sub-number,.starching-item .sub-number{
-color:white;
-font-size:20px;
-font-weight:700;
-}
+        .tipping-item .sub-number, .starching-item .sub-number {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+        }
 
-.accent-card .sub-grid,
-.accent-card .card-footer{
-display:none;
-}
+        .accent-card .sub-grid,
+        .accent-card .card-footer {
+            display: none;
+        }
 
-.last-update-simple{
-width:100%;
-max-width:500px;
-margin-top:15px;
-text-align:left;
-font-size:13px;
-color:var(--text-light);
-font-weight:500;
-letter-spacing:0.3px;
-}
+        .last-update-simple {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 15px;
+            text-align: left;
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
 
-.last-update-simple span{
-color:var(--text-dark);
-font-weight:600;
-margin-left:5px;
-}
-</style>
+        .last-update-simple span {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-left: 5px;
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- Shared Header -->
-<div class="header">
+    <div class="header">
+        <div class="company-name">Swiss-Bangla Trims & Accessories</div>
+        
+        <!-- Title with Live Production and date -->
+        <div class="live-info">
+            <span class="live-title">Live Production</span>
+            <span class="separator">|</span>
+            <span class="date-sub" id="displayDate">Loading...</span>
+        </div>
+    </div>
 
-<div class="company-name">
-Swiss-Bangla Trims & Accessories
-</div>
+    <div class="nav-section">
+        <div class="button-group">
+            <a href="weekly.html" class="nav-btn btn-outline">📊 Weekly</a>
+            <a href="monthly.html" class="nav-btn btn-outline">📅 Monthly</a>
+            <a href="form.html" class="nav-btn btn-action">➕ Add Entry</a>
+        </div>
+    </div>
 
-<div class="live-info">
-<span class="page-subtitle">Live Production</span>
-<span class="separator">|</span>
-<span class="date-sub" id="displayDate">Loading...</span>
-</div>
+    <div class="container">
+        <div class="metric-card">
+            <span class="label-small">Twill Tape <span class="live-dot"></span></span>
+            <span class="number-large" style="color: var(--primary)" id="total_twill">0</span>
+            <div class="sub-grid">
+                <div class="sub-item"><span class="sub-label">6-1</span><span class="sub-number" id="v_t61">0</span></div>
+                <div class="sub-item"><span class="sub-label">6-2</span><span class="sub-number" id="v_t62">0</span></div>
+                <div class="sub-item"><span class="sub-label">10-2</span><span class="sub-number" id="v_t102">0</span></div>
+            </div>
+        </div>
 
-</div>
+        <div class="metric-card">
+            <span class="label-small">Drawstring <span class="live-dot"></span></span>
+            <span class="number-large" style="color: var(--success)" id="total_ds">0</span>
+            <div class="sub-grid">
+                <div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="v_ds1">0</span></div>
+                <div class="sub-item"><span class="sub-label">16H-2</span><span class="sub-number" id="v_ds2">0</span></div>
+                <div class="sub-item"><span class="sub-label">48H-3</span><span class="sub-number" id="v_ds3">0</span></div>
+            </div>
+        </div>
 
-<div class="nav-section">
-<div class="button-group">
-<a href="weekly.html" class="nav-btn btn-outline">📊 Weekly</a>
-<a href="monthly.html" class="nav-btn btn-outline">📅 Monthly</a>
-<a href="form.html" class="nav-btn btn-action">➕ Add Entry</a>
-</div>
-</div>
+        <div class="metric-card">
+            <span class="label-small">Crochet <span class="live-dot"></span></span>
+            <span class="number-large" style="color: var(--warning)" id="total_c">0</span>
+            <div class="sub-grid">
+                <div class="sub-item"><span class="sub-label">C-1</span><span class="sub-number" id="v_c1">0</span></div>
+                <div class="sub-item"><span class="sub-label">C-2</span><span class="sub-number" id="v_c2">0</span></div>
+                <div class="sub-item"><span class="sub-label">C-3</span><span class="sub-number" id="v_c3">0</span></div>
+            </div>
+        </div>
 
-<div class="container">
-<div class="metric-card">
-<span class="label-small">Twill Tape <span class="live-dot"></span></span>
-<span class="number-large" style="color: var(--primary)" id="total_twill">0</span>
-<div class="sub-grid">
-<div class="sub-item"><span class="sub-label">6-1</span><span class="sub-number" id="v_t61">0</span></div>
-<div class="sub-item"><span class="sub-label">6-2</span><span class="sub-number" id="v_t62">0</span></div>
-<div class="sub-item"><span class="sub-label">10-2</span><span class="sub-number" id="v_t102">0</span></div>
-</div>
-</div>
+        <div class="metric-card accent-card">
+            <span class="label-small">Total Finished Goods <span class="live-dot"></span></span>
+            
+            <div class="fourth-card-content">
+                <div class="factory-output">
+                    <span class="number-large" id="v_fg">0</span>
+                </div>
+                
+                <div class="tipping-starching-row">
+                    <div class="tipping-item">
+                        <span class="sub-label">TIPPING</span>
+                        <span class="sub-number" id="v_tip">0</span>
+                    </div>
+                    <div class="starching-item">
+                        <span class="sub-label">STARCHING</span>
+                        <span class="sub-number" id="v_starch">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="metric-card">
-<span class="label-small">Drawstring <span class="live-dot"></span></span>
-<span class="number-large" style="color: var(--success)" id="total_ds">0</span>
-<div class="sub-grid">
-<div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="v_ds1">0</span></div>
-<div class="sub-item"><span class="sub-label">16H-2</span><span class="sub-number" id="v_ds2">0</span></div>
-<div class="sub-item"><span class="sub-label">48H-3</span><span class="sub-number" id="v_ds3">0</span></div>
-</div>
-</div>
+    <div class="last-update-simple">
+        Last Update on<span id="lastTime">--:-- --</span>
+    </div>
 
-<div class="metric-card">
-<span class="label-small">Crochet <span class="live-dot"></span></span>
-<span class="number-large" style="color: var(--warning)" id="total_c">0</span>
-<div class="sub-grid">
-<div class="sub-item"><span class="sub-label">C-1</span><span class="sub-number" id="v_c1">0</span></div>
-<div class="sub-item"><span class="sub-label">C-2</span><span class="sub-number" id="v_c2">0</span></div>
-<div class="sub-item"><span class="sub-label">C-3</span><span class="sub-number" id="v_c3">0</span></div>
-</div>
-</div>
+    <script>
+        const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-<div class="metric-card accent-card">
-<span class="label-small">Total Finished Goods <span class="live-dot"></span></span>
+        function getDhakaDate() {
+            const now = new Date();
+            return new Date(now.getTime() + (6 * 60 * 60 * 1000));
+        }
 
-<div class="fourth-card-content">
+        function formatDhakaDate(date) {
+            const day = date.getUTCDate();
+            const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            const month = monthNames[date.getUTCMonth()];
+            const year = date.getUTCFullYear();
+            const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+            const dayName = dayNames[date.getUTCDay()];
+            return `${day} ${month} ${year} (${dayName})`;
+        }
 
-<div class="factory-output">
-<span class="number-large" id="v_fg">0</span>
-</div>
+        function getDhakaDateString() {
+            const dhakaDate = getDhakaDate();
+            const year = dhakaDate.getUTCFullYear();
+            const month = String(dhakaDate.getUTCMonth()+1).padStart(2,'0');
+            const day = String(dhakaDate.getUTCDate()).padStart(2,'0');
+            return `${year}-${month}-${day}`;
+        }
 
-<div class="tipping-starching-row">
-<div class="tipping-item">
-<span class="sub-label">TIPPING</span>
-<span class="sub-number" id="v_tip">0</span>
-</div>
-<div class="starching-item">
-<span class="sub-label">STARCHING</span>
-<span class="sub-number" id="v_starch">0</span>
-</div>
-</div>
+        function formatDhakaTime12Hour() {
+            const dhakaDate = getDhakaDate();
+            let hours = dhakaDate.getUTCHours();
+            const minutes = String(dhakaDate.getUTCMinutes()).padStart(2,'0');
+            const ampm = hours>=12?'PM':'AM';
+            hours = hours%12||12;
+            const hoursStr = String(hours).padStart(2,'0');
+            return `${hoursStr}:${minutes} ${ampm}`;
+        }
 
-</div>
-</div>
-</div>
+        function updateDate() {
+            document.getElementById('displayDate').innerText = formatDhakaDate(getDhakaDate());
+        }
 
-<div class="last-update-simple">
-Last Update on<span id="lastTime">--:-- --</span>
-</div>
+        async function fetchDailyTotals() {
+            updateDate();
+            const dhakaDateString = getDhakaDateString();
+            try {
+                const {data,error} = await _supabase.from('production_logs').select('*').eq('entry_date',dhakaDateString);
+                if(error) throw error;
+                let totals={t61:0,t62:0,t102:0,ds1:0,ds2:0,ds3:0,c1:0,c2:0,c3:0,tip:0,starch:0,fg:0};
+                data.forEach(row=>{
+                    totals.t61+=(row.twill_6_1||0);
+                    totals.t62+=(row.twill_6_2||0);
+                    totals.t102+=(row.twill_10_2||0);
+                    totals.ds1+=(row.ds_16h_1||0);
+                    totals.ds2+=(row.ds_16h_2||0);
+                    totals.ds3+=(row.ds_48h_3||0);
+                    totals.c1+=(row.crochet_1||0);
+                    totals.c2+=(row.crochet_2||0);
+                    totals.c3+=(row.crochet_3||0);
+                    totals.tip+=(row.tipping||0);
+                    totals.starch+=(row.starching||0);
+                    totals.fg+=(row.finished_goods||0);
+                });
+                updateDisplay(totals);
+                document.getElementById('lastTime').innerText=formatDhakaTime12Hour();
+            } catch(err){console.error(err);}
+        }
 
-<script>
-const supabaseUrl='https://ejntepmlgyliufsjttut.supabase.co';
-const supabaseKey='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
-const _supabase=supabase.createClient(supabaseUrl,supabaseKey);
+        function updateDisplay(t){
+            document.getElementById('v_t61').innerText=t.t61.toLocaleString();
+            document.getElementById('v_t62').innerText=t.t62.toLocaleString();
+            document.getElementById('v_t102').innerText=t.t102.toLocaleString();
+            document.getElementById('total_twill').innerText=(t.t61+t.t62+t.t102).toLocaleString();
+            document.getElementById('v_ds1').innerText=t.ds1.toLocaleString();
+            document.getElementById('v_ds2').innerText=t.ds2.toLocaleString();
+            document.getElementById('v_ds3').innerText=t.ds3.toLocaleString();
+            document.getElementById('total_ds').innerText=(t.ds1+t.ds2+t.ds3).toLocaleString();
+            document.getElementById('v_c1').innerText=t.c1.toLocaleString();
+            document.getElementById('v_c2').innerText=t.c2.toLocaleString();
+            document.getElementById('v_c3').innerText=t.c3.toLocaleString();
+            document.getElementById('total_c').innerText=(t.c1+t.c2+t.c3).toLocaleString();
+            document.getElementById('v_tip').innerText=t.tip.toLocaleString();
+            document.getElementById('v_starch').innerText=t.starch.toLocaleString();
+            document.getElementById('v_fg').innerText=t.fg.toLocaleString();
+        }
 
-/* --- JS remains EXACTLY the same --- */
-
-function getDhakaDate(){
-const now=new Date();
-const dhakaTime=new Date(now.getTime()+(6*60*60*1000));
-return dhakaTime;
-}
-
-function formatDhakaDate(date){
-const day=date.getUTCDate();
-const monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const month=monthNames[date.getUTCMonth()];
-const year=date.getUTCFullYear();
-const dayNames=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const dayName=dayNames[date.getUTCDay()];
-return `${day} ${month} ${year} (${dayName})`;
-}
-
-function getDhakaDateString(){
-const dhakaDate=getDhakaDate();
-const year=dhakaDate.getUTCFullYear();
-const month=String(dhakaDate.getUTCMonth()+1).padStart(2,'0');
-const day=String(dhakaDate.getUTCDate()).padStart(2,'0');
-return `${year}-${month}-${day}`;
-}
-
-function formatDhakaTime12Hour(){
-const dhakaDate=getDhakaDate();
-let hours=dhakaDate.getUTCHours();
-const minutes=String(dhakaDate.getUTCMinutes()).padStart(2,'0');
-const ampm=hours>=12?'PM':'AM';
-hours=hours%12;
-hours=hours?hours:12;
-const hoursStr=String(hours).padStart(2,'0');
-return `${hoursStr}:${minutes} ${ampm}`;
-}
-
-function updateDate(){
-const dhakaDate=getDhakaDate();
-document.getElementById('displayDate').innerText=formatDhakaDate(dhakaDate);
-}
-
-async function fetchDailyTotals(){
-updateDate();
-
-const dhakaDateString=getDhakaDateString();
-
-try{
-
-const {data,error}=await _supabase
-.from('production_logs')
-.select('*')
-.eq('entry_date',dhakaDateString);
-
-if(error)throw error;
-
-let totals={t61:0,t62:0,t102:0,ds1:0,ds2:0,ds3:0,c1:0,c2:0,c3:0,tip:0,starch:0,fg:0};
-
-data.forEach(row=>{
-totals.t61+=(row.twill_6_1||0);
-totals.t62+=(row.twill_6_2||0);
-totals.t102+=(row.twill_10_2||0);
-totals.ds1+=(row.ds_16h_1||0);
-totals.ds2+=(row.ds_16h_2||0);
-totals.ds3+=(row.ds_48h_3||0);
-totals.c1+=(row.crochet_1||0);
-totals.c2+=(row.crochet_2||0);
-totals.c3+=(row.crochet_3||0);
-totals.tip+=(row.tipping||0);
-totals.starch+=(row.starching||0);
-totals.fg+=(row.finished_goods||0);
-});
-
-updateDisplay(totals);
-
-document.getElementById('lastTime').innerText=formatDhakaTime12Hour();
-
-}catch(err){
-console.error('Error fetching data:',err);
-}
-}
-
-function updateDisplay(t){
-document.getElementById('v_t61').innerText=t.t61.toLocaleString();
-document.getElementById('v_t62').innerText=t.t62.toLocaleString();
-document.getElementById('v_t102').innerText=t.t102.toLocaleString();
-document.getElementById('total_twill').innerText=(t.t61+t.t62+t.t102).toLocaleString();
-document.getElementById('v_ds1').innerText=t.ds1.toLocaleString();
-document.getElementById('v_ds2').innerText=t.ds2.toLocaleString();
-document.getElementById('v_ds3').innerText=t.ds3.toLocaleString();
-document.getElementById('total_ds').innerText=(t.ds1+t.ds2+t.ds3).toLocaleString();
-document.getElementById('v_c1').innerText=t.c1.toLocaleString();
-document.getElementById('v_c2').innerText=t.c2.toLocaleString();
-document.getElementById('v_c3').innerText=t.c3.toLocaleString();
-document.getElementById('total_c').innerText=(t.c1+t.c2+t.c3).toLocaleString();
-document.getElementById('v_tip').innerText=t.tip.toLocaleString();
-document.getElementById('v_starch').innerText=t.starch.toLocaleString();
-document.getElementById('v_fg').innerText=t.fg.toLocaleString();
-}
-
-window.onload=fetchDailyTotals;
-setInterval(fetchDailyTotals,30000);
-</script>
-
+        window.onload=fetchDailyTotals;
+        setInterval(fetchDailyTotals,30000);
+    </script>
 </body>
 </html>
