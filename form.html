@@ -149,7 +149,7 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
     </div>
   </div>
 
-  <!-- Finishing Card (now includes F. Goods) -->
+  <!-- Finishing Card -->
   <div class="category-card">
     <div class="card-header"><span class="card-title">Finishing & Output</span></div>
     <div class="form-grid">
@@ -168,7 +168,7 @@ const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Dhaka time helper (same as in home.html)
+// Dhaka time helper (GMT+6)
 function getDhakaDate() {
   const now = new Date();
   return new Date(now.getTime() + (6 * 60 * 60 * 1000));
@@ -179,30 +179,44 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const errorBox = document.getElementById('errorBox');
   errorBox.style.display = 'none';
 
-  // Gather values
-  const data = {
-    entry_date: getDhakaDate().toISOString().split('T')[0],
-    twill_6_1: Number(document.getElementById('t61').value) || 0,
-    twill_6_2: Number(document.getElementById('t62').value) || 0,
-    twill_10_2: Number(document.getElementById('t102').value) || 0,
-    ds_16h_1: Number(document.getElementById('ds1').value) || 0,
-    ds_16h_2: Number(document.getElementById('ds2').value) || 0,
-    ds_48h_3: Number(document.getElementById('ds3').value) || 0,
-    crochet_1: Number(document.getElementById('c1').value) || 0,
-    crochet_2: Number(document.getElementById('c2').value) || 0,
-    crochet_3: Number(document.getElementById('c3').value) || 0,
-    tipping: Number(document.getElementById('tip').value) || 0,
-    starching: Number(document.getElementById('starch').value) || 0,
-    finished_goods: Number(document.getElementById('fg').value) || 0
-  };
+  // Collect all values
+  const t61 = Number(document.getElementById('t61').value) || 0;
+  const t62 = Number(document.getElementById('t62').value) || 0;
+  const t102 = Number(document.getElementById('t102').value) || 0;
+  const ds1 = Number(document.getElementById('ds1').value) || 0;
+  const ds2 = Number(document.getElementById('ds2').value) || 0;
+  const ds3 = Number(document.getElementById('ds3').value) || 0;
+  const c1 = Number(document.getElementById('c1').value) || 0;
+  const c2 = Number(document.getElementById('c2').value) || 0;
+  const c3 = Number(document.getElementById('c3').value) || 0;
+  const tip = Number(document.getElementById('tip').value) || 0;
+  const starch = Number(document.getElementById('starch').value) || 0;
+  const fg = Number(document.getElementById('fg').value) || 0;
 
-  // Optional: check if total > 0
-  const total = Object.values(data).reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0) - data.entry_date; // subtract entry_date string
+  // Check if at least one value is > 0
+  const total = t61 + t62 + t102 + ds1 + ds2 + ds3 + c1 + c2 + c3 + tip + starch + fg;
   if (total === 0) {
     errorBox.innerText = '⚠️ Please enter at least one production value.';
     errorBox.style.display = 'block';
     return;
   }
+
+  // Prepare data object (field names match database columns)
+  const data = {
+    entry_date: getDhakaDate().toISOString().split('T')[0], // YYYY-MM-DD
+    twill_6_1: t61,
+    twill_6_2: t62,
+    twill_10_2: t102,
+    ds_16h_1: ds1,
+    ds_16h_2: ds2,
+    ds_48h_3: ds3,
+    crochet_1: c1,
+    crochet_2: c2,
+    crochet_3: c3,
+    tipping: tip,
+    starching: starch,
+    finished_goods: fg
+  };
 
   btn.disabled = true;
   btn.innerText = '⏳ Syncing...';
@@ -210,11 +224,24 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   try {
     const { error } = await _supabase.from('production_logs').insert([data]);
     if (error) throw error;
+
+    // Success
     alert('✅ Entry added successfully!');
+
     // Reset all fields to 0
-    ['t61','t62','t102','ds1','ds2','ds3','c1','c2','c3','tip','starch','fg'].forEach(id => {
-      document.getElementById(id).value = 0;
-    });
+    document.getElementById('t61').value = 0;
+    document.getElementById('t62').value = 0;
+    document.getElementById('t102').value = 0;
+    document.getElementById('ds1').value = 0;
+    document.getElementById('ds2').value = 0;
+    document.getElementById('ds3').value = 0;
+    document.getElementById('c1').value = 0;
+    document.getElementById('c2').value = 0;
+    document.getElementById('c3').value = 0;
+    document.getElementById('tip').value = 0;
+    document.getElementById('starch').value = 0;
+    document.getElementById('fg').value = 0;
+
   } catch (e) {
     errorBox.innerText = e.message;
     errorBox.style.display = 'block';
