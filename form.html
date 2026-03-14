@@ -53,8 +53,9 @@ margin:0 0 5px 0;
 text-align:center;
 }
 
+/* Dashboard link - now with date */
 .dashboard-link{ text-align:center; margin-bottom:20px; }
-.back-link{
+.date-link{
 color:var(--primary);
 text-decoration:none;
 font-size:13px;
@@ -66,10 +67,40 @@ border-radius:20px;
 transition:all .2s ease;
 border:1px solid transparent;
 }
-.back-link:hover{ background:#e2e6ea; transform:translateY(-1px);}
-.back-link:active{ transform:scale(.95);}
+.date-link:hover{ background:#e2e6ea; transform:translateY(-1px);}
+.date-link:active{ transform:scale(.95);}
 
-/* --- Cards & Form --- */
+/* Simple date field (no card) */
+.date-field-container {
+  margin-bottom: 20px;
+  width: 100%;
+}
+.date-field-container label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+  display: block;
+}
+.date-field-container input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 400;
+  outline: none;
+  transition: all 0.2s ease;
+  background: white;
+}
+.date-field-container input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(66,133,244,0.1);
+}
+
+/* Cards */
 .cards-container{ width:100%; display:grid; gap:16px; margin-bottom:20px; }
 .category-card{
 background:#fff; border-radius:18px; padding:22px;
@@ -87,12 +118,6 @@ font-size:16px; font-weight:600; text-align:center; outline:none; transition:all
 }
 .input-group input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(66,133,244,.1); }
 
-/* Date input – full width */
-.date-card .input-group input {
-  text-align: left;
-  font-weight: 400;
-}
-
 .submit-btn{
 width:100%; padding:16px 20px; background:#1a1a1a; color:white;
 border:none; border-radius:12px; font-size:16px; font-weight:600;
@@ -104,7 +129,7 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
 
 .error-box{display:none; color:var(--danger); font-size:13px; font-weight:600; text-align:center; margin-top:15px; padding:12px; background:#fff5f5; border-radius:12px; border:1px solid #fed7d7;}
 
-/* --- Modal --- */
+/* Modal */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -181,24 +206,18 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
   <div class="weekly-title">Add Production Entry</div>
 </div>
 
+<!-- Dashboard link with dynamic date, redirects to daily_edit.html -->
 <div class="dashboard-link">
-  <a href="home.html" class="back-link">📊 Dashboard</a>
+  <a href="daily_edit.html" class="date-link" id="dashboardDateLink">📅 Loading...</a>
 </div>
 
-<div class="container cards-container">
-  <!-- Date Card (new) -->
-  <div class="category-card date-card">
-    <div class="card-header">
-      <span class="card-title">Entry Date</span>
-    </div>
-    <div class="form-grid" style="grid-template-columns:1fr;">
-      <div class="input-group">
-        <label>Date</label>
-        <input type="date" id="entryDate" required>
-      </div>
-    </div>
-  </div>
+<!-- Simple date field (no card) -->
+<div class="date-field-container">
+  <label for="entryDate">Entry Date</label>
+  <input type="date" id="entryDate" required>
+</div>
 
+<div class="cards-container">
   <!-- Twill Tape Card -->
   <div class="category-card">
     <div class="card-header">
@@ -262,13 +281,22 @@ const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Dhaka time helper to set default date
+// Dhaka time helper
 function getDhakaDate() {
   const now = new Date();
   return new Date(now.getTime() + (6 * 60 * 60 * 1000));
 }
 
-// Format date as YYYY-MM-DD for input[type="date"]
+// Format date for display (e.g., "14 Mar 2026")
+function formatDisplayDate(date) {
+  const day = date.getUTCDate();
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const month = monthNames[date.getUTCMonth()];
+  const year = date.getUTCFullYear();
+  return `${day} ${month} ${year}`;
+}
+
+// Format date for input[type="date"] (YYYY-MM-DD)
 function formatDateForInput(date) {
   const year = date.getUTCFullYear();
   const month = String(date.getUTCMonth() + 1).padStart(2, '0');
@@ -276,10 +304,11 @@ function formatDateForInput(date) {
   return `${year}-${month}-${day}`;
 }
 
-// Set default date to today (Dhaka)
+// Set default date to today (Dhaka) and update dashboard link
 document.addEventListener('DOMContentLoaded', () => {
   const today = getDhakaDate();
   document.getElementById('entryDate').value = formatDateForInput(today);
+  document.getElementById('dashboardDateLink').innerHTML = `📅 ${formatDisplayDate(today)}`;
 });
 
 // Focus/blur helpers for zero values
@@ -327,7 +356,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   }
 
   const data = {
-    entry_date: entryDate,  // Use user-selected date
+    entry_date: entryDate,
     twill_6_1: t61,
     twill_6_2: t62,
     twill_10_2: t102,
@@ -351,7 +380,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
 
     // Show success modal
     document.getElementById('modalOverlay').style.display = 'flex';
-    // Reset form fields (keep date as today, or reset to today)
+    // Reset all number fields to 0
     document.getElementById('t61').value = 0;
     document.getElementById('t62').value = 0;
     document.getElementById('t102').value = 0;
