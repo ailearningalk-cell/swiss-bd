@@ -98,7 +98,7 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
 
 .error-box{display:none; color:var(--danger); font-size:13px; font-weight:600; text-align:center; margin-top:15px; padding:12px; background:#fff5f5; border-radius:12px; border:1px solid #fed7d7;}
 
-/* --- Modal (restored) --- */
+/* --- Modal --- */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -175,8 +175,9 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
   <div class="weekly-title">Add Production Entry</div>
 </div>
 
+<!-- Dashboard link – now exactly like weekly/monthly -->
 <div class="dashboard-link">
-  <a href="home.html" class="back-link">⬅ Back to Dashboard</a>
+  <a href="home.html" class="back-link">📊 Dashboard</a>
 </div>
 
 <div class="container cards-container">
@@ -228,7 +229,7 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
 </div>
 <div class="error-box" id="errorBox"></div>
 
-<!-- Success Modal (restored) -->
+<!-- Success Modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h1>✅</h1>
@@ -308,7 +309,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     const { error } = await _supabase.from('production_logs').insert([data]);
     if (error) throw error;
 
-    // Show success modal instead of alert
+    // Show success modal
     document.getElementById('modalOverlay').style.display = 'flex';
     // Reset form fields
     document.getElementById('t61').value = 0;
