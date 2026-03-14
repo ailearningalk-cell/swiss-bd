@@ -27,7 +27,7 @@ align-items:center;
 min-height:100vh;
 }
 
-.container{width:100%;max-width:500px;}
+.container{width:100%;max-width:500px;margin:0 auto;}
 
 .company-name {
     font-family: 'Montserrat','Helvetica Neue',Arial,sans-serif;
@@ -37,13 +37,9 @@ min-height:100vh;
     margin: 0 0 8px 0;
     line-height: 1.2;
     text-align: center;
-
-    /* Force single line without truncation */
     white-space: nowrap;
     overflow: visible;
     text-overflow: clip;
-
-    /* Responsive font-size so it fits in mobile screens */
     font-size: clamp(18px, 5vw, 28px);
 }
 
@@ -123,9 +119,9 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
       <span class="card-title">Twill Tape Items</span>
     </div>
     <div class="form-grid">
-      <div class="input-group"><label>(6)-1</label><input type="number" id="t61" value="0" min="0"></div>
-      <div class="input-group"><label>(6)-2</label><input type="number" id="t62" value="0" min="0"></div>
-      <div class="input-group"><label>(10)-2</label><input type="number" id="t102" value="0" min="0"></div>
+      <div class="input-group"><label>(6)-1</label><input type="number" id="t61" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>(6)-2</label><input type="number" id="t62" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>(10)-2</label><input type="number" id="t102" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
     </div>
   </div>
 
@@ -133,9 +129,9 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
   <div class="category-card">
     <div class="card-header"><span class="card-title">Drawstring Items</span></div>
     <div class="form-grid">
-      <div class="input-group"><label>16H-1</label><input type="number" id="ds1" value="0" min="0"></div>
-      <div class="input-group"><label>16H-2</label><input type="number" id="ds2" value="0" min="0"></div>
-      <div class="input-group"><label>48H-3</label><input type="number" id="ds3" value="0" min="0"></div>
+      <div class="input-group"><label>16H-1</label><input type="number" id="ds1" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>16H-2</label><input type="number" id="ds2" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>48H-3</label><input type="number" id="ds3" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
     </div>
   </div>
 
@@ -143,9 +139,9 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
   <div class="category-card">
     <div class="card-header"><span class="card-title">Crochet Items</span></div>
     <div class="form-grid">
-      <div class="input-group"><label>C-1</label><input type="number" id="c1" value="0" min="0"></div>
-      <div class="input-group"><label>C-2</label><input type="number" id="c2" value="0" min="0"></div>
-      <div class="input-group"><label>C-3</label><input type="number" id="c3" value="0" min="0"></div>
+      <div class="input-group"><label>C-1</label><input type="number" id="c1" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>C-2</label><input type="number" id="c2" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>C-3</label><input type="number" id="c3" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
     </div>
   </div>
 
@@ -153,14 +149,17 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
   <div class="category-card">
     <div class="card-header"><span class="card-title">Finishing & Output</span></div>
     <div class="form-grid">
-      <div class="input-group"><label>Tipping</label><input type="number" id="tip" value="0" min="0"></div>
-      <div class="input-group"><label>Starching</label><input type="number" id="starch" value="0" min="0"></div>
-      <div class="input-group"><label>F. Goods</label><input type="number" id="fg" value="0" min="0"></div>
+      <div class="input-group"><label>Tipping</label><input type="number" id="tip" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>Starching</label><input type="number" id="starch" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>F. Goods</label><input type="number" id="fg" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
     </div>
   </div>
 </div>
 
-<button class="submit-btn" id="submitBtn">⚡ Final Submit</button>
+<!-- Button inside container to match card width -->
+<div class="container">
+  <button class="submit-btn" id="submitBtn">⚡ Final Submit</button>
+</div>
 <div class="error-box" id="errorBox"></div>
 
 <script>
@@ -172,6 +171,16 @@ const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 function getDhakaDate() {
   const now = new Date();
   return new Date(now.getTime() + (6 * 60 * 60 * 1000));
+}
+
+// Focus/blur helpers for zero values
+function hFocus(input) {
+  if (input.value === "0") input.value = "";
+  document.getElementById('errorBox').style.display = "none";
+}
+
+function hBlur(input) {
+  if (input.value === "") input.value = "0";
 }
 
 document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -193,7 +202,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const starch = Number(document.getElementById('starch').value) || 0;
   const fg = Number(document.getElementById('fg').value) || 0;
 
-  // Check if at least one value is > 0
+  // Check if at least one value > 0
   const total = t61 + t62 + t102 + ds1 + ds2 + ds3 + c1 + c2 + c3 + tip + starch + fg;
   if (total === 0) {
     errorBox.innerText = '⚠️ Please enter at least one production value.';
@@ -203,7 +212,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
 
   // Prepare data object (field names match database columns)
   const data = {
-    entry_date: getDhakaDate().toISOString().split('T')[0], // YYYY-MM-DD
+    entry_date: getDhakaDate().toISOString().split('T')[0],
     twill_6_1: t61,
     twill_6_2: t62,
     twill_10_2: t102,
@@ -225,27 +234,13 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     const { error } = await _supabase.from('production_logs').insert([data]);
     if (error) throw error;
 
-    // Success
+    // Success: show alert and redirect to home.html
     alert('✅ Entry added successfully!');
-
-    // Reset all fields to 0
-    document.getElementById('t61').value = 0;
-    document.getElementById('t62').value = 0;
-    document.getElementById('t102').value = 0;
-    document.getElementById('ds1').value = 0;
-    document.getElementById('ds2').value = 0;
-    document.getElementById('ds3').value = 0;
-    document.getElementById('c1').value = 0;
-    document.getElementById('c2').value = 0;
-    document.getElementById('c3').value = 0;
-    document.getElementById('tip').value = 0;
-    document.getElementById('starch').value = 0;
-    document.getElementById('fg').value = 0;
+    window.location.href = 'home.html'; // redirect after OK
 
   } catch (e) {
     errorBox.innerText = e.message;
     errorBox.style.display = 'block';
-  } finally {
     btn.disabled = false;
     btn.innerText = '⚡ Final Submit';
   }
