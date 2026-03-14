@@ -36,12 +36,13 @@
             min-height: 100vh;
         }
 
-        /* --- Header – exactly matching weekly/monthly line-height and margins --- */
+        /* --- Header – absolutely fixed dimensions --- */
         .header {
             width: 100%;
             max-width: 500px;
             margin-bottom: 15px;
             text-align: center;
+            overflow: hidden;           /* contain everything */
         }
 
         .company-name {
@@ -58,33 +59,46 @@
             text-overflow: ellipsis;
         }
 
-        /* Title line – uses same line-height as .weekly-title (1.2) */
+        /* Title line – fixed pixel height (15px * 1.2 = 18px) */
         .title-line {
             font-size: 15px;
-            line-height: 1.2;          /* matches weekly/monthly */
+            line-height: 18px;          /* exact pixel value */
+            height: 18px;                /* fixed height */
             margin: 0 0 5px 0;
             text-align: center;
-            white-space: nowrap;        /* prevent wrapping */
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .title-static {
             color: #D40101;
             font-weight: 700;
             letter-spacing: 0.3px;
+            display: inline-block;
+            line-height: inherit;
+            height: 100%;
+            vertical-align: top;
         }
 
         .title-separator {
             color: var(--text-light);
             font-weight: 400;
             margin: 0 3px;
+            display: inline-block;
+            line-height: inherit;
+            height: 100%;
+            vertical-align: top;
         }
 
         .title-date {
             color: var(--text-dark);
             font-weight: 500;
             display: inline-block;
-            width: 150px;               /* fixed width, no width change */
+            width: 150px;               /* fixed width */
             text-align: center;
+            line-height: inherit;
+            height: 100%;
+            vertical-align: top;
         }
 
         /* --- Dashboard Link (universal) --- */
@@ -392,7 +406,7 @@
                 padding: 6px 2px; 
             }
             .company-name { font-size: 20px; }
-            .title-line { font-size: 14px; }
+            .title-line { font-size: 14px; line-height: 17px; height: 17px; }
             .title-date { width: 130px; }
         }
 
@@ -414,7 +428,7 @@
 
     <div class="header">
         <div class="company-name">Swiss-Bangla Trims & Accessories</div>
-        <!-- Title line – exactly the same line-height as weekly/monthly -->
+        <!-- Title line with absolutely fixed pixel height -->
         <div class="title-line">
             <span class="title-static">Daily Production Logs</span>
             <span class="title-separator">|</span>
