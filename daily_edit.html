@@ -1,419 +1,677 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Swiss-Bangla | Daily Edit</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #4285f4;
+            --success: #34a853;
+            --warning: #f1b44c;
+            --danger: #ff4b2b;
+            --oxblood: #D40101;
+            --navy: #1a237e;
+            --bg: #fdfdfd;
+            --text-dark: #1a1f36;
+            --text-light: #697386;
+            --card-border: #e0e4e8;
+        }
 
-<meta charset="UTF-8">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-<title>Swiss-Bangla | Daily Edit</title>
+        /* --- Header – exactly matching weekly/monthly line-height and margins --- */
+        .header {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
 
-<!-- Load Montserrat font to prevent layout shift -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+        .company-name {
+            font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+            font-size: clamp(18px, 5vw, 28px);
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        /* Title line – uses same line-height as .weekly-title (1.2) */
+        .title-line {
+            font-size: 15px;
+            line-height: 1.2;          /* matches weekly/monthly */
+            margin: 0 0 5px 0;
+            text-align: center;
+            white-space: nowrap;        /* prevent wrapping */
+        }
 
-<style>
+        .title-static {
+            color: #D40101;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
 
-:root {
---primary:#4285f4;
---success:#34a853;
---warning:#f1b44c;
---danger:#ff4b2b;
---oxblood:#D40101;
---navy:#1a237e;
---bg:#fdfdfd;
---text-dark:#1a1f36;
---text-light:#697386;
---card-border:#e0e4e8;
-}
+        .title-separator {
+            color: var(--text-light);
+            font-weight: 400;
+            margin: 0 3px;
+        }
 
-* {
-box-sizing:border-box;
-}
+        .title-date {
+            color: var(--text-dark);
+            font-weight: 500;
+            display: inline-block;
+            width: 150px;               /* fixed width, no width change */
+            text-align: center;
+        }
 
-body {
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-background:var(--bg);
-margin:0;
-padding:16px;
-display:flex;
-flex-direction:column;
-align-items:center;
-min-height:100vh;
-}
+        /* --- Dashboard Link (universal) --- */
+        .dashboard-link {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
 
-/* HEADER */
+        .back-link { 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 600;
+            display: inline-block;
+            padding: 8px 16px;
+            background: #f0f2f5;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
 
-.header {
-width:100%;
-max-width:500px;
-margin-bottom:15px;
-text-align:center;
-padding:0 5px;
-}
+        .back-link:hover {
+            background: #e2e6ea;
+            transform: translateY(-1px);
+        }
 
-.company-name {
-font-family:'Montserrat', Arial, sans-serif;
-font-size:clamp(18px,5vw,28px);
-font-weight:600;
-color:var(--navy);
-white-space:nowrap;
-letter-spacing:-0.3px;
-margin:0 0 8px 0;
-line-height:1.2;
-text-align:center;
-}
+        .back-link:active {
+            transform: scale(0.95);
+        }
 
-.daily-info {
-white-space:nowrap;
-}
+        /* --- Edit Cards (unchanged) --- */
+        .container {
+            width: 100%; 
+            max-width: 500px;
+            display: grid; 
+            gap: 16px;
+            margin-bottom: 10px;
+        }
 
-.daily-title {
-font-size:15px;
-color:#D40101;
-font-weight:700;
-}
+        .edit-card {
+            background: #fff; 
+            border-radius: 18px;
+            padding: 18px 16px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            border: 1px solid var(--card-border);
+            width: 100%;
+            overflow: hidden;
+        }
 
-.separator {
-color:var(--text-light);
-font-size:15px;
-margin:0 4px;
-}
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-.date-sub {
-font-size:15px;
-color:var(--text-dark);
-font-weight:500;
-}
+        .card-title {
+            font-size: 11px; 
+            font-weight: 700; 
+            color: var(--text-light); 
+            text-transform: uppercase; 
+            letter-spacing: 0.8px; 
+            display: block;
+        }
 
-/* DASHBOARD LINK */
+        .entry-count {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary);
+            background: #f0f7ff;
+            padding: 4px 10px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
 
-.dashboard-link {
-text-align:center;
-margin-bottom:20px;
-width:100%;
-max-width:500px;
-}
+        .table-responsive { 
+            overflow-x: auto; 
+            width: 100%; 
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 4px;
+        }
 
-.back-link {
-color:var(--primary);
-text-decoration:none;
-font-size:13px;
-font-weight:600;
-display:inline-block;
-padding:8px 16px;
-background:#f0f2f5;
-border-radius:20px;
-}
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 350px; 
+        }
 
-/* CONTAINER */
+        th { 
+            font-size: 10px; 
+            font-weight: 700; 
+            color: var(--text-light); 
+            text-transform: uppercase; 
+            padding: 10px 6px; 
+            text-align: center; 
+            border-bottom: 1px solid var(--card-border);
+            white-space: nowrap;
+        }
 
-.container {
-width:100%;
-max-width:500px;
-display:block;
-}
+        td { 
+            padding: 8px 4px; 
+            text-align: center;
+            border-bottom: 1px solid #f0f2f5;
+        }
 
-/* CARDS */
+        .time-label { 
+            font-size: 12px; 
+            font-weight: 600; 
+            color: var(--text-dark); 
+            white-space: nowrap; 
+            padding: 0 4px;
+        }
 
-.edit-card {
-background:#fff;
-border-radius:18px;
-padding:18px 16px;
-box-shadow:0 10px 20px rgba(0,0,0,0.02);
-border:1px solid var(--card-border);
-margin-bottom:16px;
-}
+        .inline-input {
+            width: 100%;
+            min-width: 60px;
+            max-width: 80px;
+            padding: 8px 4px;
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s ease;
+            margin: 0 auto;
+            display: block;
+            background: white;
+        }
 
-.card-header {
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:16px;
-}
+        .inline-input:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+        }
 
-.card-title {
-font-size:11px;
-font-weight:700;
-color:var(--text-light);
-text-transform:uppercase;
-letter-spacing:.8px;
-}
+        .update-btn {
+            width: 100%; 
+            padding: 16px; 
+            background: var(--navy); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer;
+            margin-top: 10px; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            letter-spacing: 0.5px;
+            display: block;
+            box-sizing: border-box;
+        }
 
-.entry-count {
-font-size:11px;
-font-weight:600;
-color:var(--primary);
-background:#f0f7ff;
-padding:4px 10px;
-border-radius:30px;
-}
+        .update-btn:hover {
+            background: #0f1a2e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
 
-/* TABLE */
+        .update-btn:active { 
+            transform: scale(0.98); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
-.table-responsive {
-overflow-x:auto;
--webkit-overflow-scrolling:touch;
-}
+        .update-btn:disabled { 
+            background: #94a3b8; 
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
 
-table {
-width:100%;
-border-collapse:collapse;
-min-width:350px;
-}
+        .loading-container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+            font-size: 15px;
+            font-weight: 500;
+            margin: 0 auto;
+        }
 
-th {
-font-size:10px;
-font-weight:700;
-color:var(--text-light);
-text-transform:uppercase;
-padding:10px 6px;
-text-align:center;
-border-bottom:1px solid var(--card-border);
-white-space:nowrap;
-}
+        .no-data-message {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: 500;
+            background: transparent;
+            margin: 0 auto;
+        }
 
-td {
-padding:8px 4px;
-text-align:center;
-border-bottom:1px solid #f0f2f5;
-}
+        .no-data-message svg {
+            width: 60px;
+            height: 60px;
+            stroke: var(--text-light);
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
 
-.time-label {
-font-size:12px;
-font-weight:600;
-color:var(--text-dark);
-}
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(5px);
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000;
+            padding: 16px;
+            box-sizing: border-box;
+        }
 
-/* INPUT */
+        .modal { 
+            background: white; 
+            padding: 30px 20px; 
+            border-radius: 20px; 
+            text-align: center; 
+            width: 100%;
+            max-width: 280px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
 
-.inline-input {
-width:100%;
-min-width:60px;
-max-width:80px;
-padding:8px 4px;
-border:2px solid var(--card-border);
-border-radius:8px;
-font-size:16px;
-font-weight:600;
-text-align:center;
-outline:none;
-background:white;
-}
+        .modal h1 { 
+            color: var(--success); 
+            margin: 0; 
+            font-size: 50px; 
+        }
 
-.inline-input:focus {
-border-color:var(--primary);
-}
+        .modal h3 { 
+            margin: 10px 0 5px; 
+            color: var(--text-dark);
+            font-size: 20px;
+        }
 
-/* BUTTON */
+        .modal p { 
+            color: var(--text-light); 
+            font-size: 14px; 
+            margin-bottom: 20px; 
+        }
 
-.update-btn {
-width:100%;
-padding:16px;
-background:var(--navy);
-color:white;
-border:none;
-border-radius:12px;
-font-size:16px;
-font-weight:600;
-cursor:pointer;
-margin-top:10px;
-}
+        .modal-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 14px 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
 
-/* LOADING */
+        .modal-btn:hover {
+            background: #2d9f5a;
+            transform: translateY(-2px);
+        }
 
-.loading-container {
-width:100%;
-max-width:500px;
-text-align:center;
-padding:40px 20px;
-color:var(--text-light);
-font-size:15px;
-}
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
 
-/* NO DATA */
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .edit-card { padding: 16px 12px; }
+            .inline-input { 
+                min-width: 50px; 
+                max-width: 70px; 
+                padding: 6px 2px; 
+                font-size: 13px; 
+            }
+            th { 
+                font-size: 9px; 
+                padding: 8px 4px; 
+            }
+            td { padding: 6px 2px; }
+            .time-label { font-size: 11px; }
+            .update-btn { 
+                padding: 14px; 
+                font-size: 15px; 
+            }
+        }
 
-.no-data-message {
-width:100%;
-max-width:500px;
-text-align:center;
-padding:50px 20px;
-color:var(--text-light);
-font-size:16px;
-}
+        @media (max-width: 360px) {
+            .inline-input { 
+                min-width: 45px; 
+                max-width: 60px; 
+                padding: 5px 2px; 
+                font-size: 12px; 
+            }
+            th { 
+                font-size: 8px; 
+                padding: 6px 2px; 
+            }
+            .company-name { font-size: 20px; }
+            .title-line { font-size: 14px; }
+            .title-date { width: 130px; }
+        }
 
-</style>
-
+        @media (max-width: 320px) {
+            .update-btn { 
+                padding: 12px; 
+                font-size: 14px; 
+                border-radius: 10px;
+            }
+            .inline-input { 
+                min-width: 40px; 
+                max-width: 50px; 
+            }
+            .title-date { width: 120px; }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="header">
+    <div class="header">
+        <div class="company-name">Swiss-Bangla Trims & Accessories</div>
+        <!-- Title line – exactly the same line-height as weekly/monthly -->
+        <div class="title-line">
+            <span class="title-static">Daily Production Logs</span>
+            <span class="title-separator">|</span>
+            <span class="title-date" id="displayDate">Loading...</span>
+        </div>
+    </div>
 
-<div class="company-name">
-Swiss-Bangla Trims & Accessories
-</div>
+    <div class="dashboard-link">
+        <a href="home.html" class="back-link">📊 Dashboard</a>
+    </div>
 
-<div class="daily-info">
+    <div id="loading" class="loading-container">Loading today's entries...</div>
+    
+    <div id="noDataMessage" class="no-data-message" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <circle cx="12" cy="16" r="1"/>
+        </svg>
+        <div>No entries found for today</div>
+    </div>
+    
+    <div id="editorContent" class="container" style="display:none;">
+        
+        <div class="edit-card">
+            <div class="card-header">
+                <span class="card-title">Twill Tape Items</span>
+                <span class="entry-count" id="twillCount">0 entries</span>
+            </div>
+            <div class="table-responsive">
+                <table id="twillTable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>(6)-1</th>
+                            <th>(6)-2</th>
+                            <th>(10)-2</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
 
-<span class="daily-title">Daily Production Logs</span>
+        <div class="edit-card">
+            <div class="card-header">
+                <span class="card-title">Drawstring Items</span>
+                <span class="entry-count" id="dsCount">0 entries</span>
+            </div>
+            <div class="table-responsive">
+                <table id="dsTable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>16H-1</th>
+                            <th>16H-2</th>
+                            <th>48H-3</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
 
-<span class="separator">|</span>
+        <div class="edit-card">
+            <div class="card-header">
+                <span class="card-title">Crochet Items</span>
+                <span class="entry-count" id="crochetCount">0 entries</span>
+            </div>
+            <div class="table-responsive">
+                <table id="crochetTable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>C-1</th>
+                            <th>C-2</th>
+                            <th>C-3</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
 
-<span class="date-sub" id="displayDate">Loading...</span>
+        <div class="edit-card">
+            <div class="card-header">
+                <span class="card-title">Finishing & Output</span>
+                <span class="entry-count" id="finishCount">0 entries</span>
+            </div>
+            <div class="table-responsive">
+                <table id="finishingTable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Tipping</th>
+                            <th>Starching</th>
+                            <th>F. Goods</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
 
-</div>
+        <button class="update-btn" onclick="saveAllChanges()">
+            ⚡ Update All Entries
+        </button>
+    </div>
 
-</div>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h1>✅</h1>
+            <h3>Updated!</h3>
+            <p>Daily entries synchronized successfully.</p>
+            <a href="home.html" class="modal-btn">Go to Dashboard</a>
+        </div>
+    </div>
 
-<div class="dashboard-link">
-<a href="home.html" class="back-link">📊 Dashboard</a>
-</div>
+    <script>
+        const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-<div id="loading" class="loading-container">
-Loading today's entries...
-</div>
+        let todayData = [];
 
-<div id="noDataMessage" class="no-data-message" style="display:none;">
-No entries found for today
-</div>
+        function getDhakaDate() {
+            const now = new Date();
+            return new Date(now.getTime() + (6 * 60 * 60 * 1000));
+        }
 
-<div id="editorContent" class="container" style="display:none;">
+        function formatDhakaDate(date) {
+            const day = date.getUTCDate();
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const month = monthNames[date.getUTCMonth()];
+            const year = date.getUTCFullYear();
+            const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const dayName = dayNames[date.getUTCDay()];
+            return `${day} ${month} ${year} (${dayName})`;
+        }
 
-<!-- TWILL -->
+        function getDhakaDateString() {
+            const dhakaDate = getDhakaDate();
+            const year = dhakaDate.getUTCFullYear();
+            const month = String(dhakaDate.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(dhakaDate.getUTCDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
-<div class="edit-card">
+        function updateDate() {
+            const dhakaDate = getDhakaDate();
+            document.getElementById('displayDate').innerText = formatDhakaDate(dhakaDate);
+        }
 
-<div class="card-header">
-<span class="card-title">Twill Tape Items</span>
-<span class="entry-count" id="twillCount">0 entries</span>
-</div>
+        async function loadData() {
+            updateDate();
+            
+            const dhakaDateString = getDhakaDateString();
+            
+            const { data } = await _supabase
+                .from('production_logs')
+                .select('*')
+                .eq('entry_date', dhakaDateString)
+                .order('created_at', {ascending: true});
+            
+            if (data && data.length > 0) {
+                todayData = data;
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'none';
+                document.getElementById('editorContent').style.display = 'grid';
+                renderTables();
+            } else {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('editorContent').style.display = 'none';
+            }
+        }
 
-<div class="table-responsive">
+        function renderTables() {
+            const twillBody = document.querySelector('#twillTable tbody');
+            const dsBody = document.querySelector('#dsTable tbody');
+            const crochetBody = document.querySelector('#crochetTable tbody');
+            const finBody = document.querySelector('#finishingTable tbody');
 
-<table id="twillTable">
+            twillBody.innerHTML = '';
+            dsBody.innerHTML = '';
+            crochetBody.innerHTML = '';
+            finBody.innerHTML = '';
 
-<thead>
-<tr>
-<th>Time</th>
-<th>(6)-1</th>
-<th>(6)-2</th>
-<th>(10)-2</th>
-</tr>
-</thead>
+            todayData.forEach((row) => {
+                const timeStr = new Date(row.created_at).toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                
+                twillBody.innerHTML += `<tr data-id="${row.id}">
+                    <td class="time-label">${timeStr}</td>
+                    <td><input type="number" class="inline-input" data-col="twill_6_1" value="${row.twill_6_1 || 0}"></td>
+                    <td><input type="number" class="inline-input" data-col="twill_6_2" value="${row.twill_6_2 || 0}"></td>
+                    <td><input type="number" class="inline-input" data-col="twill_10_2" value="${row.twill_10_2 || 0}"></td>
+                </tr>`;
 
-<tbody></tbody>
+                dsBody.innerHTML += `<tr data-id="${row.id}">
+                    <td class="time-label">${timeStr}</td>
+                    <td><input type="number" class="inline-input" data-col="ds_16h_1" value="${row.ds_16h_1 || 0}"></td>
+                    <td><input type="number" class="inline-input" data-col="ds_16h_2" value="${row.ds_16h_2 || 0}"></td>
+                    <td><input type="number" class="inline-input" data-col="ds_48h_3" value="${row.ds_48h_3 || 0}"></td>
+                </tr>`;
 
-</table>
+                crochetBody.innerHTML += `<tr data-id="${row.id}">
+                    <td class="time-label">${timeStr}</td>
+                    <td><input type="number" class="inline-input" data-col="crochet_1" value="${row.crochet_1 || 0}"></td>
+                    <td><input type="number" class="inline-input" data-col="crochet_2" value="${row.crochet_2 || 0}"></td>
+                    <td><input type="number" class="inline-input" data-col="crochet_3" value="${row.crochet_3 || 0}"></td>
+                </tr>`;
 
-</div>
+                finBody.innerHTML += `<tr data-id="${row.id}">
+                    <td class="time-label">${timeStr}</td>
+                    <td><input type="number" class="inline-input" data-col="tipping" value="${row.tipping || 0}"></td>
+                    <td><input type="number" class="inline-input" data-col="starching" value="${row.starching || 0}"></td>
+                    <td><input type="number" class="inline-input" data-col="finished_goods" value="${row.finished_goods || 0}"></td>
+                </tr>`;
+            });
 
-</div>
+            document.getElementById('twillCount').textContent = `${todayData.length} entries`;
+            document.getElementById('dsCount').textContent = `${todayData.length} entries`;
+            document.getElementById('crochetCount').textContent = `${todayData.length} entries`;
+            document.getElementById('finishCount').textContent = `${todayData.length} entries`;
+        }
 
-<!-- DRAWSTRING -->
+        async function saveAllChanges() {
+            const btn = document.querySelector('.update-btn');
+            btn.innerText = "⏳ Syncing...";
+            btn.disabled = true;
 
-<div class="edit-card">
+            const updates = todayData.map(row => {
+                const updateObj = { id: row.id };
+                document.querySelectorAll(`tr[data-id="${row.id}"] .inline-input`).forEach(input => {
+                    updateObj[input.dataset.col] = parseInt(input.value) || 0;
+                });
+                return updateObj;
+            });
 
-<div class="card-header">
-<span class="card-title">Drawstring Items</span>
-<span class="entry-count" id="dsCount">0 entries</span>
-</div>
+            const { error } = await _supabase.from('production_logs').upsert(updates);
 
-<div class="table-responsive">
+            if (!error) {
+                document.getElementById('modalOverlay').style.display = 'flex';
+                btn.disabled = false;
+                btn.innerText = "⚡ Update All Entries";
+            } else {
+                alert("Error: " + error.message);
+                btn.disabled = false;
+                btn.innerText = "⚡ Update All Entries";
+            }
+        }
 
-<table id="dsTable">
-
-<thead>
-<tr>
-<th>Time</th>
-<th>16H-1</th>
-<th>16H-2</th>
-<th>48H-3</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<!-- CROCHET -->
-
-<div class="edit-card">
-
-<div class="card-header">
-<span class="card-title">Crochet Items</span>
-<span class="entry-count" id="crochetCount">0 entries</span>
-</div>
-
-<div class="table-responsive">
-
-<table id="crochetTable">
-
-<thead>
-<tr>
-<th>Time</th>
-<th>C-1</th>
-<th>C-2</th>
-<th>C-3</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<!-- FINISHING -->
-
-<div class="edit-card">
-
-<div class="card-header">
-<span class="card-title">Finishing & Output</span>
-<span class="entry-count" id="finishCount">0 entries</span>
-</div>
-
-<div class="table-responsive">
-
-<table id="finishingTable">
-
-<thead>
-<tr>
-<th>Time</th>
-<th>Tipping</th>
-<th>Starching</th>
-<th>F. Goods</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<button class="update-btn" onclick="saveAllChanges()">
-⚡ Update All Entries
-</button>
-
-</div>
-
-<script>
-
-/* Your original JavaScript stays unchanged */
-
-</script>
-
+        window.onload = loadData;
+    </script>
 </body>
 </html>
