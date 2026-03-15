@@ -269,7 +269,7 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
 <!-- Success Modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <h1>✅</h1>
+    <h1>💾</h1>
     <h3>Data Saved!</h3>
     <p>Production logged successfully.</p>
     <a href="home.html" class="modal-btn">Go to Dashboard</a>
@@ -397,13 +397,13 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     const today = getDhakaDate();
     document.getElementById('entryDate').value = formatDateForInput(today);
     btn.disabled = false;
-    btn.innerText = '⚡ Final Submit';
+    btn.innerText = 'Submit';
 
   } catch (e) {
     errorBox.innerText = e.message;
     errorBox.style.display = 'block';
     btn.disabled = false;
-    btn.innerText = '⚡ Final Submit';
+    btn.innerText = 'Submit';
   }
 });
 </script>
