@@ -174,7 +174,6 @@ body {
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Sub-grid for breakdowns */
 .sub-grid { 
   display: flex; 
   justify-content: space-between;
@@ -196,7 +195,6 @@ body {
 
 .sub-number { font-size: 16px; font-weight: 700; color: var(--text-dark); }
 
-/* Dark accent card for finished goods */
 .accent-card { background: #1a1f36; color: white; border: none; }
 .accent-card .label-small, .accent-card .sub-label { color: #8e99ab; }
 .accent-card .number-large, .accent-card .sub-number { color: white; }
@@ -222,10 +220,8 @@ body {
 .tipping-item .sub-label, .starching-item .sub-label { color: #8e99ab; font-size: 10px; margin-bottom: 4px; }
 .tipping-item .sub-number, .starching-item .sub-number { color: white; font-size: 20px; font-weight: 700; }
 
-/* Hide old unused elements */
 .accent-card .sub-grid, .accent-card .card-footer { display: none; }
 
-/* Last update line */
 .last-update-simple {
   width: 100%;
   max-width: 500px;
@@ -263,7 +259,6 @@ body {
     </div>
 </div>
 
-<!-- Metric cards – restored exactly as in original dashboard -->
 <div class="container">
     <!-- Twill Tape Card -->
     <div class="metric-card">
@@ -298,7 +293,7 @@ body {
         </div>
     </div>
 
-    <!-- Finished Goods Card (accent card) -->
+    <!-- Finished Goods Card -->
     <div class="metric-card accent-card">
         <span class="label-small">Total Finished Goods <span class="live-dot"></span></span>
         <div class="fourth-card-content">
@@ -325,62 +320,124 @@ body {
 
 <script>
 const supabaseUrl = 'https://ejntepmlgyliufsjttut.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk'; // your key
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqbnRlcG1sZ3lsaXVmc2p0dHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1ODczMDksImV4cCI6MjA4ODE2MzMwOX0.JhM2Th0IAAAtrYsDwdzF4qNOiKSXEt8odm0x0WWz8wk';
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-function getDhakaDate(){ const now = new Date(); return new Date(now.getTime()+6*60*60*1000);}
-function formatDhakaDate(date){ const day=date.getUTCDate(); const monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; const month=monthNames[date.getUTCMonth()]; const year=date.getUTCFullYear(); const dayNames=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]; const dayName=dayNames[date.getUTCDay()]; return `${day} ${month} ${year} (${dayName})`;}
-function getDhakaDateString(){ const dhakaDate=getDhakaDate(); return `${dhakaDate.getUTCFullYear()}-${String(dhakaDate.getUTCMonth()+1).padStart(2,'0')}-${String(dhakaDate.getUTCDate()).padStart(2,'0')}`;}
-function formatDhakaTime12Hour(){ const dhakaDate=getDhakaDate(); let hours=dhakaDate.getUTCHours(); const minutes=String(dhakaDate.getUTCMinutes()).padStart(2,'0'); const ampm=hours>=12?'PM':'AM'; hours=hours%12||12; return `${String(hours).padStart(2,'0')}:${minutes} ${ampm}`;}
-function updateDate(){document.getElementById('displayDate').innerText=formatDhakaDate(getDhakaDate());}
-
-async function fetchDailyTotals(){
-  updateDate();
-  const dhakaDateString=getDhakaDateString();
-  try{
-    const {data,error}=await _supabase.from('production_logs').select('*').eq('entry_date',dhakaDateString);
-    if(error) throw error;
-    let totals={t61:0,t62:0,t102:0,ds1:0,ds2:0,ds3:0,c1:0,c2:0,c3:0,tip:0,starch:0,fg:0};
-    data.forEach(row=>{
-      totals.t61+=(row.twill_6_1||0);
-      totals.t62+=(row.twill_6_2||0);
-      totals.t102+=(row.twill_10_2||0);
-      totals.ds1+=(row.ds_16h_1||0);
-      totals.ds2+=(row.ds_16h_2||0);
-      totals.ds3+=(row.ds_48h_3||0);
-      totals.c1+=(row.crochet_1||0);
-      totals.c2+=(row.crochet_2||0);
-      totals.c3+=(row.crochet_3||0);
-      totals.tip+=(row.tipping||0);
-      totals.starch+=(row.starching||0);
-      totals.fg+=(row.finished_goods||0);
-    });
-    updateDisplay(totals);
-    document.getElementById('lastTime').innerText=formatDhakaTime12Hour();
-  }catch(err){console.error(err);}
+// Dhaka time helpers
+function getDhakaDate() {
+    const now = new Date();
+    return new Date(now.getTime() + (6 * 60 * 60 * 1000));
 }
 
-function updateDisplay(t){
-  document.getElementById('v_t61').innerText=t.t61.toLocaleString();
-  document.getElementById('v_t62').innerText=t.t62.toLocaleString();
-  document.getElementById('v_t102').innerText=t.t102.toLocaleString();
-  document.getElementById('total_twill').innerText=(t.t61+t.t62+t.t102).toLocaleString();
-  document.getElementById('v_ds1').innerText=t.ds1.toLocaleString();
-  document.getElementById('v_ds2').innerText=t.ds2.toLocaleString();
-  document.getElementById('v_ds3').innerText=t.ds3.toLocaleString();
-  document.getElementById('total_ds').innerText=(t.ds1+t.ds2+t.ds3).toLocaleString();
-  document.getElementById('v_c1').innerText=t.c1.toLocaleString();
-  document.getElementById('v_c2').innerText=t.c2.toLocaleString();
-  document.getElementById('v_c3').innerText=t.c3.toLocaleString();
-  document.getElementById('total_c').innerText=(t.c1+t.c2+t.c3).toLocaleString();
-  document.getElementById('v_tip').innerText=t.tip.toLocaleString();
-  document.getElementById('v_starch').innerText=t.starch.toLocaleString();
-  document.getElementById('v_fg').innerText=t.fg.toLocaleString();
+function formatDhakaDate(date) {
+    const day = date.getUTCDate();
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const month = monthNames[date.getUTCMonth()];
+    const year = date.getUTCFullYear();
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const dayName = dayNames[date.getUTCDay()];
+    return `${day} ${month} ${year} (${dayName})`;
 }
 
-window.onload=fetchDailyTotals;
-setInterval(fetchDailyTotals,30000);
+function getDhakaDateString() {
+    const dhakaDate = getDhakaDate();
+    const year = dhakaDate.getUTCFullYear();
+    const month = String(dhakaDate.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(dhakaDate.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Format a given UTC date to Dhaka time (HH:MM AM/PM)
+function formatDhakaTimeFromDate(utcDate) {
+    if (!utcDate) return "--:-- --";
+    const dhakaTime = new Date(utcDate.getTime() + (6 * 60 * 60 * 1000));
+    let hours = dhakaTime.getUTCHours();
+    const minutes = String(dhakaTime.getUTCMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    const hoursStr = String(hours).padStart(2, '0');
+    return `${hoursStr}:${minutes} ${ampm}`;
+}
+
+function updateDate() {
+    const dhakaDate = getDhakaDate();
+    document.getElementById('displayDate').innerText = formatDhakaDate(dhakaDate);
+}
+
+async function fetchDailyTotals() {
+    updateDate();
+    const dhakaDateString = getDhakaDateString();
+
+    try {
+        const { data, error } = await _supabase
+            .from('production_logs')
+            .select('*')
+            .eq('entry_date', dhakaDateString);
+
+        if (error) throw error;
+
+        let totals = { t61:0, t62:0, t102:0, ds1:0, ds2:0, ds3:0, c1:0, c2:0, c3:0, tip:0, starch:0, fg:0 };
+        let maxCreated = null; // to store the latest created_at
+
+        data.forEach(row => {
+            totals.t61 += (row.twill_6_1 || 0);
+            totals.t62 += (row.twill_6_2 || 0);
+            totals.t102 += (row.twill_10_2 || 0);
+            totals.ds1 += (row.ds_16h_1 || 0);
+            totals.ds2 += (row.ds_16h_2 || 0);
+            totals.ds3 += (row.ds_48h_3 || 0);
+            totals.c1 += (row.crochet_1 || 0);
+            totals.c2 += (row.crochet_2 || 0);
+            totals.c3 += (row.crochet_3 || 0);
+            totals.tip += (row.tipping || 0);
+            totals.starch += (row.starching || 0);
+            totals.fg += (row.finished_goods || 0);
+
+            // track latest created_at
+            const created = new Date(row.created_at);
+            if (!maxCreated || created > maxCreated) {
+                maxCreated = created;
+            }
+        });
+
+        updateDisplay(totals);
+
+        // Update last update time from the most recent entry
+        if (maxCreated) {
+            document.getElementById('lastTime').innerText = formatDhakaTimeFromDate(maxCreated);
+        } else {
+            document.getElementById('lastTime').innerText = "--:-- --";
+        }
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById('lastTime').innerText = "--:-- --";
+    }
+}
+
+function updateDisplay(t) {
+    document.getElementById('v_t61').innerText = t.t61.toLocaleString();
+    document.getElementById('v_t62').innerText = t.t62.toLocaleString();
+    document.getElementById('v_t102').innerText = t.t102.toLocaleString();
+    document.getElementById('total_twill').innerText = (t.t61 + t.t62 + t.t102).toLocaleString();
+    document.getElementById('v_ds1').innerText = t.ds1.toLocaleString();
+    document.getElementById('v_ds2').innerText = t.ds2.toLocaleString();
+    document.getElementById('v_ds3').innerText = t.ds3.toLocaleString();
+    document.getElementById('total_ds').innerText = (t.ds1 + t.ds2 + t.ds3).toLocaleString();
+    document.getElementById('v_c1').innerText = t.c1.toLocaleString();
+    document.getElementById('v_c2').innerText = t.c2.toLocaleString();
+    document.getElementById('v_c3').innerText = t.c3.toLocaleString();
+    document.getElementById('total_c').innerText = (t.c1 + t.c2 + t.c3).toLocaleString();
+    document.getElementById('v_tip').innerText = t.tip.toLocaleString();
+    document.getElementById('v_starch').innerText = t.starch.toLocaleString();
+    document.getElementById('v_fg').innerText = t.fg.toLocaleString();
+}
+
+// Initial load
+window.onload = fetchDailyTotals;
+
+// Refresh every 30 seconds
+setInterval(fetchDailyTotals, 30000);
 </script>
-
 </body>
 </html>
