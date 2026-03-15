@@ -230,14 +230,14 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
     </div>
   </div>
 
-  <!-- Drawstring Card - UPDATED: 4 columns (16H-1, 32H-2, 32H-3, 48H-4) -->
+  <!-- Drawstring Card - 4 columns matching your database -->
   <div class="category-card">
     <div class="card-header"><span class="card-title">Drawstring Items</span></div>
     <div class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
       <div class="input-group"><label>16H-1</label><input type="number" id="ds16h1" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
       <div class="input-group"><label>32H-2</label><input type="number" id="ds32h2" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
       <div class="input-group"><label>32H-3</label><input type="number" id="ds32h3" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-      <div class="input-group"><label>48H-4</label><input type="number" id="ds48h4" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>48H-3</label><input type="number" id="ds48h3" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
     </div>
   </div>
 
@@ -335,16 +335,16 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     return;
   }
 
-  // Collect values - UPDATED with new drawstring IDs
+  // Collect values
   const t61 = Number(document.getElementById('t61').value) || 0;
   const t62 = Number(document.getElementById('t62').value) || 0;
   const t102 = Number(document.getElementById('t102').value) || 0;
   
-  // UPDATED: New drawstring fields
+  // Drawstring fields matching your database
   const ds16h1 = Number(document.getElementById('ds16h1').value) || 0;
   const ds32h2 = Number(document.getElementById('ds32h2').value) || 0;
   const ds32h3 = Number(document.getElementById('ds32h3').value) || 0;
-  const ds48h4 = Number(document.getElementById('ds48h4').value) || 0;
+  const ds48h3 = Number(document.getElementById('ds48h3').value) || 0;  // Using existing ds_48h_3 column
   
   const c1 = Number(document.getElementById('c1').value) || 0;
   const c2 = Number(document.getElementById('c2').value) || 0;
@@ -353,32 +353,31 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const starch = Number(document.getElementById('starch').value) || 0;
   const fg = Number(document.getElementById('fg').value) || 0;
 
-  const total = t61 + t62 + t102 + ds16h1 + ds32h2 + ds32h3 + ds48h4 + c1 + c2 + c3 + tip + starch + fg;
+  const total = t61 + t62 + t102 + ds16h1 + ds32h2 + ds32h3 + ds48h3 + c1 + c2 + c3 + tip + starch + fg;
   if (total === 0) {
     errorBox.innerText = '⚠️ Please enter at least one production value.';
     errorBox.style.display = 'block';
     return;
   }
 
-  // UPDATED: Data object with new column names
-  
+  // Data object with EXACT column names from your database
   const data = {
-  entry_date: entryDate,
-  twill_6_1: t61,
-  twill_6_2: t62,
-  twill_10_2: t102,
-  ds_16h_1: ds16h1,
-  ds_32h_2: ds32h2,
-  ds_32h_3: ds32h3,
-  ds_48h_4: ds48h4,    // ← Make sure this is ds_48h_4 (with 'h')
-  crochet_1: c1,
-  crochet_2: c2,
-  crochet_3: c3,
-  tipping: tip,
-  starching: starch,
-  finished_goods: fg
-};
- 
+    entry_date: entryDate,
+    twill_6_1: t61,
+    twill_6_2: t62,
+    twill_10_2: t102,
+    ds_16h_1: ds16h1,
+    ds_32h_2: ds32h2,
+    ds_32h_3: ds32h3,
+    ds_48h_3: ds48h3,  // Using existing column name (not ds_48h_4)
+    crochet_1: c1,
+    crochet_2: c2,
+    crochet_3: c3,
+    tipping: tip,
+    starching: starch,
+    finished_goods: fg
+  };
+
   btn.disabled = true;
   btn.innerText = '⏳ Syncing...';
 
@@ -388,14 +387,14 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
 
     // Show success modal
     document.getElementById('modalOverlay').style.display = 'flex';
-    // Reset all number fields to 0 - UPDATED with new IDs
+    // Reset all number fields to 0
     document.getElementById('t61').value = 0;
     document.getElementById('t62').value = 0;
     document.getElementById('t102').value = 0;
     document.getElementById('ds16h1').value = 0;
     document.getElementById('ds32h2').value = 0;
     document.getElementById('ds32h3').value = 0;
-    document.getElementById('ds48h4').value = 0;
+    document.getElementById('ds48h3').value = 0;
     document.getElementById('c1').value = 0;
     document.getElementById('c2').value = 0;
     document.getElementById('c3').value = 0;
