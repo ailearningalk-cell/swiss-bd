@@ -361,23 +361,24 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   }
 
   // UPDATED: Data object with new column names
+  
   const data = {
-    entry_date: entryDate,
-    twill_6_1: t61,
-    twill_6_2: t62,
-    twill_10_2: t102,
-    ds_16h_1: ds16h1,
-    ds_32h_2: ds32h2,
-    ds_32h_3: ds32h3,
-    ds_48h_4: ds48h4,
-    crochet_1: c1,
-    crochet_2: c2,
-    crochet_3: c3,
-    tipping: tip,
-    starching: starch,
-    finished_goods: fg
-  };
-
+  entry_date: entryDate,
+  twill_6_1: t61,
+  twill_6_2: t62,
+  twill_10_2: t102,
+  ds_16h_1: ds16h1,
+  ds_32h_2: ds32h2,
+  ds_32h_3: ds32h3,
+  ds_48h_4: ds48h4,    // ← Make sure this is ds_48h_4 (with 'h')
+  crochet_1: c1,
+  crochet_2: c2,
+  crochet_3: c3,
+  tipping: tip,
+  starching: starch,
+  finished_goods: fg
+};
+ 
   btn.disabled = true;
   btn.innerText = '⏳ Syncing...';
 
