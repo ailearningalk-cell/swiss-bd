@@ -271,14 +271,15 @@ body {
         </div>
     </div>
 
-    <!-- Drawstring Card -->
+    <!-- Drawstring Card - UPDATED: 4 columns (16H-1, 32H-2, 32H-3, 48H-4) -->
     <div class="metric-card">
         <span class="label-small">Drawstring <span class="live-dot"></span></span>
         <span class="number-large" style="color: var(--success)" id="total_ds">0</span>
-        <div class="sub-grid">
-            <div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="v_ds1">0</span></div>
-            <div class="sub-item"><span class="sub-label">16H-2</span><span class="sub-number" id="v_ds2">0</span></div>
-            <div class="sub-item"><span class="sub-label">48H-3</span><span class="sub-number" id="v_ds3">0</span></div>
+        <div class="sub-grid" style="grid-template-columns: repeat(4, 1fr); display: grid;">
+            <div class="sub-item"><span class="sub-label">16H-1</span><span class="sub-number" id="v_ds16h1">0</span></div>
+            <div class="sub-item"><span class="sub-label">32H-2</span><span class="sub-number" id="v_ds32h2">0</span></div>
+            <div class="sub-item"><span class="sub-label">32H-3</span><span class="sub-number" id="v_ds32h3">0</span></div>
+            <div class="sub-item"><span class="sub-label">48H-4</span><span class="sub-number" id="v_ds48h4">0</span></div>
         </div>
     </div>
 
@@ -376,16 +377,26 @@ async function fetchDailyTotals() {
 
         if (error) throw error;
 
-        let totals = { t61:0, t62:0, t102:0, ds1:0, ds2:0, ds3:0, c1:0, c2:0, c3:0, tip:0, starch:0, fg:0 };
+        // UPDATED: Added ds32h2, ds32h3, ds48h4, removed ds2 (ds_16h_2)
+        let totals = { 
+            t61:0, t62:0, t102:0, 
+            ds16h1:0, ds32h2:0, ds32h3:0, ds48h4:0,
+            c1:0, c2:0, c3:0, 
+            tip:0, starch:0, fg:0 
+        };
         let maxCreated = null; // to store the latest created_at
 
         data.forEach(row => {
             totals.t61 += (row.twill_6_1 || 0);
             totals.t62 += (row.twill_6_2 || 0);
             totals.t102 += (row.twill_10_2 || 0);
-            totals.ds1 += (row.ds_16h_1 || 0);
-            totals.ds2 += (row.ds_16h_2 || 0);
-            totals.ds3 += (row.ds_48h_3 || 0);
+            
+            // UPDATED: New drawstring columns
+            totals.ds16h1 += (row.ds_16h_1 || 0);
+            totals.ds32h2 += (row.ds_32h_2 || 0);
+            totals.ds32h3 += (row.ds_32h_3 || 0);
+            totals.ds48h4 += (row.ds_48h_4 || 0);
+            
             totals.c1 += (row.crochet_1 || 0);
             totals.c2 += (row.crochet_2 || 0);
             totals.c3 += (row.crochet_3 || 0);
@@ -415,19 +426,25 @@ async function fetchDailyTotals() {
     }
 }
 
+// UPDATED: Display function with new drawstring IDs
 function updateDisplay(t) {
     document.getElementById('v_t61').innerText = t.t61.toLocaleString();
     document.getElementById('v_t62').innerText = t.t62.toLocaleString();
     document.getElementById('v_t102').innerText = t.t102.toLocaleString();
     document.getElementById('total_twill').innerText = (t.t61 + t.t62 + t.t102).toLocaleString();
-    document.getElementById('v_ds1').innerText = t.ds1.toLocaleString();
-    document.getElementById('v_ds2').innerText = t.ds2.toLocaleString();
-    document.getElementById('v_ds3').innerText = t.ds3.toLocaleString();
-    document.getElementById('total_ds').innerText = (t.ds1 + t.ds2 + t.ds3).toLocaleString();
+    
+    // UPDATED: Drawstring display with 4 columns
+    document.getElementById('v_ds16h1').innerText = t.ds16h1.toLocaleString();
+    document.getElementById('v_ds32h2').innerText = t.ds32h2.toLocaleString();
+    document.getElementById('v_ds32h3').innerText = t.ds32h3.toLocaleString();
+    document.getElementById('v_ds48h4').innerText = t.ds48h4.toLocaleString();
+    document.getElementById('total_ds').innerText = (t.ds16h1 + t.ds32h2 + t.ds32h3 + t.ds48h4).toLocaleString();
+    
     document.getElementById('v_c1').innerText = t.c1.toLocaleString();
     document.getElementById('v_c2').innerText = t.c2.toLocaleString();
     document.getElementById('v_c3').innerText = t.c3.toLocaleString();
     document.getElementById('total_c').innerText = (t.c1 + t.c2 + t.c3).toLocaleString();
+    
     document.getElementById('v_tip').innerText = t.tip.toLocaleString();
     document.getElementById('v_starch').innerText = t.starch.toLocaleString();
     document.getElementById('v_fg').innerText = t.fg.toLocaleString();
