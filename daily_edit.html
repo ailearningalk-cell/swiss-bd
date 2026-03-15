@@ -93,7 +93,7 @@ body {
 
 /* Table styles */
 .table-responsive { overflow-x:auto; width:100%; -webkit-overflow-scrolling: touch; margin-bottom:4px; }
-table { width:100%; border-collapse:collapse; min-width:350px; }
+table { width:100%; border-collapse:collapse; min-width:450px; }
 th { font-size:10px; font-weight:700; color:var(--text-light); text-transform:uppercase; padding:10px 6px; text-align:center; border-bottom:1px solid var(--card-border); white-space:nowrap; }
 td { padding:8px 4px; text-align:center; border-bottom:1px solid #f0f2f5; }
 .time-label { font-size:12px; font-weight:600; color:var(--text-dark); white-space:nowrap; padding:0 4px; }
@@ -215,7 +215,7 @@ td { padding:8px 4px; text-align:center; border-bottom:1px solid #f0f2f5; }
         </div>
     </div>
 
-    <!-- Drawstring Card -->
+    <!-- Drawstring Card - UPDATED: 4 columns -->
     <div class="edit-card">
         <div class="card-header">
             <span class="card-title">Drawstring Items</span>
@@ -227,8 +227,9 @@ td { padding:8px 4px; text-align:center; border-bottom:1px solid #f0f2f5; }
                     <tr>
                         <th>Time</th>
                         <th>16H-1</th>
-                        <th>16H-2</th>
-                        <th>48H-3</th>
+                        <th>32H-2</th>
+                        <th>32H-3</th>
+                        <th>48H-4</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -339,9 +340,17 @@ function renderTables(){
 
     todayData.forEach(row=>{
         const timeStr=new Date(row.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:true});
+        
+        // Twill Tape
         twillBody.innerHTML+=`<tr data-id="${row.id}"><td class="time-label">${timeStr}</td><td><input type="number" class="inline-input" data-col="twill_6_1" value="${row.twill_6_1||0}"></td><td><input type="number" class="inline-input" data-col="twill_6_2" value="${row.twill_6_2||0}"></td><td><input type="number" class="inline-input" data-col="twill_10_2" value="${row.twill_10_2||0}"></td></tr>`;
-        dsBody.innerHTML+=`<tr data-id="${row.id}"><td class="time-label">${timeStr}</td><td><input type="number" class="inline-input" data-col="ds_16h_1" value="${row.ds_16h_1||0}"></td><td><input type="number" class="inline-input" data-col="ds_16h_2" value="${row.ds_16h_2||0}"></td><td><input type="number" class="inline-input" data-col="ds_48h_3" value="${row.ds_48h_3||0}"></td></tr>`;
+        
+        // Drawstring - UPDATED: 4 columns
+        dsBody.innerHTML+=`<tr data-id="${row.id}"><td class="time-label">${timeStr}</td><td><input type="number" class="inline-input" data-col="ds_16h_1" value="${row.ds_16h_1||0}"></td><td><input type="number" class="inline-input" data-col="ds_32h_2" value="${row.ds_32h_2||0}"></td><td><input type="number" class="inline-input" data-col="ds_32h_3" value="${row.ds_32h_3||0}"></td><td><input type="number" class="inline-input" data-col="ds_48h_4" value="${row.ds_48h_4||0}"></td></tr>`;
+        
+        // Crochet
         crochetBody.innerHTML+=`<tr data-id="${row.id}"><td class="time-label">${timeStr}</td><td><input type="number" class="inline-input" data-col="crochet_1" value="${row.crochet_1||0}"></td><td><input type="number" class="inline-input" data-col="crochet_2" value="${row.crochet_2||0}"></td><td><input type="number" class="inline-input" data-col="crochet_3" value="${row.crochet_3||0}"></td></tr>`;
+        
+        // Finishing
         finBody.innerHTML+=`<tr data-id="${row.id}"><td class="time-label">${timeStr}</td><td><input type="number" class="inline-input" data-col="tipping" value="${row.tipping||0}"></td><td><input type="number" class="inline-input" data-col="starching" value="${row.starching||0}"></td><td><input type="number" class="inline-input" data-col="finished_goods" value="${row.finished_goods||0}"></td></tr>`;
     });
 
