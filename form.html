@@ -237,7 +237,7 @@ cursor:pointer; margin:10px 0 0 0; transition:all .3s ease; box-shadow:0 4px 6px
       <div class="input-group"><label>16H-1</label><input type="number" id="ds16h1" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
       <div class="input-group"><label>32H-2</label><input type="number" id="ds32h2" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
       <div class="input-group"><label>32H-3</label><input type="number" id="ds32h3" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
-      <div class="input-group"><label>48H-3</label><input type="number" id="ds48h3" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
+      <div class="input-group"><label>48H-4</label><input type="number" id="ds48h4" value="0" min="0" onfocus="hFocus(this)" onblur="hBlur(this)"></div>
     </div>
   </div>
 
@@ -344,7 +344,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const ds16h1 = Number(document.getElementById('ds16h1').value) || 0;
   const ds32h2 = Number(document.getElementById('ds32h2').value) || 0;
   const ds32h3 = Number(document.getElementById('ds32h3').value) || 0;
-  const ds48h3 = Number(document.getElementById('ds48h3').value) || 0;  // Using existing ds_48h_3 column
+  const ds48h4 = Number(document.getElementById('ds48h4').value) || 0;  // ← FIXED: using ds48h4
   
   const c1 = Number(document.getElementById('c1').value) || 0;
   const c2 = Number(document.getElementById('c2').value) || 0;
@@ -353,7 +353,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const starch = Number(document.getElementById('starch').value) || 0;
   const fg = Number(document.getElementById('fg').value) || 0;
 
-  const total = t61 + t62 + t102 + ds16h1 + ds32h2 + ds32h3 + ds48h3 + c1 + c2 + c3 + tip + starch + fg;
+  const total = t61 + t62 + t102 + ds16h1 + ds32h2 + ds32h3 + ds48h4 + c1 + c2 + c3 + tip + starch + fg;
   if (total === 0) {
     errorBox.innerText = '⚠️ Please enter at least one production value.';
     errorBox.style.display = 'block';
@@ -369,7 +369,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     ds_16h_1: ds16h1,
     ds_32h_2: ds32h2,
     ds_32h_3: ds32h3,
-    ds_48h_3: ds48h3,  // Using existing column name (not ds_48h_4)
+    ds_48h_4: ds48h4,  // ← FIXED: using ds_48h_4 (not ds_48h_3)
     crochet_1: c1,
     crochet_2: c2,
     crochet_3: c3,
@@ -394,7 +394,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     document.getElementById('ds16h1').value = 0;
     document.getElementById('ds32h2').value = 0;
     document.getElementById('ds32h3').value = 0;
-    document.getElementById('ds48h3').value = 0;
+    document.getElementById('ds48h4').value = 0;  // ← FIXED: reset ds48h4
     document.getElementById('c1').value = 0;
     document.getElementById('c2').value = 0;
     document.getElementById('c3').value = 0;
