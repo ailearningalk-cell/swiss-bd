@@ -263,7 +263,7 @@ td { padding:8px 4px; text-align:center; border-bottom:1px solid #f0f2f5; }
 </div>
 
 <div class="container" id="buttonContainer" style="display:none;">
-    <button class="update-btn" onclick="saveAllChanges()">⚡ Update All Entries</button>
+    <button class="update-btn" onclick="saveAllChanges()">Update All</button>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
@@ -347,8 +347,8 @@ async function saveAllChanges(){
     if(!error){
         document.getElementById('modalOverlay').style.display='flex';
         btn.disabled=false;
-        btn.innerText="⚡ Update All Entries";
-    } else { alert("Error: "+error.message); btn.disabled=false; btn.innerText="⚡ Update All Entries"; }
+        btn.innerText="Update All";
+    } else { alert("Error: "+error.message); btn.disabled=false; btn.innerText="Update All"; }
 }
 
 window.onload = loadData;
