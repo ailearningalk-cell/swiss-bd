@@ -237,7 +237,7 @@
                             <th>Draw 16H-1</th>
                             <th>Draw 32H-2</th>
                             <th>Draw 32H-3</th>
-                            <th>Draw 48H-3</th>
+                            <th>Draw 48H-4</th>
                             <th>Croc</th>
                             <th>Tip</th>
                             <th>Starch</th>
@@ -262,7 +262,7 @@
             draw16h1: 0,
             draw32h2: 0,
             draw32h3: 0,
-            draw48h3: 0,
+            draw48h4: 0,
             crochet: 0,
             tip: 0,
             starch: 0,
@@ -351,7 +351,7 @@
                 draw16h1: 0,
                 draw32h2: 0,
                 draw32h3: 0,
-                draw48h3: 0,
+                draw48h4: 0,
                 crochet: 0,
                 tip: 0,
                 starch: 0,
@@ -381,7 +381,7 @@
                     draw16h1:0, 
                     draw32h2:0, 
                     draw32h3:0, 
-                    draw48h3:0, 
+                    draw48h4:0, 
                     crochet:0, 
                     tip:0, 
                     starch:0, 
@@ -394,7 +394,7 @@
                 const draw16h1 = Number(row.ds_16h_1) || 0;
                 const draw32h2 = Number(row.ds_32h_2) || 0;
                 const draw32h3 = Number(row.ds_32h_3) || 0;
-                const draw48h3 = Number(row.ds_48h_3) || 0;
+                const draw48h4 = Number(row.ds_48h_4) || 0;  // ← FIXED: now using ds_48h_4
                 
                 const crochet = (Number(row.crochet_1) || 0) + (Number(row.crochet_2) || 0) + (Number(row.crochet_3) || 0);
                 const tip = Number(row.tipping) || 0;
@@ -405,7 +405,7 @@
                 grouped[d].draw16h1 += draw16h1;
                 grouped[d].draw32h2 += draw32h2;
                 grouped[d].draw32h3 += draw32h3;
-                grouped[d].draw48h3 += draw48h3;
+                grouped[d].draw48h4 += draw48h4;
                 grouped[d].crochet += crochet;
                 grouped[d].tip += tip;
                 grouped[d].starch += starch;
@@ -416,7 +416,7 @@
                 columnTotals.draw16h1 += draw16h1;
                 columnTotals.draw32h2 += draw32h2;
                 columnTotals.draw32h3 += draw32h3;
-                columnTotals.draw48h3 += draw48h3;
+                columnTotals.draw48h4 += draw48h4;
                 columnTotals.crochet += crochet;
                 columnTotals.tip += tip;
                 columnTotals.starch += starch;
@@ -434,7 +434,7 @@
                         <td>${day.draw16h1.toLocaleString()}</td>
                         <td>${day.draw32h2.toLocaleString()}</td>
                         <td>${day.draw32h3.toLocaleString()}</td>
-                        <td>${day.draw48h3.toLocaleString()}</td>
+                        <td>${day.draw48h4.toLocaleString()}</td>
                         <td>${day.crochet.toLocaleString()}</td>
                         <td>${day.tip.toLocaleString()}</td>
                         <td>${day.starch.toLocaleString()}</td>
@@ -451,7 +451,7 @@
                     <td><b>${columnTotals.draw16h1.toLocaleString()}</b></td>
                     <td><b>${columnTotals.draw32h2.toLocaleString()}</b></td>
                     <td><b>${columnTotals.draw32h3.toLocaleString()}</b></td>
-                    <td><b>${columnTotals.draw48h3.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.draw48h4.toLocaleString()}</b></td>
                     <td><b>${columnTotals.crochet.toLocaleString()}</b></td>
                     <td><b>${columnTotals.tip.toLocaleString()}</b></td>
                     <td><b>${columnTotals.starch.toLocaleString()}</b></td>
