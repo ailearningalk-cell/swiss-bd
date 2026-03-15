@@ -182,7 +182,7 @@
             margin-bottom: 20px;
         }
         .table-responsive { overflow-x: auto; width: 100%; }
-        table { width: 100%; border-collapse: collapse; min-width: 450px; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
         th { 
             background: #fcfdfe; padding: 12px; text-align: left; 
             font-size: 10px; font-weight: 700; color: var(--text-light);
@@ -234,7 +234,10 @@
                         <tr>
                             <th>Date</th>
                             <th>Twill</th>
-                            <th>Draw</th>
+                            <th>Draw 16H-1</th>
+                            <th>Draw 32H-2</th>
+                            <th>Draw 32H-3</th>
+                            <th>Draw 48H-3</th>
                             <th>Croc</th>
                             <th>Tip</th>
                             <th>Starch</th>
@@ -256,7 +259,10 @@
         let weekOffset = 0;
         let columnTotals = {
             twill: 0,
-            draw: 0,
+            draw16h1: 0,
+            draw32h2: 0,
+            draw32h3: 0,
+            draw48h3: 0,
             crochet: 0,
             tip: 0,
             starch: 0,
@@ -342,7 +348,10 @@
             // Reset column totals
             columnTotals = {
                 twill: 0,
-                draw: 0,
+                draw16h1: 0,
+                draw32h2: 0,
+                draw32h3: 0,
+                draw48h3: 0,
                 crochet: 0,
                 tip: 0,
                 starch: 0,
@@ -367,17 +376,36 @@
 
             data.forEach(row => {
                 const d = row.entry_date;
-                if (!grouped[d]) grouped[d] = { twill:0, ds:0, crochet:0, tip:0, starch:0, fg:0 };
+                if (!grouped[d]) grouped[d] = { 
+                    twill:0, 
+                    draw16h1:0, 
+                    draw32h2:0, 
+                    draw32h3:0, 
+                    draw48h3:0, 
+                    crochet:0, 
+                    tip:0, 
+                    starch:0, 
+                    fg:0 
+                };
                 
                 const twill = (Number(row.twill_6_1) || 0) + (Number(row.twill_6_2) || 0) + (Number(row.twill_10_2) || 0);
-                const draw = (Number(row.ds_16h_1) || 0) + (Number(row.ds_16h_2) || 0) + (Number(row.ds_48h_3) || 0);
+                
+                // Individual drawstring columns
+                const draw16h1 = Number(row.ds_16h_1) || 0;
+                const draw32h2 = Number(row.ds_32h_2) || 0;
+                const draw32h3 = Number(row.ds_32h_3) || 0;
+                const draw48h3 = Number(row.ds_48h_3) || 0;
+                
                 const crochet = (Number(row.crochet_1) || 0) + (Number(row.crochet_2) || 0) + (Number(row.crochet_3) || 0);
-                const tip = (Number(row.tipping) || 0);
-                const starch = (Number(row.starching) || 0);
-                const fg = (Number(row.finished_goods) || 0);
+                const tip = Number(row.tipping) || 0;
+                const starch = Number(row.starching) || 0;
+                const fg = Number(row.finished_goods) || 0;
                 
                 grouped[d].twill += twill;
-                grouped[d].ds += draw;
+                grouped[d].draw16h1 += draw16h1;
+                grouped[d].draw32h2 += draw32h2;
+                grouped[d].draw32h3 += draw32h3;
+                grouped[d].draw48h3 += draw48h3;
                 grouped[d].crochet += crochet;
                 grouped[d].tip += tip;
                 grouped[d].starch += starch;
@@ -385,7 +413,10 @@
                 
                 // Add to column totals
                 columnTotals.twill += twill;
-                columnTotals.draw += draw;
+                columnTotals.draw16h1 += draw16h1;
+                columnTotals.draw32h2 += draw32h2;
+                columnTotals.draw32h3 += draw32h3;
+                columnTotals.draw48h3 += draw48h3;
                 columnTotals.crochet += crochet;
                 columnTotals.tip += tip;
                 columnTotals.starch += starch;
@@ -400,7 +431,10 @@
                     <tr>
                         <td><b>${new Date(date).getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][new Date(date).getMonth()]}</b></td>
                         <td>${day.twill.toLocaleString()}</td>
-                        <td>${day.ds.toLocaleString()}</td>
+                        <td>${day.draw16h1.toLocaleString()}</td>
+                        <td>${day.draw32h2.toLocaleString()}</td>
+                        <td>${day.draw32h3.toLocaleString()}</td>
+                        <td>${day.draw48h3.toLocaleString()}</td>
                         <td>${day.crochet.toLocaleString()}</td>
                         <td>${day.tip.toLocaleString()}</td>
                         <td>${day.starch.toLocaleString()}</td>
@@ -409,12 +443,15 @@
                 `;
             });
             
-            // Add summation row at the bottom
+            // Add summation row at the bottom with all columns
             tableBody.innerHTML += `
                 <tr style="background-color: #f0f2f5; font-weight: 800; border-top: 2px solid #1a1f36;">
                     <td><b>TOTAL</b></td>
                     <td><b>${columnTotals.twill.toLocaleString()}</b></td>
-                    <td><b>${columnTotals.draw.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.draw16h1.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.draw32h2.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.draw32h3.toLocaleString()}</b></td>
+                    <td><b>${columnTotals.draw48h3.toLocaleString()}</b></td>
                     <td><b>${columnTotals.crochet.toLocaleString()}</b></td>
                     <td><b>${columnTotals.tip.toLocaleString()}</b></td>
                     <td><b>${columnTotals.starch.toLocaleString()}</b></td>
