@@ -107,12 +107,28 @@ td { padding:8px 4px; text-align:center; border-bottom:1px solid #f0f2f5; }
 
 /* Update Button */
 .update-btn {
-  width:100%; padding:16px 20px; background:var(--navy); color:white;
-  border:none; border-radius:12px; font-size:16px; font-weight:600;
-  cursor:pointer; margin-top:10px; transition:all .3s ease;
-  box-shadow:0 4px 6px rgba(0,0,0,0.1); letter-spacing:.5px; display:block; box-sizing:border-box;
+    width: 100%;
+    padding: 16px 20px;
+    background: #1a1a1a;  /* changed to black */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
+    display: block;
+    box-sizing: border-box;
 }
-.update-btn:hover { background:#0f1a2e; transform:translateY(-2px); box-shadow:0 8px 12px rgba(0,0,0,0.15); }
+
+.update-btn:hover {
+    background: #000000;  /* darker black on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
 .update-btn:active { transform:scale(0.98); box-shadow:0 2px 4px rgba(0,0,0,0.1); }
 .update-btn:disabled { background:#94a3b8; cursor:not-allowed; transform:none; box-shadow:none; }
 
