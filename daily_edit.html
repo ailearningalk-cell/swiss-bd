@@ -147,8 +147,25 @@ td { padding:8px 4px; text-align:center; border-bottom:1px solid #f0f2f5; }
 .modal h1 { color:var(--success); margin:0; font-size:50px; }
 .modal h3 { margin:10px 0 5px; color:var(--text-dark); font-size:20px; }
 .modal p { color:var(--text-light); font-size:14px; margin-bottom:20px; }
-.modal-btn { background:var(--success); color:white; border:none; padding:14px; border-radius:8px; width:100%; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; box-sizing:border-box; transition:all .2s ease; }
-.modal-btn:hover { background:#2d9f5a; transform:translateY(-2px); }
+.modal-btn {
+  background: #1a1a1a;  /* Changed from var(--success) to black */
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.modal-btn:hover {
+  background: #000000;  /* Even darker black on hover */
+  transform: translateY(-2px);
+}
 .modal-btn:active { transform:scale(0.98); }
 
 @media(max-width:360px){ .company-name{ font-size:20px; } }
